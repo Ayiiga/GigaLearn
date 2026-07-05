@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fafbff;
+  --foreground: #1a1a2e;
+  --giga-purple: #6c5ce7;
+  --giga-purple-light: #a29bfe;
+  --giga-blue: #0984e3;
+  --giga-orange: #fd9644;
+  --giga-yellow: #feca57;
+  --giga-green: #26de81;
+  --giga-teal: #00cec9;
+  --giga-pink: #fd79a8;
+  --giga-red: #ff6b6b;
+  --giga-indigo: #5f27cd;
+  --giga-surface: #ffffff;
+  --giga-muted: #636e72;
+  --giga-border: #e8ecf4;
+}
+
+.dark {
+  --background: #0f0f1a;
+  --foreground: #f5f6fa;
+  --giga-surface: #1a1a2e;
+  --giga-muted: #a4b0be;
+  --giga-border: #2d3436;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-giga-purple: var(--giga-purple);
+  --color-giga-purple-light: var(--giga-purple-light);
+  --color-giga-blue: var(--giga-blue);
+  --color-giga-orange: var(--giga-orange);
+  --color-giga-yellow: var(--giga-yellow);
+  --color-giga-green: var(--giga-green);
+  --color-giga-teal: var(--giga-teal);
+  --color-giga-pink: var(--giga-pink);
+  --color-giga-red: var(--giga-red);
+  --color-giga-indigo: var(--giga-indigo);
+  --color-giga-surface: var(--giga-surface);
+  --color-giga-muted: var(--giga-muted);
+  --color-giga-border: var(--giga-border);
+  --color-giga-border-dark: #2d3436;
+  --color-giga-text: var(--foreground);
+  --font-sans: var(--font-nunito);
+  --font-display: var(--font-fredoka);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-nunito), system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-fredoka), system-ui, sans-serif;
+}
+
+/* Child-friendly focus styles (WCAG) */
+:focus-visible {
+  outline: 3px solid var(--giga-purple);
+  outline-offset: 2px;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Touch-friendly minimum sizes */
+.touch-target {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+/* Celebration animation */
+@keyframes confetti-fall {
+  0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.animate-confetti {
+  animation: confetti-fall 3s ease-in forwards;
+}
+
+/* Gradient text */
+.text-gradient {
+  background: linear-gradient(135deg, var(--giga-purple), var(--giga-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Safe area for mobile */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}

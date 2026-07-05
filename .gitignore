@@ -1,0 +1,12 @@
+.vercel
+.env*
+!.env.example
+node_modules/
+.next/
+out/
+dist/
+*.log
+.DS_Store
+gigalearn/.wrangler/
+gigalearn/node_modules/
+gigalearn/.next/
