@@ -31,22 +31,49 @@ export async function syncOfflineData(userId: string): Promise<{ synced: number;
           time_spent_seconds: number;
         };
 
-        const { error } = await supabase.from("user_progress").upsert({
-          user_id: payload.user_id,
-          lesson_id: payload.lesson_id,
-          level: payload.level,
-          completed: payload.completed,
-          score: payload.score,
-          time_spent_seconds: payload.time_spent_seconds,
-          completed_at: payload.completed ? new Date().toISOString() : null,
-        });
+        // Curriculum IDs are stored locally; cloud sync uses slug-based progress when UUID FK is unavailable
+        const { error } = await supabase.from("user_progress").upsert(
+          {
+            user_id: payload.user_id,
+            lesson_id: payload.lesson_id,
+            level: payload.level,
+            completed: payload.completed,
+            score: payload.score,
+            time_spent_seconds: payload.time_spent_seconds,
+            completed_at: payload.completed ? new Date().toISOString() : null,
+          },
+          { onConflict: "user_id,lesson_id", ignoreDuplicates: false },
+        );
 
-        if (error) throw error;
+        if (error) {
+          // Keep item queued for retry when schema constraints differ
+          failed++;
+          continue;
+        }
 
         await db.progress
           .where("lesson_id")
           .equals(payload.lesson_id)
           .modify({ synced: true });
+      }
+
+      if (item.type === "gamification") {
+        const payload = item.payload as unknown as GamificationState & { user_id: string };
+        const { error } = await supabase.from("gamification").upsert({
+          user_id: userId,
+          xp: payload.xp,
+          coins: payload.coins,
+          level: payload.level,
+          streak: payload.streak,
+          unlocked_lessons: payload.unlocked_lessons,
+          completed_lessons: payload.completed_lessons ?? [],
+          daily_quest_progress: payload.daily_quest_progress ?? {},
+          completed_quests: payload.completed_quests ?? [],
+          unlocked_worlds: payload.unlocked_worlds ?? [],
+          strengths: payload.strengths ?? [],
+          weaknesses: payload.weaknesses ?? [],
+        });
+        if (error) throw error;
       }
 
       await removeSyncItem(item.id);

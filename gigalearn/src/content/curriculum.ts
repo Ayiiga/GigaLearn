@@ -1,4 +1,5 @@
 import type { Achievement, LearningLevel, Lesson } from "@/types";
+import { MATH_LESSONS } from "@/content/math-curriculum";
 
 export const LEVELS: {
   id: LearningLevel;
@@ -268,63 +269,7 @@ The End.`,
   },
 ];
 
-export const MATH_LESSONS: Lesson[] = [
-  {
-    id: "math-count-1-5",
-    level: "mathematics",
-    title: "Counting 1 to 5",
-    description: "Recognize and count numbers one through five",
-    slug: "counting-1-5",
-    order_index: 1,
-    duration_minutes: 10,
-    xp_reward: 55,
-    coin_reward: 11,
-    is_premium: false,
-    content: {
-      type: "mathematics",
-      activities: [
-        { id: "m1", type: "matching", title: "Count the objects", data: { range: [1, 5], emoji: "🍎" } },
-      ],
-    },
-  },
-  {
-    id: "math-count-6-10",
-    level: "mathematics",
-    title: "Counting 6 to 10",
-    description: "Practice counting higher numbers",
-    slug: "counting-6-10",
-    order_index: 2,
-    duration_minutes: 10,
-    xp_reward: 60,
-    coin_reward: 12,
-    is_premium: false,
-    content: {
-      type: "mathematics",
-      activities: [
-        { id: "m2", type: "matching", title: "Count the stars", data: { range: [6, 10], emoji: "⭐" } },
-      ],
-    },
-  },
-  {
-    id: "math-addition-basics",
-    level: "mathematics",
-    title: "Adding Together",
-    description: "Simple addition with pictures",
-    slug: "addition-basics",
-    order_index: 3,
-    duration_minutes: 12,
-    xp_reward: 70,
-    coin_reward: 14,
-    is_premium: false,
-    content: {
-      type: "mathematics",
-      activities: [
-        { id: "m3", type: "quiz", title: "1 + 1 = ?", data: { a: 1, b: 1, answer: 2 } },
-        { id: "m4", type: "quiz", title: "2 + 2 = ?", data: { a: 2, b: 2, answer: 4 } },
-      ],
-    },
-  },
-];
+export { MATH_LESSONS } from "@/content/math-curriculum";
 
 export const LESSONS: Lesson[] = [
   ...buildAlphabetLessons(),

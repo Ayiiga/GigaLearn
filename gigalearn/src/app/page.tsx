@@ -62,7 +62,7 @@ export default function HomePage() {
                 <div className="text-center">
                   <span className="text-8xl">🎓</span>
                   <h2 className="font-display mt-4 text-3xl font-bold">GigaLearn</h2>
-                  <p className="mt-2 opacity-90">8 Learning Levels • AI Tutor • Games</p>
+                  <p className="mt-2 opacity-90">9 Learning Levels • AI Tutor • Games</p>
                 </div>
                 <div className="mt-6">
                   <ProgressBar />
@@ -83,7 +83,7 @@ export default function HomePage() {
       <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="text-center mb-12">
-            <h2 className="font-display text-3xl font-bold sm:text-4xl">8 Learning Adventures</h2>
+            <h2 className="font-display text-3xl font-bold sm:text-4xl">9 Learning Adventures</h2>
             <p className="mt-4 text-giga-muted max-w-2xl mx-auto">
               From alphabet tracing to grammar mastery — a complete English learning journey
             </p>

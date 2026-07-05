@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardTitle, CardDescription } from "@/components/ui/card";
 import { AI_FEATURES } from "@/content/curriculum";
 import { getOfflineAIResponse } from "@/lib/ai/offline-responses";
+import { fetchJsonWithRetry } from "@/lib/network/fetch-with-retry";
 import { withBasePath } from "@/lib/base-path";
 import type { AIFeatureRequest } from "@/types";
 
@@ -18,12 +19,15 @@ export default function AITutorPage() {
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [error, setError] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
     setLoading(true);
     setResponse("");
+    setError(null);
 
     try {
       if (isStaticHosting) {
@@ -31,14 +35,23 @@ export default function AITutorPage() {
         return;
       }
 
-      const res = await fetch(withBasePath("/api/ai"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ feature: selectedFeature, input }),
-      });
-      const data = await res.json();
+      const data = await fetchJsonWithRetry<{ response?: string; error?: string }>(
+        withBasePath("/api/ai"),
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ feature: selectedFeature, input }),
+          retries: 2,
+        },
+      );
+      if (data.error) {
+        setError(data.error);
+        setResponse(getOfflineAIResponse({ feature: selectedFeature, input }));
+        return;
+      }
       setResponse(data.response ?? "Something went wrong.");
     } catch {
+      setError("We could not reach the AI tutor. Showing an offline response instead.");
       setResponse(getOfflineAIResponse({ feature: selectedFeature, input }));
     } finally {
       setLoading(false);
@@ -91,6 +104,12 @@ export default function AITutorPage() {
             Get AI Help
           </Button>
         </form>
+
+        {error && (
+          <p className="mt-4 rounded-xl bg-giga-orange/10 px-4 py-3 text-sm text-giga-orange" role="alert">
+            {error}
+          </p>
+        )}
 
         {response && (
           <motion.div

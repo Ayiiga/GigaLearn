@@ -17,6 +17,8 @@ import {
   WifiOff,
   Moon,
   Sun,
+  Calculator,
+  Target,
 } from "lucide-react";
 import { useState } from "react";
 import { useTheme } from "next-themes";
@@ -29,7 +31,9 @@ const NAV_ITEMS = [
   { href: "/", label: "Home", icon: Home },
   { href: "/learn", label: "Learn", icon: BookOpen },
   { href: "/gigaphonics", label: "GigaPhonics", icon: Sparkles },
+  { href: "/gigamath", label: "GigaMath", icon: Calculator },
   { href: "/games", label: "Games", icon: Gamepad2 },
+  { href: "/quests", label: "Quests", icon: Target },
   { href: "/progress", label: "Progress", icon: BarChart3 },
   { href: "/achievements", label: "Achievements", icon: Trophy },
   { href: "/settings", label: "Settings", icon: Settings },

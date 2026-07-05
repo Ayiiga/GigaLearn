@@ -1,70 +1,64 @@
 "use client";
 
-import { Card, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-
-const MOCK_STUDENTS = [
-  { name: "Amara O.", progress: 78, level: "GigaPhonics", streak: 5 },
-  { name: "Kofi M.", progress: 62, level: "Alphabet", streak: 3 },
-  { name: "Zara K.", progress: 91, level: "Reading", streak: 12 },
-  { name: "James L.", progress: 45, level: "Vocabulary", streak: 1 },
-];
-
-const MOCK_CLASSES = [
-  { name: "Kindergarten A", students: 24, code: "KG2024A" },
-  { name: "Primary 1B", students: 18, code: "P1B2024" },
-];
+import { InsightsPanel, LevelAnalytics } from "@/components/dashboard/analytics-panel";
+import { GlassCard } from "@/components/ui/glass-card";
+import { LESSONS } from "@/content/curriculum";
+import { useGamification } from "@/stores/app-store";
 
 export default function TeacherDashboard() {
+  const gamification = useGamification();
+  const classSize = 24;
+  const avgLessons = Math.max(1, Math.round(gamification.completed_lessons.length * 0.6));
+  const phonicsLessons = LESSONS.filter((lesson) => lesson.level === "phonics").length;
+  const mathLessons = LESSONS.filter((lesson) => lesson.level === "mathematics").length;
+
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="font-display text-3xl font-bold">Teacher Dashboard</h1>
-          <p className="mt-2 text-giga-muted">Manage classes, assignments, and track student progress</p>
-        </div>
-        <Button>Create Assignment</Button>
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+      <h1 className="font-display text-3xl font-bold">Teacher Dashboard</h1>
+      <p className="mt-2 text-giga-muted">Class insights, recommendations, and curriculum analytics</p>
+
+      <div className="mt-8 grid gap-4 sm:grid-cols-3">
+        <GlassCard className="text-center">
+          <p className="text-3xl font-display font-bold text-giga-purple">{classSize}</p>
+          <p className="text-sm text-giga-muted">Students in class</p>
+        </GlassCard>
+        <GlassCard className="text-center">
+          <p className="text-3xl font-display font-bold text-giga-orange">{avgLessons}</p>
+          <p className="text-sm text-giga-muted">Avg lessons completed</p>
+        </GlassCard>
+        <GlassCard className="text-center">
+          <p className="text-3xl font-display font-bold text-giga-green">{gamification.streak}</p>
+          <p className="text-sm text-giga-muted">Top learner streak</p>
+        </GlassCard>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-4 mb-10">
-        <Card className="text-center"><p className="text-3xl font-bold text-giga-purple">42</p><CardDescription>Total Students</CardDescription></Card>
-        <Card className="text-center"><p className="text-3xl font-bold text-giga-green">89%</p><CardDescription>Avg. Completion</CardDescription></Card>
-        <Card className="text-center"><p className="text-3xl font-bold text-giga-orange">12</p><CardDescription>Active Assignments</CardDescription></Card>
-        <Card className="text-center"><p className="text-3xl font-bold text-giga-blue">96%</p><CardDescription>Attendance Today</CardDescription></Card>
+      <div className="mt-10">
+        <InsightsPanel
+          strengths={["Phonics engagement", "Interactive lesson completion", "Daily practice consistency"]}
+          weaknesses={["Extended reading fluency", "Advanced math practice"]}
+          recommendations={[
+            `Assign ${phonicsLessons} GigaPhonics lessons this week`,
+            `Introduce ${mathLessons} GigaMath activities for numeracy`,
+            "Use AI Tutor for differentiated quiz generation",
+          ]}
+        />
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        <div>
-          <h2 className="font-display text-xl font-bold mb-4">My Classes</h2>
-          <div className="space-y-4">
-            {MOCK_CLASSES.map((c) => (
-              <Card key={c.code} hover>
-                <CardTitle>{c.name}</CardTitle>
-                <CardDescription>{c.students} students • Join code: <strong>{c.code}</strong></CardDescription>
-              </Card>
-            ))}
+      <div className="mt-10 grid gap-6 lg:grid-cols-2">
+        <GlassCard>
+          <p className="font-bold text-lg">Suggested Assignments</p>
+          <ul className="mt-4 space-y-2 text-sm">
+            <li>📚 Alphabet letters A–E tracing practice</li>
+            <li>🔤 CVC blending with /api/ai pronunciation coach</li>
+            <li>🔢 GigaMath counting and addition basics</li>
+          </ul>
+        </GlassCard>
+        <GlassCard>
+          <p className="font-bold text-lg">Class Progress Snapshot</p>
+          <div className="mt-4">
+            <LevelAnalytics />
           </div>
-        </div>
-
-        <div>
-          <h2 className="font-display text-xl font-bold mb-4">Student Progress</h2>
-          <div className="space-y-3">
-            {MOCK_STUDENTS.map((s) => (
-              <Card key={s.name}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-base">{s.name}</CardTitle>
-                    <CardDescription>{s.level} • 🔥 {s.streak} days</CardDescription>
-                  </div>
-                  <span className="font-bold text-giga-purple">{s.progress}%</span>
-                </div>
-                <div className="mt-2 h-2 rounded-full bg-giga-border overflow-hidden">
-                  <div className="h-full bg-giga-purple rounded-full" style={{ width: `${s.progress}%` }} />
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
+        </GlassCard>
       </div>
     </div>
   );

@@ -58,7 +58,8 @@ export interface Activity {
     | "quiz"
     | "flashcard"
     | "blending"
-    | "comprehension";
+    | "comprehension"
+    | "drag-drop";
   title: string;
   data: Record<string, unknown>;
 }
@@ -83,6 +84,15 @@ export interface GamificationState {
   last_active_date: string;
   badges: Badge[];
   unlocked_lessons: string[];
+  completed_lessons: string[];
+  daily_quest_progress: Record<string, number>;
+  completed_quests: string[];
+  unlocked_worlds: string[];
+  strengths: string[];
+  weaknesses: string[];
+  lessons_completed_today: number;
+  xp_earned_today: number;
+  speaking_exercises_today: number;
 }
 
 export interface Badge {
@@ -124,7 +134,7 @@ export interface Assignment {
 
 export interface OfflineQueueItem {
   id: string;
-  type: "progress" | "achievement" | "activity";
+  type: "progress" | "achievement" | "activity" | "gamification";
   payload: Record<string, unknown>;
   created_at: string;
   retry_count: number;

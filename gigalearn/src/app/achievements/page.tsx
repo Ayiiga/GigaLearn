@@ -1,12 +1,19 @@
 "use client";
 
+import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { Card, CardTitle, CardDescription } from "@/components/ui/card";
 import { ACHIEVEMENTS } from "@/content/curriculum";
-import { useGamification } from "@/stores/app-store";
+import { useGamification, useAppStore } from "@/stores/app-store";
+import { GlassCard } from "@/components/ui/glass-card";
 
 export default function AchievementsPage() {
   const { xp, badges } = useGamification();
+  const checkAchievements = useAppStore((s) => s.checkAchievements);
+  const earnedIds = new Set(badges.map((badge) => badge.id));
+
+  useEffect(() => {
+    checkAchievements();
+  }, [checkAchievements, xp]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
@@ -17,32 +24,32 @@ export default function AchievementsPage() {
         <div className="mt-8">
           <h2 className="font-bold mb-4">Earned Badges</h2>
           <div className="flex flex-wrap gap-4">
-            {badges.map((b) => (
-              <Card key={b.id} className="text-center w-32">
-                <span className="text-4xl">{b.icon}</span>
-                <CardTitle className="mt-2 text-sm">{b.name}</CardTitle>
-              </Card>
+            {badges.map((badge) => (
+              <GlassCard key={badge.id} className="text-center w-36 border-giga-yellow/40">
+                <span className="text-4xl">{badge.icon}</span>
+                <p className="mt-2 font-bold text-sm">{badge.name}</p>
+              </GlassCard>
             ))}
           </div>
         </div>
       )}
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {ACHIEVEMENTS.map((a, i) => {
-          const earned = xp >= a.xp_required;
+        {ACHIEVEMENTS.map((achievement, index) => {
+          const earned = earnedIds.has(achievement.id) || xp >= achievement.xp_required;
           return (
             <motion.div
-              key={a.id}
+              key={achievement.id}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.05 }}
+              transition={{ delay: index * 0.05 }}
             >
-              <Card className={earned ? "border-giga-yellow bg-giga-yellow/5" : "opacity-60"}>
-                <span className="text-4xl">{earned ? a.icon : "🔒"}</span>
-                <CardTitle className="mt-3">{a.title}</CardTitle>
-                <CardDescription>{a.description}</CardDescription>
-                <p className="mt-3 text-sm font-bold text-giga-purple">{a.xp_required} XP required</p>
-              </Card>
+              <GlassCard className={earned ? "border-giga-yellow bg-giga-yellow/10" : "opacity-70"}>
+                <span className="text-4xl">{earned ? achievement.icon : "🔒"}</span>
+                <p className="mt-3 font-bold">{achievement.title}</p>
+                <p className="text-sm text-giga-muted">{achievement.description}</p>
+                <p className="mt-3 text-sm font-bold text-giga-purple">{achievement.xp_required} XP required</p>
+              </GlassCard>
             </motion.div>
           );
         })}

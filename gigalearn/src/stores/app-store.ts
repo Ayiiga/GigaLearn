@@ -1,6 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { GamificationState, UserRole } from "@/types";
+import { getNewBadgesToAward } from "@/lib/gamification/achievements";
+import { DAILY_QUESTS } from "@/content/quests";
+import { LEARNING_WORLDS } from "@/content/worlds";
+import { buildLearnerInsights } from "@/lib/learning-path/recommendations";
+import type { GamificationState, LearningLevel, UserRole } from "@/types";
 import { calculateLevel } from "@/lib/utils";
 
 interface AppState {
@@ -18,6 +22,12 @@ interface AppState {
   incrementStreak: () => void;
   unlockLesson: (lessonId: string) => void;
   earnBadge: (badge: GamificationState["badges"][0]) => void;
+  completeLesson: (lessonId: string, level: LearningLevel, xpEarned?: number) => void;
+  completeQuest: (questId: string) => void;
+  unlockWorld: (worldId: string) => void;
+  hydrateGamification: (partial: Partial<GamificationState>) => void;
+  checkAchievements: () => void;
+  refreshLearningInsights: () => void;
 }
 
 const defaultGamification: GamificationState = {
@@ -27,12 +37,80 @@ const defaultGamification: GamificationState = {
   streak: 0,
   last_active_date: new Date().toISOString().split("T")[0],
   badges: [],
-  unlocked_lessons: ["alphabet-a", "phonics-cvc-a"],
+  unlocked_lessons: ["alphabet-a", "phonics-cvc-a", "math-count-1-5"],
+  completed_lessons: [],
+  daily_quest_progress: {},
+  completed_quests: [],
+  unlocked_worlds: ["alphabet-island"],
+  strengths: [],
+  weaknesses: [],
+  lessons_completed_today: 0,
+  xp_earned_today: 0,
+  speaking_exercises_today: 0,
 };
+
+function withDefaults(state: GamificationState): GamificationState {
+  return {
+    ...defaultGamification,
+    ...state,
+    badges: state.badges ?? [],
+    unlocked_lessons: state.unlocked_lessons ?? defaultGamification.unlocked_lessons,
+    completed_lessons: state.completed_lessons ?? [],
+    daily_quest_progress: state.daily_quest_progress ?? {},
+    completed_quests: state.completed_quests ?? [],
+    unlocked_worlds: state.unlocked_worlds ?? defaultGamification.unlocked_worlds,
+    strengths: state.strengths ?? [],
+    weaknesses: state.weaknesses ?? [],
+    lessons_completed_today: state.lessons_completed_today ?? 0,
+    xp_earned_today: state.xp_earned_today ?? 0,
+    speaking_exercises_today: state.speaking_exercises_today ?? 0,
+  };
+}
+
+function unlockWorldsForXp(gamification: GamificationState): string[] {
+  const worlds = new Set(gamification.unlocked_worlds);
+  for (const world of LEARNING_WORLDS) {
+    if (gamification.xp >= world.unlockXp) worlds.add(world.id);
+  }
+  return Array.from(worlds);
+}
+
+function updateQuestProgress(
+  gamification: GamificationState,
+  updates: Partial<Pick<GamificationState, "lessons_completed_today" | "xp_earned_today" | "speaking_exercises_today">>,
+  level?: LearningLevel,
+) {
+  const progress = { ...gamification.daily_quest_progress };
+  const completed = new Set(gamification.completed_quests);
+  let xpBonus = 0;
+  let coinBonus = 0;
+
+  if (updates.lessons_completed_today !== undefined) {
+    progress["complete-2-lessons"] = updates.lessons_completed_today;
+    if (level === "phonics") progress["practice-phonics"] = 1;
+    if (level === "mathematics") progress["math-practice"] = 1;
+  }
+  if (updates.xp_earned_today !== undefined) {
+    progress["earn-100-xp"] = updates.xp_earned_today;
+  }
+  if (gamification.streak > 0) progress["keep-streak"] = 1;
+
+  for (const quest of DAILY_QUESTS) {
+    if (completed.has(quest.id)) continue;
+    const current = progress[quest.id] ?? 0;
+    if (current >= quest.target) {
+      completed.add(quest.id);
+      xpBonus += quest.xpReward;
+      coinBonus += quest.coinReward;
+    }
+  }
+
+  return { progress, completed: Array.from(completed), xpBonus, coinBonus };
+}
 
 export const useAppStore = create<AppState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       isOnline: true,
       userRole: "student",
       gamification: defaultGamification,
@@ -46,12 +124,27 @@ export const useAppStore = create<AppState>()(
 
       addXP: (amount) =>
         set((s) => {
+          const today = new Date().toISOString().split("T")[0];
+          const resetDaily = s.gamification.last_active_date !== today;
+          const xpEarnedToday = (resetDaily ? 0 : s.gamification.xp_earned_today) + amount;
           const xp = s.gamification.xp + amount;
+          const base: GamificationState = {
+            ...withDefaults(s.gamification),
+            xp,
+            level: calculateLevel(xp),
+            xp_earned_today: xpEarnedToday,
+            last_active_date: today,
+            unlocked_worlds: unlockWorldsForXp({ ...s.gamification, xp }),
+          };
+          const questUpdate = updateQuestProgress(base, { xp_earned_today: xpEarnedToday });
           return {
             gamification: {
-              ...s.gamification,
-              xp,
-              level: calculateLevel(xp),
+              ...base,
+              daily_quest_progress: questUpdate.progress,
+              completed_quests: questUpdate.completed,
+              xp: base.xp + questUpdate.xpBonus,
+              coins: base.coins + questUpdate.coinBonus,
+              level: calculateLevel(base.xp + questUpdate.xpBonus),
             },
           };
         }),
@@ -59,7 +152,7 @@ export const useAppStore = create<AppState>()(
       addCoins: (amount) =>
         set((s) => ({
           gamification: {
-            ...s.gamification,
+            ...withDefaults(s.gamification),
             coins: s.gamification.coins + amount,
           },
         })),
@@ -77,11 +170,20 @@ export const useAppStore = create<AppState>()(
             streak = lastActive === yesterdayStr ? streak + 1 : 1;
           }
 
+          const gamification = {
+            ...withDefaults(s.gamification),
+            streak,
+            last_active_date: today,
+          };
+          const questUpdate = updateQuestProgress(gamification, {});
           return {
             gamification: {
-              ...s.gamification,
-              streak,
-              last_active_date: today,
+              ...gamification,
+              daily_quest_progress: questUpdate.progress,
+              completed_quests: questUpdate.completed,
+              coins: gamification.coins + questUpdate.coinBonus,
+              xp: gamification.xp + questUpdate.xpBonus,
+              level: calculateLevel(gamification.xp + questUpdate.xpBonus),
             },
           };
         }),
@@ -89,7 +191,7 @@ export const useAppStore = create<AppState>()(
       unlockLesson: (lessonId) =>
         set((s) => ({
           gamification: {
-            ...s.gamification,
+            ...withDefaults(s.gamification),
             unlocked_lessons: s.gamification.unlocked_lessons.includes(lessonId)
               ? s.gamification.unlocked_lessons
               : [...s.gamification.unlocked_lessons, lessonId],
@@ -101,13 +203,106 @@ export const useAppStore = create<AppState>()(
           if (s.gamification.badges.some((b) => b.id === badge.id)) return s;
           return {
             gamification: {
-              ...s.gamification,
+              ...withDefaults(s.gamification),
               badges: [...s.gamification.badges, badge],
             },
           };
         }),
+
+      completeLesson: (lessonId, level, xpEarned = 0) => {
+        const state = get();
+        if (!state.gamification.completed_lessons.includes(lessonId)) {
+          state.unlockLesson(lessonId);
+          state.addXP(xpEarned);
+          state.incrementStreak();
+        }
+        set((s) => {
+          const today = new Date().toISOString().split("T")[0];
+          const resetDaily = s.gamification.last_active_date !== today;
+          const lessonsToday = (resetDaily ? 0 : s.gamification.lessons_completed_today) + 1;
+          const completedLessons = s.gamification.completed_lessons.includes(lessonId)
+            ? s.gamification.completed_lessons
+            : [...s.gamification.completed_lessons, lessonId];
+          const gamification = {
+            ...withDefaults(s.gamification),
+            completed_lessons: completedLessons,
+            lessons_completed_today: lessonsToday,
+            last_active_date: today,
+          };
+          const questUpdate = updateQuestProgress(gamification, { lessons_completed_today: lessonsToday }, level);
+          const insights = buildLearnerInsights({
+            ...gamification,
+            completed_lessons: completedLessons,
+          });
+          return {
+            gamification: {
+              ...gamification,
+              daily_quest_progress: questUpdate.progress,
+              completed_quests: questUpdate.completed,
+              strengths: insights.strengths,
+              weaknesses: insights.weaknesses,
+              unlocked_worlds: unlockWorldsForXp(gamification),
+            },
+          };
+        });
+        get().checkAchievements();
+      },
+
+      completeQuest: (questId) =>
+        set((s) => ({
+          gamification: {
+            ...withDefaults(s.gamification),
+            completed_quests: s.gamification.completed_quests.includes(questId)
+              ? s.gamification.completed_quests
+              : [...s.gamification.completed_quests, questId],
+          },
+        })),
+
+      unlockWorld: (worldId) =>
+        set((s) => ({
+          gamification: {
+            ...withDefaults(s.gamification),
+            unlocked_worlds: s.gamification.unlocked_worlds.includes(worldId)
+              ? s.gamification.unlocked_worlds
+              : [...s.gamification.unlocked_worlds, worldId],
+          },
+        })),
+
+      hydrateGamification: (partial) =>
+        set((s) => ({
+          gamification: withDefaults({ ...s.gamification, ...partial }),
+        })),
+
+      checkAchievements: () => {
+        const { gamification, earnBadge } = get();
+        for (const badge of getNewBadgesToAward(withDefaults(gamification))) {
+          earnBadge(badge);
+        }
+      },
+
+      refreshLearningInsights: () =>
+        set((s) => {
+          const insights = buildLearnerInsights(withDefaults(s.gamification));
+          return {
+            gamification: {
+              ...withDefaults(s.gamification),
+              strengths: insights.strengths,
+              weaknesses: insights.weaknesses,
+            },
+          };
+        }),
     }),
-    { name: "gigalearn-store" },
+    {
+      name: "gigalearn-store",
+      merge: (persisted, current) => {
+        const persistedState = persisted as Partial<AppState> | undefined;
+        return {
+          ...current,
+          ...persistedState,
+          gamification: withDefaults((persistedState?.gamification ?? current.gamification) as GamificationState),
+        };
+      },
+    },
   ),
 );
 

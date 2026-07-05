@@ -1,53 +1,72 @@
 "use client";
 
-import { Card, CardTitle, CardDescription } from "@/components/ui/card";
 import { ProgressBar } from "@/components/gamification/progress-bar";
+import { InsightsPanel, LevelAnalytics } from "@/components/dashboard/analytics-panel";
+import { LearningPathCard } from "@/components/dashboard/learning-path-card";
+import { buildLearnerInsights } from "@/lib/learning-path/recommendations";
+import { useGamification } from "@/stores/app-store";
+import { GlassCard } from "@/components/ui/glass-card";
+import { LESSONS } from "@/content/curriculum";
 
 export default function ParentDashboard() {
-  return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
-      <h1 className="font-display text-3xl font-bold">Parent Dashboard</h1>
-      <p className="mt-2 text-giga-muted">Track your child&apos;s learning journey</p>
+  const gamification = useGamification();
+  const insights = buildLearnerInsights(gamification);
+  const completedCount = gamification.completed_lessons.length;
+  const readingDone = LESSONS.filter(
+    (lesson) => lesson.level === "reading" && gamification.completed_lessons.includes(lesson.id),
+  ).length;
 
-      <Card className="mt-8 p-6">
+  return (
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+      <h1 className="font-display text-3xl font-bold">Parent Dashboard</h1>
+      <p className="mt-2 text-giga-muted">Detailed analytics and learning insights for your child</p>
+
+      <GlassCard className="mt-8 p-6">
         <div className="flex items-center gap-4">
           <span className="text-5xl">👧</span>
           <div>
-            <CardTitle>Amara&apos;s Progress</CardTitle>
-            <CardDescription>Kindergarten • Active learner</CardDescription>
+            <p className="font-display text-xl font-bold">Learner Progress Overview</p>
+            <p className="text-giga-muted">{completedCount} lessons completed • Level {gamification.level}</p>
           </div>
         </div>
         <div className="mt-6 max-w-md"><ProgressBar /></div>
-      </Card>
+      </GlassCard>
 
-      <div className="mt-10 grid gap-6 sm:grid-cols-2">
-        <Card>
-          <CardTitle>📖 Reading This Week</CardTitle>
-          <CardDescription className="mt-2">3 stories read • 45 minutes total</CardDescription>
+      <div className="mt-10">
+        <InsightsPanel
+          strengths={insights.strengths}
+          weaknesses={insights.weaknesses}
+          recommendations={[
+            `Practice ${insights.recommendedLevel} for ${insights.dailyGoalMinutes} minutes today`,
+            "Read one story aloud together before bedtime",
+            "Celebrate streak milestones to build habits",
+          ]}
+        />
+      </div>
+
+      <div className="mt-10 grid gap-6 lg:grid-cols-2">
+        <GlassCard>
+          <p className="font-bold text-lg">📖 Reading Progress</p>
+          <p className="mt-2 text-giga-muted">{readingDone} reading lessons completed</p>
+          <p className="mt-4 text-sm">Current streak: {gamification.streak} days</p>
+        </GlassCard>
+        <GlassCard>
+          <p className="font-bold text-lg">🏆 Achievements</p>
+          <p className="mt-2 text-giga-muted">{gamification.badges.length} badges earned</p>
           <ul className="mt-4 space-y-2 text-sm">
-            <li>✅ Leo the Learning Lion</li>
-            <li>✅ A Rainy Day Adventure</li>
-            <li>🔄 The Magic Kite (in progress)</li>
+            {gamification.badges.slice(0, 3).map((badge) => (
+              <li key={badge.id}>{badge.icon} {badge.name}</li>
+            ))}
           </ul>
-        </Card>
-        <Card>
-          <CardTitle>🏆 Recent Achievements</CardTitle>
-          <CardDescription className="mt-2">Celebrated this week</CardDescription>
-          <ul className="mt-4 space-y-2 text-sm">
-            <li>⭐ Phonics Star — 5 lessons complete</li>
-            <li>🔥 5-day streak!</li>
-            <li>🅰️ First Letter traced</li>
-          </ul>
-        </Card>
-        <Card className="sm:col-span-2">
-          <CardTitle>🏠 Home Learning Suggestions</CardTitle>
-          <CardDescription className="mt-2">Recommended activities for today</CardDescription>
-          <ol className="mt-4 space-y-2 list-decimal list-inside text-sm">
-            <li>Practice GigaPhonics CVC words for 10 minutes</li>
-            <li>Read &ldquo;Leo the Learning Lion&rdquo; together aloud</li>
-            <li>Play Letter Match game offline before bedtime</li>
-          </ol>
-        </Card>
+        </GlassCard>
+      </div>
+
+      <div className="mt-10 grid gap-8 lg:grid-cols-2">
+        <LearningPathCard />
+        <div>
+          <h2 className="font-display text-xl font-bold mb-4">Level Breakdown</h2>
+          <LevelAnalytics />
+        </div>
       </div>
     </div>
   );

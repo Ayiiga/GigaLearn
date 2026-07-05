@@ -10,6 +10,7 @@ import { LetterTracing } from "@/components/learning/letter-tracing";
 import { PhonicsCard, BlendingActivity } from "@/components/learning/phonics-card";
 import { FlashcardDeck } from "@/components/learning/flashcard";
 import { CelebrationEffect, XPBadge } from "@/components/gamification/progress-bar";
+import { MathActivityRenderer, VoicePracticePanel } from "@/components/learning/math-activity-renderer";
 import { LESSONS, STORIES, VOCABULARY_CATEGORIES, CVC_WORDS, PHONICS_SOUNDS } from "@/content/curriculum";
 import { useAppStore } from "@/stores/app-store";
 import { saveLocalProgress } from "@/lib/offline/db";
@@ -26,17 +27,15 @@ export function LessonPageClient({
   const lesson = LESSONS.find((l) => l.level === level && l.slug === slug);
   const [celebrate, setCelebrate] = useState(false);
   const [completed, setCompleted] = useState(false);
-  const { addXP, addCoins, incrementStreak, unlockLesson } = useAppStore();
+  const { completeLesson, addCoins } = useAppStore();
 
   if (!lesson) notFound();
 
   const handleComplete = async () => {
     setCompleted(true);
     setCelebrate(true);
-    addXP(lesson.xp_reward);
+    completeLesson(lesson.id, lesson.level, lesson.xp_reward);
     addCoins(lesson.coin_reward);
-    incrementStreak();
-    unlockLesson(lesson.id);
 
     await saveLocalProgress({
       id: crypto.randomUUID(),
@@ -77,66 +76,20 @@ export function LessonPageClient({
           </div>
         );
       }
-      case "mathematics": {
-        const quiz = lesson.content.activities.find((a) => a.type === "quiz");
-        const count = lesson.content.activities.find((a) => a.type === "matching");
-        if (quiz?.data.a != null) {
-          const a = quiz.data.a as number;
-          const b = quiz.data.b as number;
-          const answer = quiz.data.answer as number;
-          const options = [...new Set([answer, answer + 1, Math.max(1, answer - 1), answer + 2])].sort(
-            (x, y) => x - y,
-          );
-          return (
-            <div className="text-center space-y-6">
-              <p className="text-5xl font-bold font-display">
-                {a} + {b} = ?
-              </p>
-              <div className="flex flex-wrap justify-center gap-3">
-                {options.map((option) => (
-                    <Button
-                      key={option}
-                      size="lg"
-                      variant="secondary"
-                      onClick={() => option === answer && handleComplete()}
-                    >
-                      {option}
-                    </Button>
-                  ))}
-              </div>
-            </div>
-          );
-        }
-        if (count?.data.range) {
-          const [min, max] = count.data.range as [number, number];
-          const seed = lesson.id.split("").reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
-          const target = min + (seed % (max - min + 1));
-          const emoji = (count.data.emoji as string) ?? "⭐";
-          return (
-            <div className="text-center space-y-6">
-              <p className="text-xl text-giga-muted">How many do you see?</p>
-              <div className="flex flex-wrap justify-center gap-2 text-4xl">
-                {Array.from({ length: target }, (_, i) => (
-                  <span key={i}>{emoji}</span>
-                ))}
-              </div>
-              <div className="flex flex-wrap justify-center gap-2">
-                {Array.from({ length: max - min + 1 }, (_, i) => min + i).map((n) => (
-                  <Button key={n} variant="secondary" onClick={() => n === target && handleComplete()}>
-                    {n}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          );
-        }
-        return null;
-      }
+      case "mathematics":
+        return (
+          <MathActivityRenderer
+            activities={lesson.content.activities}
+            lessonId={lesson.id}
+            onComplete={handleComplete}
+          />
+        );
       case "phonics":
         return (
           <div className="space-y-12">
             <PhonicsCard {...PHONICS_SOUNDS[0]} />
             <BlendingActivity {...CVC_WORDS[0]} onComplete={handleComplete} />
+            <VoicePracticePanel prompt={`Say the word ${CVC_WORDS[0].word}`} />
           </div>
         );
       case "vocabulary":
@@ -195,7 +148,7 @@ export function LessonPageClient({
           {renderActivity()}
         </div>
 
-        {!completed && lesson.level !== "phonics" && (
+        {!completed && lesson.level !== "phonics" && lesson.level !== "mathematics" && (
           <div className="mt-8 text-center">
             <Button size="lg" onClick={handleComplete}>
               Complete Lesson 🎉

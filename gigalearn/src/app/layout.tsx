@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { Nunito, Fredoka } from "next/font/google";
 import { ThemeProvider, OnlineStatusProvider } from "@/components/providers/app-providers";
-import { OfflineInitializer } from "@/components/providers/offline-initializer";
+import { AuthOfflineBridge } from "@/components/providers/auth-offline-bridge";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import "./globals.css";
@@ -57,7 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${nunito.variable} ${fredoka.variable} antialiased min-h-screen flex flex-col`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <OnlineStatusProvider>
-            <OfflineInitializer />
+            <AuthOfflineBridge />
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
