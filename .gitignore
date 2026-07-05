@@ -3,6 +3,7 @@
 !.env.example
 node_modules/
 .next/
+.open-next/
 out/
 dist/
 *.log
@@ -10,3 +11,5 @@ dist/
 gigalearn/.wrangler/
 gigalearn/node_modules/
 gigalearn/.next/
+gigalearn/.open-next/
+gigalearn/out/
