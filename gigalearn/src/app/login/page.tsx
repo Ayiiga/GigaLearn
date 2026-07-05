@@ -7,33 +7,39 @@ import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
-import { createClient } from "@/lib/supabase/client";
+import { AuthConfigBanner } from "@/components/auth/auth-config-banner";
+import { AuthFormSkeleton } from "@/components/auth/auth-form-skeleton";
+import { signInWithEmailPassword } from "@/lib/auth/supabase-auth";
+import { useSubmitGuard } from "@/hooks/use-submit-guard";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") ?? "/learn";
+  const { guard } = useSubmitGuard();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
 
-    const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    const result = await guard(async () => {
+      setLoading(true);
+      const { error: authError } = await signInWithEmailPassword(email, password);
+      if (authError) {
+        setError(authError.message);
+        return false;
+      }
+      router.push(redirect);
+      router.refresh();
+      return true;
+    });
 
-    if (authError) {
-      setError(authError.message);
-      setLoading(false);
-      return;
-    }
-
-    router.push(redirect);
-    router.refresh();
+    setLoading(false);
+    if (result === null) return;
   };
 
   const handleDemo = () => {
@@ -48,6 +54,8 @@ function LoginForm() {
         <p className="text-giga-muted mt-2">Sign in to continue learning</p>
       </div>
 
+      <AuthConfigBanner />
+
       <GoogleSignInButton redirectPath={redirect} className="mb-6" />
 
       <div className="relative mb-6">
@@ -59,7 +67,7 @@ function LoginForm() {
         </div>
       </div>
 
-      <form onSubmit={handleLogin} className="space-y-4">
+      <form onSubmit={handleLogin} className="space-y-4" noValidate>
         <div>
           <label htmlFor="email" className="block text-sm font-bold mb-1">Email</label>
           <input
@@ -70,6 +78,7 @@ function LoginForm() {
             className="w-full rounded-xl border border-giga-border p-3 min-h-[48px] focus:ring-4 focus:ring-giga-purple/20 dark:bg-giga-surface"
             required
             autoComplete="email"
+            disabled={loading}
           />
         </div>
         <div>
@@ -82,18 +91,23 @@ function LoginForm() {
             className="w-full rounded-xl border border-giga-border p-3 min-h-[48px] focus:ring-4 focus:ring-giga-purple/20 dark:bg-giga-surface"
             required
             autoComplete="current-password"
+            disabled={loading}
           />
         </div>
 
-        {error && <p className="text-giga-red text-sm font-medium" role="alert">{error}</p>}
+        {error && (
+          <p className="text-giga-red text-sm font-medium rounded-xl bg-giga-red/10 px-3 py-2" role="alert">
+            {error}
+          </p>
+        )}
 
-        <Button type="submit" className="w-full" size="lg" loading={loading}>
+        <Button type="submit" className="w-full" size="lg" loading={loading} disabled={loading}>
           Sign In
         </Button>
       </form>
 
       <div className="mt-6 text-center">
-        <Button variant="ghost" onClick={handleDemo} className="w-full">
+        <Button variant="ghost" onClick={handleDemo} className="w-full" disabled={loading}>
           Continue as Guest (Demo)
         </Button>
       </div>
@@ -111,7 +125,7 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <div className="flex min-h-[60vh] items-center justify-center px-4 py-12">
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<AuthFormSkeleton />}>
         <LoginForm />
       </Suspense>
     </div>

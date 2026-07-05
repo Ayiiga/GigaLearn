@@ -12,7 +12,7 @@ Vercel is the **recommended** deploy path for this Next.js 15 app.
 | Variable | Value |
 |----------|--------|
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://vhgqzdxkjmsomclyrchv.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your anon JWT |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Publishable/anon key from [API Keys](https://supabase.com/dashboard/project/vhgqzdxkjmsomclyrchv/settings/api-keys) — must match project `vhgqzdxkjmsomclyrchv` |
 | `NEXT_PUBLIC_APP_URL` | `https://your-project.vercel.app` |
 | `NEXT_PUBLIC_APP_NAME` | `GigaLearn` |
 | `OPENAI_API_KEY` | Optional |
@@ -100,4 +100,12 @@ The app includes [`@vercel/analytics`](https://vercel.com/docs/analytics) via `<
 - Site URL: `https://your-project.vercel.app`
 - Redirect: `https://your-project.vercel.app/auth/callback`
 
-Config file: `gigalearn/vercel.json` (PWA cache headers).
+If login shows "Failed to fetch" or an auth config banner, verify:
+
+1. `NEXT_PUBLIC_SUPABASE_URL` is `https://vhgqzdxkjmsomclyrchv.supabase.co` (not an empty string in Vercel)
+2. `NEXT_PUBLIC_SUPABASE_ANON_KEY` is the **publishable/anon key for project `vhgqzdxkjmsomclyrchv`** (JWT `ref` must match)
+3. Redirect URLs include `https://your-project.vercel.app/auth/callback`
+
+Health check: `GET /api/health` should return `"status":"healthy"` when configured correctly.
+
+Config file: `gigalearn/vercel.json` (PWA cache headers + security headers).

@@ -3,6 +3,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { Nunito, Fredoka } from "next/font/google";
 import { ThemeProvider, OnlineStatusProvider } from "@/components/providers/app-providers";
 import { AuthOfflineBridge } from "@/components/providers/auth-offline-bridge";
+import { MonitoringProvider } from "@/components/providers/monitoring-provider";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import "./globals.css";
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <OnlineStatusProvider>
             <AuthOfflineBridge />
+            <MonitoringProvider />
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />

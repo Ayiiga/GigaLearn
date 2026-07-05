@@ -1,12 +1,20 @@
 import { SUPABASE_PROJECT_REF } from "@/lib/supabase/project";
 
+function cleanAppUrl(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const trimmed = value.trim();
+  if (!trimmed || trimmed === '""' || trimmed === "''") return undefined;
+  return trimmed.replace(/\/$/, "");
+}
+
 /**
  * Canonical site URL for OAuth redirects (dev + production).
  * Set NEXT_PUBLIC_APP_URL in production (e.g. https://gigalearn.app).
  */
 export function getSiteUrl(): string {
-  if (process.env.NEXT_PUBLIC_APP_URL) {
-    return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
+  const configured = cleanAppUrl(process.env.NEXT_PUBLIC_APP_URL);
+  if (configured) {
+    return configured;
   }
 
   if (typeof window !== "undefined") {
@@ -28,15 +36,20 @@ export function getAuthCallbackUrl(redirectPath = "/learn"): string {
 
 /** Redirect URLs to register in Supabase Dashboard → Auth → URL Configuration */
 export function getRequiredRedirectUrls(): string[] {
-  const production = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "");
+  const production = cleanAppUrl(process.env.NEXT_PUBLIC_APP_URL);
   const urls = [
     "http://localhost:3000/auth/callback",
     "http://127.0.0.1:3000/auth/callback",
+    "https://giga-learn-ayiigas-projects.vercel.app/auth/callback",
+    "https://giga-learn-ayiiga-ayiigas-projects.vercel.app/auth/callback",
   ];
   if (production) {
     urls.push(`${production}/auth/callback`);
   }
-  return urls;
+  if (process.env.VERCEL_URL) {
+    urls.push(`https://${process.env.VERCEL_URL}/auth/callback`);
+  }
+  return [...new Set(urls)];
 }
 
 export function getSupabaseAuthSettingsUrl(): string {

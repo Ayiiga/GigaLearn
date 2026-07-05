@@ -6,7 +6,9 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
-import { createClient } from "@/lib/supabase/client";
+import { AuthConfigBanner } from "@/components/auth/auth-config-banner";
+import { signUpWithEmailPassword } from "@/lib/auth/supabase-auth";
+import { useSubmitGuard } from "@/hooks/use-submit-guard";
 import type { UserRole } from "@/types";
 
 export default function RegisterPage() {
@@ -18,30 +20,31 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+  const { guard } = useSubmitGuard();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
 
-    const supabase = createClient();
-    const { error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: fullName, role },
-      },
+    const result = await guard(async () => {
+      setLoading(true);
+      const { error: authError } = await signUpWithEmailPassword(email, password, {
+        full_name: fullName.trim(),
+        role,
+      });
+
+      if (authError) {
+        setError(authError.message);
+        return false;
+      }
+
+      setSuccess(true);
+      setTimeout(() => router.push("/learn"), 2000);
+      return true;
     });
 
-    if (authError) {
-      setError(authError.message);
-      setLoading(false);
-      return;
-    }
-
-    setSuccess(true);
-    setLoading(false);
-    setTimeout(() => router.push("/learn"), 2000);
+    if (result === null) return;
+    if (!success) setLoading(false);
   };
 
   if (success) {
@@ -65,6 +68,8 @@ export default function RegisterPage() {
           <p className="text-giga-muted mt-2">Create your free account</p>
         </div>
 
+        <AuthConfigBanner />
+
         <GoogleSignInButton redirectPath="/learn" className="mb-6" />
 
         <div className="relative mb-6">
@@ -76,7 +81,7 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        <form onSubmit={handleRegister} className="space-y-4">
+        <form onSubmit={handleRegister} className="space-y-4" noValidate>
           <div>
             <label htmlFor="name" className="block text-sm font-bold mb-1">Full Name</label>
             <input
@@ -85,6 +90,8 @@ export default function RegisterPage() {
               onChange={(e) => setFullName(e.target.value)}
               className="w-full rounded-xl border border-giga-border p-3 min-h-[48px] dark:bg-giga-surface"
               required
+              disabled={loading}
+              autoComplete="name"
             />
           </div>
           <div>
@@ -96,6 +103,8 @@ export default function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-xl border border-giga-border p-3 min-h-[48px] dark:bg-giga-surface"
               required
+              disabled={loading}
+              autoComplete="email"
             />
           </div>
           <div>
@@ -108,6 +117,8 @@ export default function RegisterPage() {
               className="w-full rounded-xl border border-giga-border p-3 min-h-[48px] dark:bg-giga-surface"
               required
               minLength={6}
+              disabled={loading}
+              autoComplete="new-password"
             />
           </div>
           <div>
@@ -117,6 +128,7 @@ export default function RegisterPage() {
               value={role}
               onChange={(e) => setRole(e.target.value as UserRole)}
               className="w-full rounded-xl border border-giga-border p-3 min-h-[48px] dark:bg-giga-surface"
+              disabled={loading}
             >
               <option value="student">Student / Learner</option>
               <option value="teacher">Teacher</option>
@@ -124,9 +136,13 @@ export default function RegisterPage() {
             </select>
           </div>
 
-          {error && <p className="text-giga-red text-sm" role="alert">{error}</p>}
+          {error && (
+            <p className="text-giga-red text-sm rounded-xl bg-giga-red/10 px-3 py-2" role="alert">
+              {error}
+            </p>
+          )}
 
-          <Button type="submit" className="w-full" size="lg" loading={loading}>
+          <Button type="submit" className="w-full" size="lg" loading={loading} disabled={loading}>
             Create Account
           </Button>
         </form>

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { signInWithGoogle } from "@/lib/supabase/auth-actions";
+import { signInWithGoogle } from "@/lib/auth/supabase-auth";
+import { useSubmitGuard } from "@/hooks/use-submit-guard";
 
 interface GoogleSignInButtonProps {
   redirectPath?: string;
@@ -17,18 +18,25 @@ export function GoogleSignInButton({
 }: GoogleSignInButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { guard } = useSubmitGuard();
 
   const handleGoogleSignIn = async () => {
-    setLoading(true);
     setError(null);
 
-    const { error: authError } = await signInWithGoogle(redirectPath);
+    const result = await guard(async () => {
+      setLoading(true);
+      const { error: authError } = await signInWithGoogle(redirectPath);
 
-    if (authError) {
-      setError(authError.message);
-      setLoading(false);
-    }
-    // On success, browser redirects to Google — keep loading state
+      if (authError) {
+        setError(authError.message);
+        setLoading(false);
+        return false;
+      }
+      // On success, browser redirects to Google — keep loading state
+      return true;
+    });
+
+    if (result === null) return;
   };
 
   return (

@@ -1,22 +1,10 @@
+import { signInWithGoogle as signInWithGoogleAuth } from "@/lib/auth/supabase-auth";
 import { createClient } from "@/lib/supabase/client";
-import { getAuthCallbackUrl } from "@/lib/supabase/site-url";
 
+/** @deprecated Use `@/lib/auth/supabase-auth` directly — kept for backward compatibility. */
 export async function signInWithGoogle(redirectPath = "/learn") {
-  const supabase = createClient();
-
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: getAuthCallbackUrl(redirectPath),
-      queryParams: {
-        access_type: "offline",
-        prompt: "consent",
-      },
-      skipBrowserRedirect: false,
-    },
-  });
-
-  return { data, error };
+  const result = await signInWithGoogleAuth(redirectPath);
+  return { data: result.data, error: result.error };
 }
 
 export async function signOut() {

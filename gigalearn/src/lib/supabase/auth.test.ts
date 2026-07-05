@@ -26,6 +26,11 @@ describe("site-url OAuth helpers", () => {
     expect(getSiteUrl()).toBe("https://gigalearn.app");
   });
 
+  it("ignores empty NEXT_PUBLIC_APP_URL and falls back to localhost", () => {
+    process.env.NEXT_PUBLIC_APP_URL = "";
+    expect(getSiteUrl()).toBe("http://localhost:3000");
+  });
+
   it("builds auth callback with redirect param", () => {
     process.env.NEXT_PUBLIC_APP_URL = "https://gigalearn.app";
     expect(getAuthCallbackUrl("/learn")).toBe(
