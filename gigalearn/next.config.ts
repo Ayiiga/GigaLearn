@@ -70,7 +70,7 @@ const withPwaConfig = withPWA({
 
 const config = isGithubPages ? nextConfig : withPwaConfig(nextConfig);
 
-if (!isGithubPages) {
+if (!isGithubPages && process.env.NODE_ENV === "development") {
   initOpenNextCloudflareForDev();
 }
 
