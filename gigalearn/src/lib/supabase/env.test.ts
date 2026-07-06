@@ -3,6 +3,7 @@ import {
   getSupabaseUrl,
   getSupabasePublishableKey,
   validateSupabaseConfig,
+  isValidSupabaseHttpUrl,
 } from "@/lib/supabase/env";
 import { SUPABASE_URL } from "@/lib/supabase/project";
 
@@ -20,6 +21,19 @@ describe("supabase env resolution", () => {
   it("falls back to project URL when NEXT_PUBLIC_SUPABASE_URL is empty", () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = "";
     expect(getSupabaseUrl()).toBe(SUPABASE_URL);
+  });
+
+  it("falls back to project URL when NEXT_PUBLIC_SUPABASE_URL contains a publishable key", () => {
+    process.env.NEXT_PUBLIC_SUPABASE_URL = "sb_publishable_d0L5X9L_YtTPx96rRUCoqA_N_ZCx1lH";
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_d0L5X9L_YtTPx96rRUCoqA_N_ZCx1lH";
+    expect(getSupabaseUrl()).toBe(SUPABASE_URL);
+    expect(getSupabasePublishableKey()).toBe("sb_publishable_d0L5X9L_YtTPx96rRUCoqA_N_ZCx1lH");
+  });
+
+  it("rejects placeholder URLs and keys", () => {
+    expect(isValidSupabaseHttpUrl("your-supabase-url")).toBe(false);
+    expect(isValidSupabaseHttpUrl("sb_publishable_test")).toBe(false);
+    expect(isValidSupabaseHttpUrl(SUPABASE_URL)).toBe(true);
   });
 
   it("falls back to ANON_PUBLIC_KEY when NEXT_PUBLIC_SUPABASE_ANON_KEY is empty", () => {

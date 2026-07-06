@@ -9,21 +9,31 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = createClient();
+    let subscription: { unsubscribe: () => void } | undefined;
 
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
+    try {
+      const supabase = createClient();
+
+      supabase.auth.getUser().then(({ data }) => {
+        setUser(data.user);
+        setLoading(false);
+      }).catch(() => {
+        setLoading(false);
+      });
+
+      const {
+        data: { subscription: authSubscription },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user ?? null);
+        setLoading(false);
+      });
+      subscription = authSubscription;
+    } catch (error) {
+      console.error("Supabase auth initialization failed:", error);
       setLoading(false);
-    });
+    }
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    return () => subscription?.unsubscribe();
   }, []);
 
   return { user, loading, isAuthenticated: !!user };

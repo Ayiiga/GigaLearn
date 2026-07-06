@@ -7,34 +7,70 @@ function cleanEnv(value: string | undefined): string | undefined {
   return trimmed;
 }
 
+function isPlaceholderValue(value: string): boolean {
+  const lower = value.toLowerCase();
+  return (
+    lower === "placeholder-key" ||
+    lower.startsWith("your-") ||
+    lower.includes("placeholder") ||
+    lower.includes("changeme")
+  );
+}
+
+/** True when the value is a Supabase HTTP URL, not a key or placeholder. */
+export function isValidSupabaseHttpUrl(value: string | undefined): value is string {
+  if (!value || isPlaceholderValue(value)) return false;
+  const trimmed = value.trim();
+  if (trimmed.startsWith("eyJ") || trimmed.startsWith("sb_publishable_")) return false;
+  if (!/^https?:\/\//i.test(trimmed)) return false;
+  try {
+    return new URL(trimmed).hostname.endsWith(".supabase.co");
+  } catch {
+    return false;
+  }
+}
+
+function isValidSupabaseKey(value: string | undefined): value is string {
+  if (!value || isPlaceholderValue(value)) return false;
+  const trimmed = value.trim();
+  if (/^https?:\/\//i.test(trimmed) || trimmed.endsWith(".supabase.co")) return false;
+  return trimmed.startsWith("eyJ") || trimmed.startsWith("sb_publishable_");
+}
+
 /**
  * Resolves the Supabase client API key.
  * Prefers legacy anon JWT when present (best SSR/auth compatibility),
  * then new publishable keys (sb_publishable_*).
  */
 export function getSupabasePublishableKey(): string {
-  const anon =
-    cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) ??
-    cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) ??
-    cleanEnv(process.env.ANON_PUBLIC_KEY);
+  const candidates = [
+    cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+    cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY),
+    cleanEnv(process.env.ANON_PUBLIC_KEY),
+  ];
 
-  if (anon?.startsWith("eyJ")) {
-    return anon;
-  }
-
-  if (anon && anon !== "placeholder-key") {
-    return anon;
+  for (const candidate of candidates) {
+    if (isValidSupabaseKey(candidate)) {
+      return candidate;
+    }
   }
 
   return "placeholder-key";
 }
 
 export function getSupabaseUrl(): string {
-  return (
-    cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_URL) ??
-    cleanEnv(process.env.SUPABASE_URL) ??
-    SUPABASE_URL
-  );
+  const candidates = [
+    cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_URL),
+    cleanEnv(process.env.SUPABASE_URL),
+  ];
+
+  for (const candidate of candidates) {
+    if (isValidSupabaseHttpUrl(candidate)) {
+      return candidate.trim();
+    }
+  }
+
+  return SUPABASE_URL;
 }
 
 export interface SupabaseConfigStatus {
