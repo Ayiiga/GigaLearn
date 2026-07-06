@@ -112,6 +112,8 @@ export interface GamificationState {
   recent_activity: ActivityEntry[];
   weekly_goals: WeeklyGoalProgress;
   dismissed_notifications: string[];
+  leaderboard_opt_in: boolean;
+  completed_weekly_challenges: string[];
 }
 
 export interface Badge {
@@ -168,7 +170,14 @@ export interface AIFeatureRequest {
     | "homework_assistant"
     | "recommendations"
     | "vocabulary_trainer"
-    | "speaking_coach";
+    | "speaking_coach"
+    | "speech_coach"
+    | "science_lab"
+    | "lesson_generator"
+    | "coding_tutor"
+    | "math_tutor"
+    | "study_plan"
+    | "revision";
   input: string;
   context?: Record<string, unknown>;
 }

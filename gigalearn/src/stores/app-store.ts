@@ -59,6 +59,8 @@ const defaultGamification: GamificationState = {
     week_start: getWeekStart(),
   },
   dismissed_notifications: [],
+  leaderboard_opt_in: true,
+  completed_weekly_challenges: [],
 };
 
 function getWeekStart(): string {
@@ -96,6 +98,8 @@ function withDefaults(state: GamificationState): GamificationState {
     recent_activity: state.recent_activity ?? [],
     weekly_goals: resetWeeklyGoalsIfNeeded(state.weekly_goals ?? defaultGamification.weekly_goals),
     dismissed_notifications: state.dismissed_notifications ?? [],
+    leaderboard_opt_in: state.leaderboard_opt_in ?? true,
+    completed_weekly_challenges: state.completed_weekly_challenges ?? [],
   };
 }
 

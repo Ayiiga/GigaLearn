@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowLeft, CheckCircle } from "lucide-react";
@@ -12,10 +13,13 @@ import { FlashcardDeck } from "@/components/learning/flashcard";
 import { CelebrationEffect, XPBadge } from "@/components/gamification/progress-bar";
 import { MathActivityRenderer, VoicePracticePanel } from "@/components/learning/math-activity-renderer";
 import { LESSONS, STORIES, VOCABULARY_CATEGORIES, CVC_WORDS, PHONICS_SOUNDS } from "@/content/curriculum";
-import { useAppStore } from "@/stores/app-store";
+import { useAppStore, useGamification } from "@/stores/app-store";
 import { saveLocalProgress } from "@/lib/offline/db";
 import { speak } from "@/lib/speech";
+import { getNextCurriculumLesson, getNextLessonAfterCompletion } from "@/lib/learning-path/next-lesson";
+import { useLessonNavigation } from "@/hooks/use-lesson-navigation";
 import { Volume2 } from "lucide-react";
+import type { LearningLevel } from "@/types";
 
 export function LessonPageClient({
   level,
@@ -24,14 +28,23 @@ export function LessonPageClient({
   level: string;
   slug: string;
 }) {
+  const router = useRouter();
   const lesson = LESSONS.find((l) => l.level === level && l.slug === slug);
+  const gamification = useGamification();
   const [celebrate, setCelebrate] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [tracingDone, setTracingDone] = useState(false);
   const { completeLesson, addCoins } = useAppStore();
+  const { nextTarget, isAdvancing, scheduleAutoAdvance } = useLessonNavigation();
 
   if (!lesson) notFound();
 
+  const nextInLevel = getNextCurriculumLesson(lesson.id, lesson.level as LearningLevel);
+  const nextAnywhere = getNextLessonAfterCompletion(lesson.id, lesson.level as LearningLevel, gamification);
+  const nextLesson = nextInLevel ?? nextAnywhere;
+
   const handleComplete = async () => {
+    if (completed) return;
     setCompleted(true);
     setCelebrate(true);
     completeLesson(lesson.id, lesson.level, lesson.xp_reward);
@@ -49,6 +62,7 @@ export function LessonPageClient({
       synced: false,
     });
 
+    scheduleAutoAdvance(nextLesson, `/learn?level=${level}`);
     setTimeout(() => setCelebrate(false), 3000);
   };
 
@@ -63,15 +77,22 @@ export function LessonPageClient({
           .emoji as string | undefined;
         return (
           <div className="space-y-10">
-            <LetterTracing letter={letter} onComplete={() => {}} />
-            {word && (
-              <div className="text-center space-y-4">
+            <LetterTracing
+              letter={letter}
+              onComplete={() => {
+                setTracingDone(true);
+                if (word) speak(word);
+              }}
+            />
+            {word && tracingDone && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-4">
                 <span className="text-7xl block">{emoji}</span>
                 <p className="text-2xl font-bold font-display">{word}</p>
                 <Button type="button" variant="secondary" onClick={() => speak(word)}>
                   <Volume2 className="h-4 w-4" /> Hear &ldquo;{word}&rdquo;
                 </Button>
-              </div>
+                <Button size="lg" onClick={handleComplete}>Complete Letter 🎉</Button>
+              </motion.div>
             )}
           </div>
         );
@@ -102,6 +123,7 @@ export function LessonPageClient({
               synonym: "synonym" in w ? w.synonym : undefined,
               antonym: "antonym" in w ? w.antonym : undefined,
             }))}
+            onComplete={handleComplete}
           />
         );
       case "reading": {
@@ -120,11 +142,18 @@ export function LessonPageClient({
         return (
           <div className="text-center py-12">
             <span className="text-6xl">📚</span>
-            <p className="mt-4 text-giga-muted">Interactive activities coming up!</p>
+            <p className="mt-4 text-giga-muted">Complete this lesson to continue your learning path.</p>
           </div>
         );
     }
   };
+
+  const showManualComplete =
+    !completed &&
+    lesson.level !== "phonics" &&
+    lesson.level !== "mathematics" &&
+    lesson.level !== "vocabulary" &&
+    lesson.level !== "alphabet";
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
@@ -148,7 +177,7 @@ export function LessonPageClient({
           {renderActivity()}
         </div>
 
-        {!completed && lesson.level !== "phonics" && lesson.level !== "mathematics" && (
+        {showManualComplete && (
           <div className="mt-8 text-center">
             <Button size="lg" onClick={handleComplete}>
               Complete Lesson 🎉
@@ -160,10 +189,20 @@ export function LessonPageClient({
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="mt-8 flex items-center justify-center gap-3 rounded-2xl bg-giga-green/10 p-6 text-giga-green font-bold text-xl"
+            className="mt-8 flex flex-col items-center gap-3 rounded-2xl bg-giga-green/10 p-6 text-giga-green font-bold text-xl"
           >
-            <CheckCircle className="h-8 w-8" />
-            Lesson Complete! +{lesson.xp_reward} XP earned
+            <div className="flex items-center gap-3">
+              <CheckCircle className="h-8 w-8" />
+              Lesson Complete! +{lesson.xp_reward} XP earned
+            </div>
+            {isAdvancing && nextTarget && (
+              <p className="text-sm text-giga-muted font-normal">Moving to {nextTarget.title}…</p>
+            )}
+            {!isAdvancing && nextLesson && (
+              <Button variant="outline" onClick={() => router.push(nextLesson.href)}>
+                Continue to {nextLesson.title} →
+              </Button>
+            )}
           </motion.div>
         )}
       </motion.div>

@@ -19,6 +19,7 @@ import {
   Calculator,
   Target,
   Bot,
+  Users,
 } from "lucide-react";
 import { useState } from "react";
 import { useTheme } from "next-themes";
@@ -34,6 +35,7 @@ const NAV_ITEMS = [
   { href: "/gigamath", label: "GigaMath", icon: Calculator },
   { href: "/ai-tutor", label: "AI Tutor", icon: Bot },
   { href: "/quests", label: "Quests", icon: Target },
+  { href: "/community", label: "Community", icon: Users },
   { href: "/progress", label: "Progress", icon: BarChart3 },
   { href: "/achievements", label: "Achievements", icon: Trophy },
   { href: "/settings", label: "Settings", icon: Settings },

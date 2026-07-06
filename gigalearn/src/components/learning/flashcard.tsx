@@ -14,16 +14,30 @@ interface FlashcardProps {
   antonym?: string;
 }
 
-export function FlashcardDeck({ cards }: { cards: FlashcardProps[] }) {
+export function FlashcardDeck({
+  cards,
+  onComplete,
+}: {
+  cards: FlashcardProps[];
+  onComplete?: () => void;
+}) {
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const [finished, setFinished] = useState(false);
 
   const card = cards[index];
   if (!card) return null;
 
   const next = () => {
     setFlipped(false);
-    setIndex((i) => (i + 1) % cards.length);
+    if (index >= cards.length - 1) {
+      if (!finished) {
+        setFinished(true);
+        onComplete?.();
+      }
+      return;
+    }
+    setIndex((i) => i + 1);
   };
 
   const prev = () => {

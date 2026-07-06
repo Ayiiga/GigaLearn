@@ -15,6 +15,13 @@ const FEATURE_PROMPTS: Record<AIFeatureRequest["feature"], string> = {
   recommendations: "Suggest 3 learning activities based on this progress:",
   vocabulary_trainer: "Teach these vocabulary words with simple definitions and example sentences:",
   speaking_coach: "Provide speaking practice prompts and feedback for:",
+  speech_coach: "Coach the learner on clear speech, pacing, and expression for:",
+  science_lab: "Explain this science concept simply with a virtual lab analogy for a child:",
+  lesson_generator: "Generate a short age-appropriate lesson outline with activities for:",
+  coding_tutor: "Teach this coding concept step-by-step for a young beginner:",
+  math_tutor: "Provide step-by-step mathematics guidance with encouragement for:",
+  study_plan: "Create a personalized study plan based on this learner profile:",
+  revision: "Create an adaptive revision session with practice questions for:",
 };
 
 export async function runAIFeature(request: AIFeatureRequest): Promise<string> {
@@ -60,6 +67,20 @@ function getOfflineResponse(request: AIFeatureRequest): string {
       "Word: Happy 😊\nMeaning: Feeling good and smiling\nExample: I am happy when I play with friends.\n\nWord: Brave 🦁\nMeaning: Not afraid to try new things\nExample: The brave girl read aloud in class.",
     speaking_coach:
       "Let's practice speaking! 🗣️ Try saying: 'Hello, my name is ___. I like to ___.' Speak slowly and clearly. Great job practicing!",
+    speech_coach:
+      "Focus on speaking clearly! 🎤 Take a breath, speak at a steady pace, and emphasise important words. Record yourself and listen back!",
+    science_lab:
+      "🔬 In our virtual lab: observe carefully, ask 'what if?' questions, and test your ideas safely. Plants need water, light, and air to grow!",
+    lesson_generator:
+      "📋 Lesson Plan:\n1. Warm-up (5 min)\n2. Explore with diagrams (10 min)\n3. Hands-on activity (10 min)\n4. Quick quiz (5 min)\n5. Reflection",
+    coding_tutor:
+      "💻 Step 1: Understand the goal.\nStep 2: Break it into small commands.\nStep 3: Test each step.\nStep 4: Fix errors and try again!",
+    math_tutor:
+      "🔢 Let's solve step by step:\n1. Read the problem carefully.\n2. Draw or count if needed.\n3. Work slowly.\n4. Check your answer!",
+    study_plan:
+      "📅 Study Plan:\nMon: Phonics (15 min)\nTue: Math practice (15 min)\nWed: Reading story (20 min)\nThu: Review quiz (10 min)\nFri: Free exploration!",
+    revision:
+      "🔄 Revision Session:\n1. Review key vocabulary\n2. Practice 3 quiz questions\n3. Read aloud for 2 minutes\n4. Celebrate what you remember!",
   };
 
   return responses[request.feature];

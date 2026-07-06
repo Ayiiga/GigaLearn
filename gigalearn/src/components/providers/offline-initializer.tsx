@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import { registerBackgroundSync, syncOfflineData } from "@/lib/offline/sync";
+import { syncOfflineData, registerBackgroundSync } from "@/lib/offline/sync";
 import { cacheLessons } from "@/lib/offline/db";
+import { cacheLessonForOffline } from "@/lib/offline/lesson-cache";
 import { LESSONS } from "@/content/curriculum";
+import { ECOSYSTEM_LESSONS } from "@/content/ecosystem-lessons";
 import { useAppStore } from "@/stores/app-store";
 
 export function OfflineInitializer({ userId }: { userId?: string }) {
@@ -11,6 +13,9 @@ export function OfflineInitializer({ userId }: { userId?: string }) {
 
   useEffect(() => {
     cacheLessons(LESSONS);
+    for (const lesson of ECOSYSTEM_LESSONS) {
+      cacheLessonForOffline(lesson.id, { title: lesson.title, ecosystemId: lesson.ecosystemId, steps: lesson.steps });
+    }
     registerBackgroundSync();
 
     const handleOnline = async () => {

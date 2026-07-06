@@ -42,7 +42,7 @@ export const LEARNING_ECOSYSTEMS: LearningEcosystem[] = [
     topics: ["Biology", "Chemistry", "Physics", "Earth Science", "Astronomy"],
     methods: ["Simulations", "Virtual Labs", "Quizzes", "AI Explanations"],
     href: "/ecosystems/gigascience",
-    available: false,
+    available: true,
   },
   {
     id: "gigarobotics",
@@ -53,7 +53,7 @@ export const LEARNING_ECOSYSTEMS: LearningEcosystem[] = [
     topics: ["Sensors", "Motors", "Automation", "Arduino", "Simulation"],
     methods: ["Simulations", "Drag-and-Drop", "Project-Based Learning"],
     href: "/ecosystems/gigarobotics",
-    available: false,
+    available: true,
   },
   {
     id: "gigacoding",
@@ -64,7 +64,7 @@ export const LEARNING_ECOSYSTEMS: LearningEcosystem[] = [
     topics: ["Block Coding", "Scratch", "HTML/CSS", "JavaScript", "Python"],
     methods: ["Interactive Exercises", "Instant Feedback", "AI Mentoring"],
     href: "/ecosystems/gigacoding",
-    available: false,
+    available: true,
   },
   {
     id: "gigaiq",
@@ -86,7 +86,7 @@ export const LEARNING_ECOSYSTEMS: LearningEcosystem[] = [
     topics: ["Design Thinking", "Entrepreneurship", "Collaboration"],
     methods: ["Project-Based Learning", "AI Creativity"],
     href: "/ecosystems/gigainnovation",
-    available: false,
+    available: true,
   },
   {
     id: "gigaarts",
@@ -97,7 +97,7 @@ export const LEARNING_ECOSYSTEMS: LearningEcosystem[] = [
     topics: ["Drawing", "Painting", "Digital Art", "Animation"],
     methods: ["Picture Learning", "Art Challenges"],
     href: "/ecosystems/gigaarts",
-    available: false,
+    available: true,
   },
   {
     id: "gigamusic",

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,14 +13,26 @@ import { withBasePath } from "@/lib/base-path";
 import type { AIFeatureRequest } from "@/types";
 
 const isStaticHosting = process.env.NEXT_PUBLIC_GITHUB_PAGES === "true";
+const VALID_FEATURES = new Set(AI_FEATURES.map((f) => f.id));
 
-export default function AITutorPage() {
-  const [selectedFeature, setSelectedFeature] = useState<AIFeatureRequest["feature"]>("reading_coach");
+function AITutorContent() {
+  const searchParams = useSearchParams();
+  const featureParam = searchParams.get("feature");
+  const initialFeature = featureParam && VALID_FEATURES.has(featureParam)
+    ? (featureParam as AIFeatureRequest["feature"])
+    : "reading_coach";
+
+  const [selectedFeature, setSelectedFeature] = useState<AIFeatureRequest["feature"]>(initialFeature);
   const [input, setInput] = useState("");
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
-
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (featureParam && VALID_FEATURES.has(featureParam)) {
+      setSelectedFeature(featureParam as AIFeatureRequest["feature"]);
+    }
+  }, [featureParam]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,5 +135,13 @@ export default function AITutorPage() {
         )}
       </Card>
     </div>
+  );
+}
+
+export default function AITutorPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Loading AI Tutor...</div>}>
+      <AITutorContent />
+    </Suspense>
   );
 }

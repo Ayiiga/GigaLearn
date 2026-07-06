@@ -387,12 +387,19 @@ export const GAMES = [
 export const AI_FEATURES = [
   { id: "reading_coach", title: "AI Reading Coach", icon: "📖", description: "Get help reading any text" },
   { id: "pronunciation", title: "Pronunciation Checker", icon: "🎤", description: "Practice and improve pronunciation" },
+  { id: "speech_coach", title: "AI Speech Coach", icon: "🗣️", description: "Improve speaking pace and clarity" },
   { id: "story_generator", title: "Story Generator", icon: "✨", description: "Create custom stories" },
   { id: "quiz_generator", title: "Quiz Generator", icon: "❓", description: "Generate practice quizzes" },
   { id: "homework_assistant", title: "Homework Assistant", icon: "📝", description: "Get homework help" },
+  { id: "math_tutor", title: "AI Math Tutor", icon: "🔢", description: "Step-by-step math guidance" },
+  { id: "science_lab", title: "Science Lab Assistant", icon: "🔬", description: "Virtual science explanations" },
+  { id: "coding_tutor", title: "AI Coding Tutor", icon: "💻", description: "Learn programming step by step" },
+  { id: "lesson_generator", title: "Lesson Generator", icon: "📋", description: "Generate custom lesson plans" },
   { id: "recommendations", title: "Learning Recommendations", icon: "💡", description: "Personalized learning paths" },
+  { id: "study_plan", title: "Study Plan", icon: "📅", description: "Personalized weekly study plans" },
+  { id: "revision", title: "Revision Mode", icon: "🔄", description: "Adaptive revision sessions" },
   { id: "vocabulary_trainer", title: "Vocabulary Trainer", icon: "📚", description: "Learn new words with AI" },
-  { id: "speaking_coach", title: "Speaking Coach", icon: "🗣️", description: "Practice speaking English" },
+  { id: "speaking_coach", title: "Speaking Coach", icon: "🎙️", description: "Practice speaking English" },
 ];
 
 export const TESTIMONIALS = [
