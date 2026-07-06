@@ -153,3 +153,92 @@ export async function getUserRole(userId: string): Promise<UserRole | null> {
   const { data } = await supabase.from("profiles").select("role").eq("id", userId).single();
   return (data?.role as UserRole) ?? null;
 }
+
+export interface ClassroomStudent {
+  student_id: string;
+  full_name: string;
+  joined_at: string;
+}
+
+export async function joinClassroomByCode(studentId: string, joinCode: string) {
+  const supabase = createClient();
+  const { data: classroom, error: lookupError } = await supabase
+    .from("classrooms")
+    .select("id, name")
+    .eq("join_code", joinCode.trim().toLowerCase())
+    .single();
+
+  if (lookupError || !classroom) {
+    return { error: "Invalid join code. Check with your teacher." };
+  }
+
+  const { error } = await supabase.from("classroom_students").upsert({
+    classroom_id: classroom.id,
+    student_id: studentId,
+  });
+
+  if (error) return { error: error.message };
+  return { classroom };
+}
+
+export async function fetchClassroomStudents(classroomId: string): Promise<ClassroomStudent[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("classroom_students")
+    .select("student_id, joined_at, profiles(full_name)")
+    .eq("classroom_id", classroomId);
+
+  if (error || !data) return [];
+
+  return data.map((row) => {
+    const profile = Array.isArray(row.profiles)
+      ? (row.profiles[0] as { full_name: string } | undefined)
+      : (row.profiles as { full_name: string } | null);
+    return {
+      student_id: row.student_id,
+      full_name: profile?.full_name ?? "Student",
+      joined_at: row.joined_at,
+    };
+  });
+}
+
+export async function markAttendance(
+  classroomId: string,
+  studentId: string,
+  present: boolean,
+) {
+  const supabase = createClient();
+  const today = new Date().toISOString().split("T")[0];
+  return supabase.from("attendance").upsert(
+    { classroom_id: classroomId, student_id: studentId, date: today, present },
+    { onConflict: "classroom_id,student_id,date" },
+  );
+}
+
+export async function fetchTodayAttendance(classroomId: string) {
+  const supabase = createClient();
+  const today = new Date().toISOString().split("T")[0];
+  const { data } = await supabase
+    .from("attendance")
+    .select("student_id, present")
+    .eq("classroom_id", classroomId)
+    .eq("date", today);
+  return data ?? [];
+}
+
+export async function createHomework(
+  teacherId: string,
+  classroomId: string,
+  title: string,
+  dueDate?: string,
+) {
+  return createAssignment(teacherId, classroomId, `📝 ${title}`, dueDate);
+}
+
+export async function sendClassAnnouncement(
+  teacherId: string,
+  classroomId: string,
+  message: string,
+) {
+  return createAssignment(teacherId, classroomId, `📢 ${message.slice(0, 80)}`);
+}

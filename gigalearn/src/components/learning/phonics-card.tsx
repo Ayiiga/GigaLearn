@@ -12,9 +12,10 @@ interface PhonicsCardProps {
   sound: string;
   example: string;
   type: string;
+  onMastered?: () => void;
 }
 
-export function PhonicsCard({ grapheme, sound, example, type }: PhonicsCardProps) {
+export function PhonicsCard({ grapheme, sound, example, type, onMastered }: PhonicsCardProps) {
   const [flipped, setFlipped] = useState(false);
   const [listening, setListening] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -35,6 +36,7 @@ export function PhonicsCard({ grapheme, sound, example, type }: PhonicsCardProps
         setListening(false);
         const match = transcript.toLowerCase().includes(example.toLowerCase());
         setFeedback(match ? "🌟 Excellent pronunciation!" : `Good try! The word is "${example}"`);
+        if (match) setTimeout(() => onMastered?.(), 1800);
       },
       () => {
         setListening(false);
@@ -117,6 +119,7 @@ interface BlendingActivityProps {
 export function BlendingActivity({ phonemes, word, image, onComplete }: BlendingActivityProps) {
   const [revealed, setRevealed] = useState(0);
   const [done, setDone] = useState(false);
+  const [advancing, setAdvancing] = useState(false);
 
   const blend = () => {
     if (revealed < phonemes.length) {
@@ -125,7 +128,8 @@ export function BlendingActivity({ phonemes, word, image, onComplete }: Blending
     } else if (!done) {
       speak(word);
       setDone(true);
-      onComplete?.();
+      setAdvancing(true);
+      setTimeout(() => onComplete?.(), 2000);
     }
   };
 
@@ -150,9 +154,14 @@ export function BlendingActivity({ phonemes, word, image, onComplete }: Blending
         ))}
       </div>
       {done && (
-        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="flex items-center justify-center gap-2 text-giga-green font-bold text-2xl">
-          <CheckCircle className="h-8 w-8" />
-          {word}!
+        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="space-y-2">
+          <div className="flex items-center justify-center gap-2 text-giga-green font-bold text-2xl">
+            <CheckCircle className="h-8 w-8" />
+            {word}!
+          </div>
+          {advancing && (
+            <p className="text-sm text-giga-muted">Moving to next word...</p>
+          )}
         </motion.div>
       )}
       {!done && (

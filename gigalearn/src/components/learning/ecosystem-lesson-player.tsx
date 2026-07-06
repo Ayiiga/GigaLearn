@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Volume2, Mic, Bot, ChevronRight, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -161,7 +161,7 @@ export function EcosystemLessonPlayer({
         return (
           <div className="space-y-4">
             <p className="text-lg leading-relaxed">{step.content}</p>
-            <Button onClick={advance}>Continue <ChevronRight className="h-4 w-4" /></Button>
+            <AutoContinueButton onAdvance={advance} />
           </div>
         );
       case "diagram":
@@ -230,6 +230,23 @@ export function EcosystemLessonPlayer({
           Moving to {nextTitle ?? "next lesson"}…
         </motion.p>
       )}
+    </div>
+  );
+}
+
+function AutoContinueButton({ onAdvance, delayMs = 2500 }: { onAdvance: () => void; delayMs?: number }) {
+  const [seconds, setSeconds] = useState(Math.ceil(delayMs / 1000));
+
+  useEffect(() => {
+    const tick = setInterval(() => setSeconds((s) => Math.max(0, s - 1)), 1000);
+    const done = setTimeout(onAdvance, delayMs);
+    return () => { clearInterval(tick); clearTimeout(done); };
+  }, [onAdvance, delayMs]);
+
+  return (
+    <div className="space-y-2">
+      <Button onClick={onAdvance}>Continue now <ChevronRight className="h-4 w-4" /></Button>
+      <p className="text-xs text-giga-muted">Auto-continuing in {seconds}s...</p>
     </div>
   );
 }

@@ -18,7 +18,8 @@ import { saveLocalProgress } from "@/lib/offline/db";
 import { speak } from "@/lib/speech";
 import { getNextCurriculumLesson, getNextLessonAfterCompletion } from "@/lib/learning-path/next-lesson";
 import { useLessonNavigation } from "@/hooks/use-lesson-navigation";
-import { Volume2 } from "lucide-react";
+import { cacheLessonForOffline } from "@/lib/offline/lesson-cache";
+import { Volume2, Download } from "lucide-react";
 import type { LearningLevel } from "@/types";
 
 export function LessonPageClient({
@@ -33,6 +34,7 @@ export function LessonPageClient({
   const gamification = useGamification();
   const [celebrate, setCelebrate] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [downloaded, setDownloaded] = useState(false);
   const [tracingDone, setTracingDone] = useState(false);
   const { completeLesson, addCoins } = useAppStore();
   const { nextTarget, isAdvancing, scheduleAutoAdvance } = useLessonNavigation();
@@ -167,9 +169,19 @@ export function LessonPageClient({
         <div className="mb-8">
           <h1 className="font-display text-3xl font-bold">{lesson.title}</h1>
           <p className="mt-2 text-giga-muted">{lesson.description}</p>
-          <div className="mt-4 flex gap-3">
+          <div className="mt-4 flex flex-wrap gap-3 items-center">
             <XPBadge amount={lesson.xp_reward} />
             <span className="text-sm text-giga-muted">⏱ {lesson.duration_minutes} min</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                cacheLessonForOffline(lesson.id, { title: lesson.title, level: lesson.level, slug: lesson.slug, content: lesson.content });
+                setDownloaded(true);
+              }}
+            >
+              <Download className="h-4 w-4" /> {downloaded ? "Saved offline" : "Download for offline"}
+            </Button>
           </div>
         </div>
 

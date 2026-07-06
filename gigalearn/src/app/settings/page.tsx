@@ -1,6 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { JoinClassroomForm } from "@/components/classroom/join-classroom";
+import { subscribeToPushNotifications, scheduleDailyReminder } from "@/lib/pwa/push-notifications";
+import { useEffect } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle, CardDescription } from "@/components/ui/card";
@@ -21,6 +24,10 @@ export default function SettingsPage() {
     router.push("/");
     router.refresh();
   };
+
+  useEffect(() => {
+    scheduleDailyReminder();
+  }, []);
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12">
@@ -81,6 +88,29 @@ export default function SettingsPage() {
           </div>
           <Button variant="outline" className="mt-4" onClick={() => router.push(userRole === "student" ? "/" : `/dashboard/${userRole}`)}>
             Open {userRole === "admin" ? "Administrator" : userRole.charAt(0).toUpperCase() + userRole.slice(1)} Dashboard
+          </Button>
+        </Card>
+
+        <Card>
+          <CardTitle>Student Enrollment</CardTitle>
+          <CardDescription className="mt-2">Join a classroom with your teacher&apos;s code</CardDescription>
+          <div className="mt-4">
+            <JoinClassroomForm />
+          </div>
+        </Card>
+
+        <Card>
+          <CardTitle>Push Notifications</CardTitle>
+          <CardDescription className="mt-2">Get daily learning reminders and streak alerts</CardDescription>
+          <Button
+            variant="outline"
+            className="mt-4"
+            onClick={async () => {
+              const ok = await subscribeToPushNotifications();
+              alert(ok ? "Notifications enabled!" : "Notifications not available on this device.");
+            }}
+          >
+            Enable Learning Reminders
           </Button>
         </Card>
 

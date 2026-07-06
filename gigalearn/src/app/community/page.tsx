@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft, Trophy, Shield } from "lucide-react";
@@ -11,14 +12,32 @@ import {
   WEEKLY_CHALLENGES,
   buildClassroomLeaderboard,
   getWeeklyChallengeProgress,
+  type LeaderboardEntry,
 } from "@/lib/community";
+import { withBasePath } from "@/lib/base-path";
 
 export default function CommunityPage() {
   const gamification = useGamification();
   const setGamification = useAppStore((s) => s.hydrateGamification);
   const { user } = useAuth();
   const userName = user?.user_metadata?.full_name?.split(" ")[0] ?? "Learner";
-  const leaderboard = buildClassroomLeaderboard(gamification, userName, gamification.leaderboard_opt_in);
+  const [cloudBoard, setCloudBoard] = useState<LeaderboardEntry[]>([]);
+  const [cloudSource, setCloudSource] = useState("local");
+
+  useEffect(() => {
+    fetch(withBasePath("/api/leaderboard"))
+      .then((r) => r.json())
+      .then((data: { entries: { rank: number; name: string; xp: number; avatar: string }[]; source: string }) => {
+        if (data.entries?.length) {
+          setCloudBoard(data.entries.map((e) => ({ ...e, optedIn: true })));
+          setCloudSource(data.source);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const localBoard = buildClassroomLeaderboard(gamification, userName, gamification.leaderboard_opt_in);
+  const leaderboard = cloudBoard.length > 0 ? cloudBoard : localBoard;
 
   const toggleOptIn = () => {
     setGamification({ leaderboard_opt_in: !gamification.leaderboard_opt_in });
@@ -70,6 +89,7 @@ export default function CommunityPage() {
 
       <h2 className="font-display text-2xl font-bold mt-10 mb-4 flex items-center gap-2">
         <Trophy className="h-6 w-6 text-giga-yellow" /> School Leaderboard
+        {cloudSource === "cloud" && <span className="text-xs font-normal text-giga-muted">(live)</span>}
       </h2>
       {gamification.leaderboard_opt_in ? (
         <GlassCard>

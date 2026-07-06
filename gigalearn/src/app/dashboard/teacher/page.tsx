@@ -11,10 +11,13 @@ import {
   fetchTeacherClassrooms,
   fetchTeacherAssignments,
   createClassroom,
+  createHomework,
+  sendClassAnnouncement,
   createAssignment,
   type ClassroomSummary,
   type AssignmentSummary,
 } from "@/lib/classroom";
+import { AttendancePanel } from "@/components/classroom/attendance-panel";
 
 export default function TeacherDashboard() {
   const { user, isAuthenticated } = useAuth();
@@ -22,6 +25,9 @@ export default function TeacherDashboard() {
   const [assignments, setAssignments] = useState<AssignmentSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [newClassName, setNewClassName] = useState("");
+  const [homeworkTitle, setHomeworkTitle] = useState("");
+  const [announcement, setAnnouncement] = useState("");
+  const [selectedClassroom, setSelectedClassroom] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -121,9 +127,19 @@ export default function TeacherDashboard() {
                 <li key={c.id} className="rounded-xl border border-giga-border p-3 dark:border-giga-border-dark">
                   <p className="font-semibold">{c.name}</p>
                   <p className="text-sm text-giga-muted">{c.grade_level} · {c.student_count} students · Code: {c.join_code}</p>
-                  <Button size="sm" variant="outline" className="mt-2" onClick={() => handleCreateAssignment(c.id)}>
-                    <ClipboardList className="h-4 w-4" /> Assign Lesson
-                  </Button>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <Button size="sm" variant="outline" onClick={() => { setSelectedClassroom(c.id); handleCreateAssignment(c.id); }}>
+                      <ClipboardList className="h-4 w-4" /> Assign
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setSelectedClassroom(selectedClassroom === c.id ? null : c.id)}>
+                      Attendance
+                    </Button>
+                  </div>
+                  {selectedClassroom === c.id && (
+                    <div className="mt-3 border-t border-giga-border pt-3 dark:border-giga-border-dark">
+                      <AttendancePanel classroomId={c.id} />
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
@@ -159,6 +175,55 @@ export default function TeacherDashboard() {
           )}
         </GlassCard>
       </div>
+
+      {classrooms.length > 0 && isAuthenticated && (
+        <div className="mt-10 grid gap-6 lg:grid-cols-2">
+          <GlassCard>
+            <h2 className="font-display text-xl font-bold mb-4">Homework</h2>
+            <input
+              value={homeworkTitle}
+              onChange={(e) => setHomeworkTitle(e.target.value)}
+              placeholder="Homework title"
+              className="w-full rounded-xl border border-giga-border px-3 py-2 text-sm mb-3 dark:bg-giga-surface"
+            />
+            <Button
+              size="sm"
+              disabled={!homeworkTitle.trim()}
+              onClick={async () => {
+                if (!user || !classrooms[0]) return;
+                await createHomework(user.id, classrooms[0].id, homeworkTitle.trim());
+                setHomeworkTitle("");
+                setMessage("Homework assigned!");
+                const refreshed = await fetchTeacherAssignments(user.id);
+                setAssignments(refreshed);
+              }}
+            >
+              Assign Homework
+            </Button>
+          </GlassCard>
+          <GlassCard>
+            <h2 className="font-display text-xl font-bold mb-4">Class Announcement</h2>
+            <textarea
+              value={announcement}
+              onChange={(e) => setAnnouncement(e.target.value)}
+              placeholder="Message to your class..."
+              className="w-full rounded-xl border border-giga-border px-3 py-2 text-sm mb-3 min-h-[80px] dark:bg-giga-surface"
+            />
+            <Button
+              size="sm"
+              disabled={!announcement.trim()}
+              onClick={async () => {
+                if (!user || !classrooms[0]) return;
+                await sendClassAnnouncement(user.id, classrooms[0].id, announcement.trim());
+                setAnnouncement("");
+                setMessage("Announcement sent!");
+              }}
+            >
+              Send Notification
+            </Button>
+          </GlassCard>
+        </div>
+      )}
 
       <div className="mt-10">
         <InsightsPanel
