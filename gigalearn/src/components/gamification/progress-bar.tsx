@@ -5,7 +5,7 @@ import { useGamification } from "@/stores/app-store";
 import { xpForNextLevel } from "@/lib/utils";
 
 export function ProgressBar() {
-  const { xp, level, streak, coins } = useGamification();
+  const { xp, level, streak, coins, gems } = useGamification();
   const nextLevelXp = xpForNextLevel(level);
   const prevLevelXp = xpForNextLevel(level - 1);
   const progress = ((xp - prevLevelXp) / (nextLevelXp - prevLevelXp)) * 100;
@@ -21,7 +21,7 @@ export function ProgressBar() {
             </span>
           )}
         </div>
-        <span className="text-sm text-giga-muted">🪙 {coins} coins</span>
+        <span className="text-sm text-giga-muted">🪙 {coins} · 💎 {gems ?? 0}</span>
       </div>
       <div className="h-3 rounded-full bg-white dark:bg-giga-surface overflow-hidden">
         <motion.div

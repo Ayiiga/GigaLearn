@@ -62,20 +62,26 @@ export default function SettingsPage() {
         </Card>
 
         <Card>
-          <CardTitle>Demo Role</CardTitle>
-          <CardDescription className="mt-2">Switch role for dashboard preview (demo mode)</CardDescription>
+          <CardTitle>Role & Dashboard</CardTitle>
+          <CardDescription className="mt-2">Switch between student, teacher, parent, and administrator views</CardDescription>
           <div className="mt-4 flex flex-wrap gap-2">
             {(["student", "teacher", "parent", "admin"] as const).map((role) => (
               <Button
                 key={role}
                 variant={userRole === role ? "primary" : "outline"}
                 size="sm"
-                onClick={() => setUserRole(role)}
+                onClick={() => {
+                  setUserRole(role);
+                  router.push(role === "student" ? "/" : `/dashboard/${role}`);
+                }}
               >
-                {role.charAt(0).toUpperCase() + role.slice(1)}
+                {role === "admin" ? "Administrator" : role.charAt(0).toUpperCase() + role.slice(1)}
               </Button>
             ))}
           </div>
+          <Button variant="outline" className="mt-4" onClick={() => router.push(userRole === "student" ? "/" : `/dashboard/${userRole}`)}>
+            Open {userRole === "admin" ? "Administrator" : userRole.charAt(0).toUpperCase() + userRole.slice(1)} Dashboard
+          </Button>
         </Card>
 
         <Card>

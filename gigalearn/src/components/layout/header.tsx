@@ -7,7 +7,6 @@ import {
   Home,
   BookOpen,
   Sparkles,
-  Gamepad2,
   BarChart3,
   Trophy,
   Settings,
@@ -19,6 +18,7 @@ import {
   Sun,
   Calculator,
   Target,
+  Bot,
 } from "lucide-react";
 import { useState } from "react";
 import { useTheme } from "next-themes";
@@ -28,11 +28,11 @@ import { UserMenu } from "@/components/auth/user-menu";
 import { useGamification } from "@/stores/app-store";
 
 const NAV_ITEMS = [
-  { href: "/", label: "Home", icon: Home },
+  { href: "/", label: "Dashboard", icon: Home },
   { href: "/learn", label: "Learn", icon: BookOpen },
   { href: "/gigaphonics", label: "GigaPhonics", icon: Sparkles },
   { href: "/gigamath", label: "GigaMath", icon: Calculator },
-  { href: "/games", label: "Games", icon: Gamepad2 },
+  { href: "/ai-tutor", label: "AI Tutor", icon: Bot },
   { href: "/quests", label: "Quests", icon: Target },
   { href: "/progress", label: "Progress", icon: BarChart3 },
   { href: "/achievements", label: "Achievements", icon: Trophy },
@@ -79,8 +79,9 @@ export function Header() {
           <UserMenu />
 
           <div className="hidden items-center gap-2 rounded-full bg-giga-yellow/20 px-3 py-1.5 sm:flex">
-            <span className="text-sm">⭐ {gamification.xp} XP</span>
+            <span className="text-sm">⭐ {gamification.xp}</span>
             <span className="text-sm">🪙 {gamification.coins}</span>
+            <span className="text-sm">💎 {gamification.gems ?? 0}</span>
           </div>
 
           <button

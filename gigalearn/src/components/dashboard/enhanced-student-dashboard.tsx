@@ -79,7 +79,7 @@ export function EnhancedStudentDashboard() {
           <div className="space-y-3 text-sm">
             <p><strong>Strengths:</strong> {gamification.strengths.join(", ") || "Building confidence"}</p>
             <p><strong>Focus areas:</strong> {gamification.weaknesses.join(", ") || "Exploring all levels"}</p>
-            <p><strong>Coins:</strong> 🪙 {gamification.coins}</p>
+            <p><strong>Coins:</strong> 🪙 {gamification.coins} · <strong>Gems:</strong> 💎 {gamification.gems ?? 0}</p>
             <p><strong>Badges earned:</strong> {gamification.badges.length}</p>
           </div>
         </GlassCard>

@@ -76,9 +76,25 @@ export interface UserProgress {
   synced: boolean;
 }
 
+export interface ActivityEntry {
+  id: string;
+  type: "lesson" | "quest" | "badge" | "xp" | "streak";
+  title: string;
+  icon: string;
+  timestamp: string;
+}
+
+export interface WeeklyGoalProgress {
+  lessons_completed: number;
+  xp_earned: number;
+  speaking_exercises: number;
+  week_start: string;
+}
+
 export interface GamificationState {
   xp: number;
   coins: number;
+  gems: number;
   level: number;
   streak: number;
   last_active_date: string;
@@ -93,6 +109,9 @@ export interface GamificationState {
   lessons_completed_today: number;
   xp_earned_today: number;
   speaking_exercises_today: number;
+  recent_activity: ActivityEntry[];
+  weekly_goals: WeeklyGoalProgress;
+  dismissed_notifications: string[];
 }
 
 export interface Badge {

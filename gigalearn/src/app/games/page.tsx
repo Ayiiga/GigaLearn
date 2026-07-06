@@ -3,35 +3,72 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Card, CardTitle, CardDescription } from "@/components/ui/card";
-import { GAMES } from "@/content/curriculum";
-import { useAppStore } from "@/stores/app-store";
+import { ArrowLeft } from "lucide-react";
+
+const FUNCTIONAL_GAMES = [
+  {
+    href: "/learn?level=alphabet",
+    icon: "🎯",
+    title: "Letter Match",
+    description: "Match letters to pictures in Alphabet Adventure",
+  },
+  {
+    href: "/gigaphonics",
+    icon: "🔊",
+    title: "Sound Blender",
+    description: "Blend sounds to make words in GigaPhonics",
+  },
+  {
+    href: "/vocabulary",
+    icon: "🔍",
+    title: "Word Hunt",
+    description: "Find and learn sight words with flashcards",
+  },
+  {
+    href: "/stories",
+    icon: "❓",
+    title: "Story Quiz",
+    description: "Read stories and test comprehension",
+  },
+  {
+    href: "/learn?level=rhythm",
+    icon: "🎵",
+    title: "Rhyme Time",
+    description: "Practice rhyming words and rhythm",
+  },
+  {
+    href: "/gigamath",
+    icon: "🔢",
+    title: "Number Ninja",
+    description: "Quick counting and arithmetic challenges",
+  },
+];
 
 export default function GamesPage() {
-  const addXP = useAppStore((s) => s.addXP);
-
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+      <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-giga-purple hover:underline mb-6">
+        <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+      </Link>
+
       <h1 className="font-display text-3xl font-bold">Learning Games</h1>
-      <p className="mt-2 text-giga-muted">Fun, educational games — works offline too! 🎮</p>
+      <p className="mt-2 text-giga-muted">Play educational games linked to real lessons — works offline too!</p>
 
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {GAMES.map((game, i) => (
+        {FUNCTIONAL_GAMES.map((game, i) => (
           <motion.div
-            key={game.id}
+            key={game.title}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: i * 0.05 }}
           >
-            <Card
-              hover
-              className="cursor-pointer h-full"
-              onClick={() => addXP(25)}
-            >
-              <span className="text-5xl">{game.icon}</span>
-              <CardTitle className="mt-4">{game.title}</CardTitle>
-              <CardDescription>{game.description}</CardDescription>
-              <p className="mt-4 text-sm font-bold text-giga-purple">+25 XP per play</p>
-            </Card>
+            <Link href={game.href}>
+              <Card hover className="h-full">
+                <span className="text-5xl">{game.icon}</span>
+                <CardTitle className="mt-4">{game.title}</CardTitle>
+                <CardDescription>{game.description}</CardDescription>
+              </Card>
+            </Link>
           </motion.div>
         ))}
       </div>
