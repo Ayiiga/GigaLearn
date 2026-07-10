@@ -4,6 +4,8 @@ import {
   getSupabasePublishableKey,
   validateSupabaseConfig,
   isValidSupabaseHttpUrl,
+  sanitizeSupabaseKey,
+  getSupabaseProjectRef,
 } from "@/lib/supabase/env";
 import { SUPABASE_URL } from "@/lib/supabase/project";
 
@@ -42,14 +44,36 @@ describe("supabase env resolution", () => {
     expect(getSupabasePublishableKey()).toBe("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test");
   });
 
-  it("detects anon key project mismatch", () => {
+  it("prefers anon key matching the configured project URL", () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = SUPABASE_URL;
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indyb25ncHJvamVjdCIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNjAwMDAwMDAwLCJleHAiOjE5MDAwMDAwMDB9.sig";
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY1 =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoZ3F6ZHhram1zb21jbHlyY2h2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2MDAwMDAwMDAsImV4cCI6MTkwMDAwMDAwMH0.sig";
+
+    expect(getSupabasePublishableKey()).toBe(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY1);
+  });
+
+  it("detects anon key project mismatch with URL", () => {
+    process.env.NEXT_PUBLIC_SUPABASE_URL = SUPABASE_URL;
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indyb25ncHJvamVjdCIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNjAwMDAwMDAwLCJleHAiOjE5MDAwMDAwMDB9.sig";
+    delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY1;
 
     const status = validateSupabaseConfig();
     expect(status.ok).toBe(false);
     expect(status.issues.some((issue) => issue.includes("wrongproject"))).toBe(true);
+    expect(status.issues.some((issue) => issue.includes("GigaTrend TV expects"))).toBe(true);
+  });
+
+  it("strips invisible unicode from keys", () => {
+    const dirty = "eyJhbGci.test\u200b";
+    expect(sanitizeSupabaseKey(dirty)).toBe("eyJhbGci.test");
+  });
+
+  it("resolves project ref from URL", () => {
+    process.env.NEXT_PUBLIC_SUPABASE_URL = SUPABASE_URL;
+    expect(getSupabaseProjectRef()).toBe("vhgqzdxkjmsomclyrchv");
   });
 
   it("reports invalid config when keys are missing", () => {

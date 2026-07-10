@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { validateSupabaseConfig, getSupabasePublishableKey } from "@/lib/supabase/env";
-import { SUPABASE_PROJECT_REF } from "@/lib/supabase/project";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +30,7 @@ export async function GET() {
       timestamp: new Date().toISOString(),
       latencyMs: Date.now() - started,
       supabase: {
-        project: SUPABASE_PROJECT_REF,
+        project: config.projectRef,
         configured: config.ok,
         authReachable,
         issues: config.issues,

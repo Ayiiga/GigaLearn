@@ -44,6 +44,8 @@ export interface NewsArticle {
   aiSummary30s: string;
   aiSummary2m: string;
   aiSummaryFull: string;
+  /** Full article body paragraphs for on-site reading */
+  body: string[];
   keyPoints: string[];
   timeline: { time: string; event: string }[];
   tags: string[];

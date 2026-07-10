@@ -1,4 +1,4 @@
-import { SUPABASE_PROJECT_REF } from "@/lib/supabase/project";
+import { getSupabaseProjectRef } from "@/lib/supabase/env";
 
 function cleanAppUrl(value: string | undefined): string | undefined {
   if (!value) return undefined;
@@ -53,9 +53,9 @@ export function getRequiredRedirectUrls(): string[] {
 }
 
 export function getSupabaseAuthSettingsUrl(): string {
-  return `https://supabase.com/dashboard/project/${SUPABASE_PROJECT_REF}/auth/url-configuration`;
+  return `https://supabase.com/dashboard/project/${getSupabaseProjectRef()}/auth/url-configuration`;
 }
 
 export function getSupabaseGoogleProviderUrl(): string {
-  return `https://supabase.com/dashboard/project/${SUPABASE_PROJECT_REF}/auth/providers?provider=Google`;
+  return `https://supabase.com/dashboard/project/${getSupabaseProjectRef()}/auth/providers?provider=Google`;
 }

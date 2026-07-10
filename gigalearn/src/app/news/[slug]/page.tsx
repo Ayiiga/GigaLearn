@@ -58,6 +58,15 @@ export default async function ArticlePage({ params }: Props) {
       <p className="mt-6 text-lg leading-relaxed text-giga-muted">{article.summary}</p>
 
       <section className="mt-10">
+        <h2 className="font-display text-xl font-bold mb-4">Full Story</h2>
+        <div className="space-y-5 text-base sm:text-lg leading-relaxed text-giga-text">
+          {article.body.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-10">
         <h2 className="font-display text-xl font-bold mb-4">Key Points</h2>
         <ul className="space-y-2">
           {article.keyPoints.map((point) => (

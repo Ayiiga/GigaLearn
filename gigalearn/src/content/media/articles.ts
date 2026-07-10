@@ -2,7 +2,27 @@ import type { NewsArticle } from "@/types/media";
 
 const local = (file: string) => `/images/news/${file}`;
 
-export const NEWS_ARTICLES: NewsArticle[] = [
+/** Build readable body paragraphs from extended summaries. */
+function buildArticleBody(aiSummary2m: string, aiSummaryFull: string): string[] {
+  const combined = `${aiSummary2m.trim()} ${aiSummaryFull.trim()}`.trim();
+  const sentences = combined.split(/(?<=[.!?])\s+/).filter((s) => s.length > 12);
+  if (sentences.length <= 2) return [combined];
+
+  const paragraphs: string[] = [];
+  for (let i = 0; i < sentences.length; i += 2) {
+    paragraphs.push(sentences.slice(i, i + 2).join(" "));
+  }
+  return paragraphs;
+}
+
+function withBody<T extends Omit<NewsArticle, "body">>(article: T): NewsArticle {
+  return {
+    ...article,
+    body: buildArticleBody(article.aiSummary2m, article.aiSummaryFull),
+  };
+}
+
+const RAW_ARTICLES = [
   {
     id: "1",
     slug: "ghana-parliament-economic-reform-bill",
@@ -177,7 +197,9 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     ],
     tags: ["Health", "Malaria", "Vaccine", "Africa"],
   },
-];
+] as const satisfies readonly Omit<NewsArticle, "body">[];
+
+export const NEWS_ARTICLES: NewsArticle[] = RAW_ARTICLES.map((article) => withBody(article));
 
 export function getArticleBySlug(slug: string): NewsArticle | undefined {
   return NEWS_ARTICLES.find((a) => a.slug === slug);
