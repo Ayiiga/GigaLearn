@@ -1,7 +1,7 @@
 {
   "name": "GigaTrend TV — Africa's Smart News & Live TV",
   "short_name": "GigaTrend TV",
-  "description": "Africa's Smart News & Live TV Platform. Breaking news, sports, live TV, radio, and AI-powered summaries.",
+  "description": "Africa's Smart News & Live TV Platform. Breaking news, sports, live TV, radio, and powerful search.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a1628",
@@ -31,6 +31,11 @@
       "description": "Latest breaking stories"
     },
     {
+      "name": "Search",
+      "url": "/search",
+      "description": "Search news, sports, TV, and more"
+    },
+    {
       "name": "Live TV",
       "url": "/live-tv",
       "description": "Watch official live streams"
@@ -39,11 +44,6 @@
       "name": "Sports",
       "url": "/sports",
       "description": "Scores, fixtures, and analysis"
-    },
-    {
-      "name": "Ask AI",
-      "url": "/ai-assistant",
-      "description": "GigaTrend AI news assistant"
     }
   ]
 }

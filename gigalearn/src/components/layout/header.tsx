@@ -18,6 +18,7 @@ import {
   MapPin,
   Users,
   User,
+  Search,
   Menu,
   X,
   Wifi,
@@ -47,6 +48,7 @@ const NAV_ITEMS = [
   { href: "/africa", label: "Africa", icon: MapPin },
   { href: "/world", label: "World", icon: Globe },
   { href: "/community", label: "Community", icon: Users },
+  { href: "/search", label: "Search", icon: Search },
   { href: "/profile", label: "Profile", icon: User },
 ];
 

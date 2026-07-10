@@ -157,6 +157,27 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     timeline: [{ time: "12:00", event: "Industry report published" }],
     tags: ["Nollywood", "Entertainment", "Streaming"],
   },
+  {
+    id: "9",
+    slug: "africa-malaria-vaccine-rollout",
+    title: "Expanded Malaria Vaccine Rollout Reaches 12 African Nations",
+    summary: "WHO-backed immunization program accelerates across West and Central Africa, targeting millions of children under five.",
+    category: "health",
+    country: "ghana",
+    imageUrl: unsplash("photo-1584036561561-dafc5fd22829"),
+    publishedAt: "2026-07-10T11:00:00Z",
+    author: "Dr. Fatima Bello",
+    readMinutes: 4,
+    aiSummary30s: "Malaria vaccine rollout expands to 12 African countries, protecting millions of young children.",
+    aiSummary2m: "A coordinated malaria vaccine campaign has expanded to 12 African nations, with health ministries reporting strong uptake in Ghana, Nigeria, and Kenya. The program targets children under five in high-burden regions.",
+    aiSummaryFull: "The World Health Organization and African health ministries announced a major expansion of malaria vaccine distribution across 12 countries. Early data from pilot programs show significant reductions in severe cases among vaccinated children.",
+    keyPoints: ["12 nations in rollout", "Focus on children under five", "Strong uptake in Ghana and Nigeria", "WHO-backed program"],
+    timeline: [
+      { time: "08:00", event: "WHO briefing on rollout progress" },
+      { time: "13:00", event: "Ghana vaccination centers report record day" },
+    ],
+    tags: ["Health", "Malaria", "Vaccine", "Africa"],
+  },
 ];
 
 export function getArticleBySlug(slug: string): NewsArticle | undefined {
@@ -173,4 +194,27 @@ export function getBreakingNews(): NewsArticle[] {
 
 export function getAfricaNews(): NewsArticle[] {
   return NEWS_ARTICLES.filter((a) => a.country);
+}
+
+/** Hero slider: one featured story per major category */
+export function getHeroArticles(): NewsArticle[] {
+  const categories: NewsArticle["category"][] = [
+    "politics",
+    "sports",
+    "entertainment",
+    "technology",
+    "business",
+    "health",
+    "science",
+  ];
+  const picked: NewsArticle[] = [];
+  const breaking = getBreakingNews();
+  if (breaking[0]) picked.push(breaking[0]);
+
+  for (const cat of categories) {
+    const article = NEWS_ARTICLES.find((a) => a.category === cat && !picked.some((p) => p.id === a.id));
+    if (article) picked.push(article);
+  }
+
+  return picked.length > 0 ? picked : NEWS_ARTICLES.slice(0, 7);
 }

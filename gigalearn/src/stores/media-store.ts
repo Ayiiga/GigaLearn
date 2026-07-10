@@ -9,6 +9,7 @@ const defaultPreferences: UserMediaPreferences = {
   favoriteRadioStations: [],
   followedTopics: [],
   followedJournalists: [],
+  searchHistory: [],
   language: "en",
   notifications: {
     breakingNews: true,
@@ -29,6 +30,8 @@ interface MediaState {
   toggleFollowJournalist: (name: string) => void;
   setLanguage: (lang: string) => void;
   updateNotifications: (partial: Partial<UserMediaPreferences["notifications"]>) => void;
+  addSearchHistory: (query: string) => void;
+  clearSearchHistory: () => void;
   isArticleSaved: (slug: string) => boolean;
 }
 
@@ -98,6 +101,22 @@ export const useMediaStore = create<MediaState>()(
             ...s.preferences,
             notifications: { ...s.preferences.notifications, ...partial },
           },
+        })),
+
+      addSearchHistory: (query) => {
+        const trimmed = query.trim();
+        if (!trimmed) return;
+        set((s) => ({
+          preferences: {
+            ...s.preferences,
+            searchHistory: [trimmed, ...(s.preferences.searchHistory ?? []).filter((h) => h !== trimmed)].slice(0, 20),
+          },
+        }));
+      },
+
+      clearSearchHistory: () =>
+        set((s) => ({
+          preferences: { ...s.preferences, searchHistory: [] },
         })),
 
       isArticleSaved: (slug) => get().preferences.savedArticles.includes(slug),

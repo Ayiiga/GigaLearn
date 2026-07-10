@@ -109,6 +109,7 @@ export interface UserMediaPreferences {
   favoriteRadioStations: string[];
   followedTopics: string[];
   followedJournalists: string[];
+  searchHistory: string[];
   language: string;
   notifications: {
     breakingNews: boolean;

@@ -2,19 +2,34 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Mic, MicOff, X } from "lucide-react";
+import { Search, Mic, MicOff, Clock, TrendingUp } from "lucide-react";
 import { globalSearch, getSearchSuggestions } from "@/content/media";
+import type { SearchFilter } from "@/content/media";
+import { useMediaStore } from "@/stores/media-store";
 import { cn } from "@/lib/utils";
 import { SpeechRecognizer } from "@/lib/speech";
 
-export function GlobalSearchBar({ className }: { className?: string }) {
+interface GlobalSearchBarProps {
+  className?: string;
+  autoFocus?: boolean;
+  onSubmit?: (query: string) => void;
+}
+
+export function GlobalSearchBar({ className, autoFocus, onSubmit }: GlobalSearchBarProps) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [listening, setListening] = useState(false);
   const router = useRouter();
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const suggestions = getSearchSuggestions();
+  const searchHistory = useMediaStore((s) => s.preferences.searchHistory ?? []);
+  const addSearchHistory = useMediaStore((s) => s.addSearchHistory);
   const results = query.trim() ? globalSearch(query) : [];
+
+  useEffect(() => {
+    if (autoFocus) inputRef.current?.focus();
+  }, [autoFocus]);
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -40,24 +55,34 @@ export function GlobalSearchBar({ className }: { className?: string }) {
   }, []);
 
   const submit = (q: string) => {
+    const trimmed = q.trim();
+    if (!trimmed) return;
+    addSearchHistory(trimmed);
     setOpen(false);
-    router.push(`/search?q=${encodeURIComponent(q)}`);
+    if (onSubmit) {
+      onSubmit(trimmed);
+    } else {
+      router.push(`/search?q=${encodeURIComponent(trimmed)}`);
+    }
   };
 
   return (
     <div ref={wrapperRef} className={cn("relative", className)}>
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-giga-muted" />
+          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-giga-muted" aria-hidden />
           <input
+            ref={inputRef}
             type="search"
             value={query}
             onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
             onFocus={() => setOpen(true)}
             onKeyDown={(e) => e.key === "Enter" && query.trim() && submit(query)}
-            placeholder="Search news, videos, TV, radio, teams..."
+            placeholder="Search news, videos, TV, radio, teams, players, countries..."
             className="w-full rounded-2xl border border-giga-border bg-white/80 py-3 pl-12 pr-4 text-sm font-medium backdrop-blur-sm focus:border-gtv-purple focus:outline-none focus:ring-2 focus:ring-gtv-purple/20 dark:bg-giga-surface/80 min-h-[48px]"
             aria-label="Global search"
+            aria-controls="search-results"
+            autoComplete="off"
           />
         </div>
         <button
@@ -75,8 +100,9 @@ export function GlobalSearchBar({ className }: { className?: string }) {
       {open && (
         <div
           id="search-results"
-          className="absolute left-0 right-0 top-full z-50 mt-2 max-h-80 overflow-y-auto rounded-2xl border border-giga-border bg-white shadow-2xl dark:bg-giga-surface"
+          className="absolute left-0 right-0 top-full z-50 mt-2 max-h-96 overflow-y-auto rounded-2xl border border-giga-border bg-white shadow-2xl dark:bg-giga-surface"
           role="listbox"
+          aria-label="Search suggestions"
         >
           {query.trim() ? (
             results.length > 0 ? (
@@ -97,17 +123,37 @@ export function GlobalSearchBar({ className }: { className?: string }) {
               <p className="px-4 py-6 text-center text-sm text-giga-muted">No results found</p>
             )
           ) : (
-            <div className="p-3">
-              <p className="px-2 py-1 text-xs font-semibold uppercase text-giga-muted">Trending searches</p>
-              {suggestions.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => { setQuery(s); submit(s); }}
-                  className="block w-full rounded-xl px-3 py-2 text-left text-sm hover:bg-gtv-purple/5"
-                >
-                  {s}
-                </button>
-              ))}
+            <div className="p-3 space-y-4">
+              {searchHistory.length > 0 && (
+                <div>
+                  <p className="flex items-center gap-1.5 px-2 py-1 text-xs font-semibold uppercase text-giga-muted">
+                    <Clock className="h-3.5 w-3.5" /> Recent searches
+                  </p>
+                  {searchHistory.slice(0, 5).map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => { setQuery(s); submit(s); }}
+                      className="block w-full rounded-xl px-3 py-2 text-left text-sm hover:bg-gtv-purple/5"
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <div>
+                <p className="flex items-center gap-1.5 px-2 py-1 text-xs font-semibold uppercase text-giga-muted">
+                  <TrendingUp className="h-3.5 w-3.5" /> Trending searches
+                </p>
+                {suggestions.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => { setQuery(s); submit(s); }}
+                    className="block w-full rounded-xl px-3 py-2 text-left text-sm hover:bg-gtv-purple/5"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
           {query && (
@@ -124,46 +170,15 @@ export function GlobalSearchBar({ className }: { className?: string }) {
   );
 }
 
-export function FloatingAiAssistant() {
-  const [expanded, setExpanded] = useState(false);
-  const router = useRouter();
-  const prompts = [
-    "Who scored today?",
-    "Latest World Cup news",
-    "What's trending in Ghana?",
-    "Summarize today's politics",
-    "Explain this news simply",
-  ];
-
-  return (
-    <div className="fixed bottom-6 right-6 z-50">
-      {expanded && (
-        <div className="mb-3 w-80 rounded-2xl border border-giga-border bg-white p-4 shadow-2xl dark:bg-giga-surface">
-          <div className="flex items-center justify-between">
-            <p className="font-display font-bold">Ask GigaTrend AI</p>
-            <button onClick={() => setExpanded(false)} aria-label="Close"><X className="h-4 w-4" /></button>
-          </div>
-          <p className="mt-1 text-sm text-giga-muted">Voice-enabled news assistant with multi-language support.</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {prompts.map((p) => (
-              <button
-                key={p}
-                onClick={() => router.push(`/ai-assistant?q=${encodeURIComponent(p)}`)}
-                className="rounded-full bg-gtv-purple/10 px-3 py-1.5 text-xs font-medium text-gtv-purple hover:bg-gtv-purple/20"
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-gtv-purple to-gtv-cyan text-white shadow-lg hover:shadow-xl transition-shadow"
-        aria-label="Ask GigaTrend AI"
-      >
-        <span className="text-xl">✨</span>
-      </button>
-    </div>
-  );
-}
+export const SEARCH_FILTERS: { id: SearchFilter; label: string }[] = [
+  { id: "all", label: "All" },
+  { id: "article", label: "News" },
+  { id: "video", label: "Videos" },
+  { id: "tv", label: "TV" },
+  { id: "radio", label: "Radio" },
+  { id: "team", label: "Teams" },
+  { id: "player", label: "Players" },
+  { id: "country", label: "Countries" },
+  { id: "competition", label: "Competitions" },
+  { id: "topic", label: "Topics" },
+];

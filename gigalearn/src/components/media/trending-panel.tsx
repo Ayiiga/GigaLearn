@@ -1,10 +1,25 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { TrendingUp, Flame, Hash } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import type { TrendingItem } from "@/types/media";
 import { cn } from "@/lib/utils";
+
+type TrendingPeriod = "today" | "week" | "month";
+
+const PERIOD_LABELS: Record<TrendingPeriod, string> = {
+  today: "Today",
+  week: "This Week",
+  month: "This Month",
+};
+
+function filterByPeriod(items: TrendingItem[], period: TrendingPeriod): TrendingItem[] {
+  if (period === "today") return items;
+  if (period === "week") return [...items].sort((a, b) => (b.count ?? 0) - (a.count ?? 0));
+  return [...items].reverse();
+}
 
 function TrendingList({ title, items, icon }: { title: string; items: TrendingItem[]; icon: React.ReactNode }) {
   return (
@@ -17,7 +32,7 @@ function TrendingList({ title, items, icon }: { title: string; items: TrendingIt
         {items.map((item, i) => (
           <li key={item.id}>
             <Link
-              href="/trending"
+              href={`/search?q=${encodeURIComponent(item.label)}`}
               className="flex items-center gap-3 rounded-xl px-2 py-2 text-sm transition-colors hover:bg-gtv-purple/5"
             >
               <span className="w-5 text-center font-bold text-giga-muted">{i + 1}</span>
@@ -44,6 +59,7 @@ export function TrendingPanel({
   searches,
   topics,
   people,
+  showPeriodFilter = false,
 }: {
   stories: TrendingItem[];
   videos: TrendingItem[];
@@ -51,15 +67,48 @@ export function TrendingPanel({
   searches: TrendingItem[];
   topics: TrendingItem[];
   people: TrendingItem[];
+  showPeriodFilter?: boolean;
 }) {
+  const [period, setPeriod] = useState<TrendingPeriod>("today");
+
+  const filteredStories = filterByPeriod(stories, period);
+  const filteredVideos = filterByPeriod(videos, period);
+  const filteredHashtags = filterByPeriod(hashtags, period);
+  const filteredSearches = filterByPeriod(searches, period);
+  const filteredTopics = filterByPeriod(topics, period);
+  const filteredPeople = filterByPeriod(people, period);
+
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <TrendingList title="Trending Stories" items={stories} icon={<Flame className="h-5 w-5 text-gtv-red" />} />
-      <TrendingList title="Trending Videos" items={videos} icon={<TrendingUp className="h-5 w-5 text-gtv-cyan" />} />
-      <TrendingList title="Trending Hashtags" items={hashtags} icon={<Hash className="h-5 w-5 text-gtv-purple" />} />
-      <TrendingList title="Trending Searches" items={searches} icon={<TrendingUp className="h-5 w-5 text-gtv-gold" />} />
-      <TrendingList title="Viral Topics" items={topics} icon={<Flame className="h-5 w-5 text-gtv-orange" />} />
-      <TrendingList title="Viral People" items={people} icon={<TrendingUp className="h-5 w-5 text-gtv-purple" />} />
+    <div>
+      {showPeriodFilter && (
+        <div className="mb-6 flex gap-2" role="tablist" aria-label="Trending period">
+          {(Object.keys(PERIOD_LABELS) as TrendingPeriod[]).map((p) => (
+            <button
+              key={p}
+              role="tab"
+              aria-selected={period === p}
+              onClick={() => setPeriod(p)}
+              className={cn(
+                "rounded-full px-4 py-2 text-sm font-semibold transition-colors min-h-[40px]",
+                period === p
+                  ? "bg-gtv-purple text-white"
+                  : "bg-gtv-purple/10 text-gtv-purple hover:bg-gtv-purple/20",
+              )}
+            >
+              {PERIOD_LABELS[p]}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <TrendingList title="Trending Stories" items={filteredStories} icon={<Flame className="h-5 w-5 text-gtv-red" />} />
+        <TrendingList title="Trending Videos" items={filteredVideos} icon={<TrendingUp className="h-5 w-5 text-gtv-cyan" />} />
+        <TrendingList title="Trending Hashtags" items={filteredHashtags} icon={<Hash className="h-5 w-5 text-gtv-purple" />} />
+        <TrendingList title="Trending Searches" items={filteredSearches} icon={<TrendingUp className="h-5 w-5 text-gtv-gold" />} />
+        <TrendingList title="Trending Topics" items={filteredTopics} icon={<Flame className="h-5 w-5 text-gtv-orange" />} />
+        <TrendingList title="Popular People" items={filteredPeople} icon={<TrendingUp className="h-5 w-5 text-gtv-purple" />} />
+      </div>
     </div>
   );
 }

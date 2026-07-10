@@ -25,6 +25,7 @@ export default function TrendingPage() {
         searches={TRENDING_SEARCHES}
         topics={VIRAL_TOPICS}
         people={VIRAL_PEOPLE}
+        showPeriodFilter
       />
     </MediaPageShell>
   );

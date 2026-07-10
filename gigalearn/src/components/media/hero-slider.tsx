@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Bot } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { NewsArticle } from "@/types/media";
 import { formatDistanceToNow } from "date-fns";
@@ -53,7 +53,9 @@ export function HeroSlider({ articles }: { articles: NewsArticle[] }) {
           <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-10">
             <div className="max-w-2xl">
               <div className="flex flex-wrap gap-2">
-                <span className="rounded-full bg-gtv-red px-3 py-1 text-xs font-bold text-white">Breaking</span>
+                {article.isBreaking && (
+                  <span className="rounded-full bg-gtv-red px-3 py-1 text-xs font-bold text-white">Breaking</span>
+                )}
                 <span className="rounded-full bg-gtv-cyan/20 px-3 py-1 text-xs font-bold text-gtv-cyan capitalize">
                   {article.category}
                 </span>
@@ -65,15 +67,10 @@ export function HeroSlider({ articles }: { articles: NewsArticle[] }) {
               <p className="mt-2 text-xs text-white/60">
                 {formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true })} · {article.author}
               </p>
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-6">
                 <Link href={`/news/${article.slug}`}>
                   <Button size="lg" className="bg-white text-gtv-deep hover:bg-white/90">
-                    Read Full Story
-                  </Button>
-                </Link>
-                <Link href={`/news/${article.slug}#ai-summary`}>
-                  <Button variant="outline" size="lg" className="border-white/40 text-white hover:bg-white/10">
-                    <Bot className="h-4 w-4" /> AI Summary
+                    Read More
                   </Button>
                 </Link>
               </div>

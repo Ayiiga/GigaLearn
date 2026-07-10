@@ -3,7 +3,7 @@
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import Image from "next/image";
-import { Bot, Bookmark, Clock } from "lucide-react";
+import { Bookmark, Clock } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { cn } from "@/lib/utils";
 import type { NewsArticle } from "@/types/media";
@@ -11,10 +11,10 @@ import type { NewsArticle } from "@/types/media";
 export function NewsCard({
   article,
   featured = false,
-  showAiButton = true,
 }: {
   article: NewsArticle;
   featured?: boolean;
+  /** @deprecated AI summaries coming soon — kept for API compatibility */
   showAiButton?: boolean;
 }) {
   return (
@@ -52,11 +52,6 @@ export function NewsCard({
             </span>
             <span>{article.readMinutes} min read</span>
           </div>
-          {showAiButton && (
-            <span className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-gtv-purple/10 px-3 py-1.5 text-xs font-semibold text-gtv-purple">
-              <Bot className="h-3.5 w-3.5" /> AI Summary
-            </span>
-          )}
         </div>
       </Link>
     </GlassCard>

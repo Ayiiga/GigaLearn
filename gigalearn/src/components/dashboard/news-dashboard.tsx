@@ -12,10 +12,11 @@ import { TvStationCard } from "@/components/media/tv-station-card";
 import { FixtureCard } from "@/components/media/sports-panel";
 import { GlobalSearchBar } from "@/components/media/search-bar";
 import { AdPlaceholder } from "@/components/media/ad-placeholder";
+import { AiComingSoon } from "@/components/media/ai-coming-soon";
 import { GlassCard } from "@/components/ui/glass-card";
 import {
   NEWS_ARTICLES,
-  getBreakingNews,
+  getHeroArticles,
   getAfricaNews,
   TRENDING_STORIES,
   TRENDING_VIDEOS,
@@ -31,8 +32,7 @@ import {
 const fadeUp = { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 } };
 
 export function NewsDashboard() {
-  const breaking = getBreakingNews();
-  const heroArticles = breaking.length > 0 ? breaking : NEWS_ARTICLES.slice(0, 5);
+  const heroArticles = getHeroArticles();
   const liveFixtures = SPORTS_FIXTURES.filter((f) => f.status === "live");
   const africaNews = getAfricaNews();
 
@@ -56,6 +56,7 @@ export function NewsDashboard() {
           searches={TRENDING_SEARCHES}
           topics={VIRAL_TOPICS}
           people={VIRAL_PEOPLE}
+          showPeriodFilter
         />
       </motion.section>
 
@@ -125,6 +126,10 @@ export function NewsDashboard() {
       </div>
 
       <AdPlaceholder slot="banner" className="mt-8" />
+
+      <section className="mt-10">
+        <AiComingSoon />
+      </section>
     </div>
   );
 }

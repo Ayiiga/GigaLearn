@@ -9,7 +9,8 @@ const FAQ = [
   { q: `How do I install ${BRAND.name}?`, a: "Open GigaTrend TV in Chrome or Edge, tap the install icon in the address bar, or use 'Add to Home Screen' on mobile for the full PWA experience." },
   { q: "Does it work offline?", a: "Yes! Saved articles and cached content are available offline. Breaking news syncs when you're back online." },
   { q: "Where do Live TV streams come from?", a: "We only link to official broadcaster sources. Tap 'Watch Official' to open the authorized stream on the broadcaster's website." },
-  { q: "What is Ask GigaTrend AI?", a: "Our AI assistant provides news summaries, sports updates, and multi-language responses. Try voice input on the AI assistant page." },
+  { q: "How do I search for content?", a: "Use the Search page or the search bar on the homepage. You can find news, videos, TV stations, radio, teams, players, countries, and trending topics with instant suggestions and search history." },
+  { q: "What is GigaTrend AI?", a: "GigaTrend AI is coming soon. It will offer intelligent news summaries, sports insights, multilingual explanations, and voice assistance. Tap 'Notify Me' on the AI page to get notified at launch." },
   { q: "How do I save articles?", a: "Open any article and tap Save, or sign in to sync bookmarks across devices via your profile." },
 ];
 

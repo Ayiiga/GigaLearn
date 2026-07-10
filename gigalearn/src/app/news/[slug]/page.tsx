@@ -2,10 +2,10 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { formatDistanceToNow } from "date-fns";
-import { Bot, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import { getArticleBySlug } from "@/content/media";
-import { GlassCard } from "@/components/ui/glass-card";
 import { ArticleActions } from "@/components/media/article-actions";
+import { AiComingSoon } from "@/components/media/ai-coming-soon";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -57,24 +57,6 @@ export default async function ArticlePage({ params }: Props) {
 
       <p className="mt-6 text-lg leading-relaxed text-giga-muted">{article.summary}</p>
 
-      <section id="ai-summary" className="mt-10 space-y-4">
-        <h2 className="font-display text-2xl font-bold flex items-center gap-2">
-          <Bot className="h-6 w-6 text-gtv-purple" /> AI News Summaries
-        </h2>
-        <GlassCard>
-          <h3 className="font-semibold text-gtv-purple">30-Second Summary</h3>
-          <p className="mt-2 text-sm">{article.aiSummary30s}</p>
-        </GlassCard>
-        <GlassCard>
-          <h3 className="font-semibold text-gtv-purple">2-Minute Summary</h3>
-          <p className="mt-2 text-sm leading-relaxed">{article.aiSummary2m}</p>
-        </GlassCard>
-        <GlassCard>
-          <h3 className="font-semibold text-gtv-purple">Full Summary</h3>
-          <p className="mt-2 text-sm leading-relaxed">{article.aiSummaryFull}</p>
-        </GlassCard>
-      </section>
-
       <section className="mt-10">
         <h2 className="font-display text-xl font-bold mb-4">Key Points</h2>
         <ul className="space-y-2">
@@ -99,8 +81,8 @@ export default async function ArticlePage({ params }: Props) {
         </div>
       </section>
 
-      <div className="mt-10 rounded-2xl border border-dashed border-gtv-purple/30 bg-gtv-purple/5 p-6 text-center text-sm text-giga-muted">
-        Audio narration and multi-language translation available with GigaTrend AI Premium.
+      <div className="mt-10">
+        <AiComingSoon compact />
       </div>
     </article>
   );

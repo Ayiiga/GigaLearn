@@ -12,7 +12,10 @@ const FOOTER_LINKS = {
   Coverage: [
     { href: "/africa", label: "Africa" },
     { href: "/world", label: "World" },
+    { href: "/politics", label: "Politics" },
     { href: "/sports", label: "Sports" },
+    { href: "/health", label: "Health" },
+    { href: "/science", label: "Science" },
     { href: "/business", label: "Business" },
     { href: "/technology", label: "Technology" },
   ],
