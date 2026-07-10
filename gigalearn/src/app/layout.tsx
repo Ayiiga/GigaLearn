@@ -6,6 +6,7 @@ import { AuthOfflineBridge } from "@/components/providers/auth-offline-bridge";
 import { MonitoringProvider } from "@/components/providers/monitoring-provider";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { GlobalUi } from "@/components/layout/global-ui";
 import { BRAND } from "@/lib/brand";
 import "./globals.css";
 
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
+            <GlobalUi />
             <Analytics />
           </OnlineStatusProvider>
         </ThemeProvider>

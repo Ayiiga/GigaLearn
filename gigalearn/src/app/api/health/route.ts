@@ -27,7 +27,7 @@ export async function GET() {
   return NextResponse.json(
     {
       status,
-      service: "gigalearn",
+      service: "gigatrend-tv",
       timestamp: new Date().toISOString(),
       latencyMs: Date.now() - started,
       supabase: {

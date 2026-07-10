@@ -29,25 +29,34 @@ export async function subscribeToPushNotifications(): Promise<boolean> {
   }
 }
 
-export function showLearningReminder(title: string, body: string) {
+export function showNewsNotification(title: string, body: string) {
   if (typeof window === "undefined" || Notification.permission !== "granted") return;
   try {
-    new Notification(title, { body, icon: "/icon.png", tag: "gigalearn-reminder" });
+    new Notification(title, { body, icon: "/icons/icon-192.png", tag: "gigatrend-notification" });
   } catch {
     // Notifications blocked
   }
 }
 
-export function scheduleDailyReminder(hour = 16) {
+/** @deprecated Use showNewsNotification */
+export const showLearningReminder = showNewsNotification;
+
+export function scheduleBreakingNewsReminder(hour = 8) {
   if (typeof window === "undefined") return;
-  const key = "gigalearn-daily-reminder";
+  const key = "gigatrend-daily-briefing";
   const last = localStorage.getItem(key);
   const today = new Date().toISOString().split("T")[0];
   if (last === today) return;
 
   const now = new Date();
   if (now.getHours() >= hour) {
-    showLearningReminder("Time to learn! 📚", "Keep your streak going with a quick GigaLearn session.");
+    showNewsNotification(
+      "Your morning briefing is ready 📰",
+      "Catch up on breaking news, sports, and trending stories on GigaTrend TV.",
+    );
     localStorage.setItem(key, today);
   }
 }
+
+/** @deprecated Use scheduleBreakingNewsReminder */
+export const scheduleDailyReminder = scheduleBreakingNewsReminder;

@@ -10,7 +10,8 @@ import { TrendingPanel } from "@/components/media/trending-panel";
 import { VideoCard } from "@/components/media/video-card";
 import { TvStationCard } from "@/components/media/tv-station-card";
 import { FixtureCard } from "@/components/media/sports-panel";
-import { GlobalSearchBar, FloatingAiAssistant } from "@/components/media/search-bar";
+import { GlobalSearchBar } from "@/components/media/search-bar";
+import { AdPlaceholder } from "@/components/media/ad-placeholder";
 import { GlassCard } from "@/components/ui/glass-card";
 import {
   NEWS_ARTICLES,
@@ -113,6 +114,8 @@ export function NewsDashboard() {
             </div>
           </section>
 
+          <AdPlaceholder slot="sidebar" />
+
           <GlassCard className="border-dashed border-gtv-gold/40 bg-gtv-gold/5">
             <p className="text-xs font-semibold uppercase text-gtv-gold">Premium</p>
             <p className="mt-1 font-display font-bold">Go Ad-Free</p>
@@ -121,7 +124,7 @@ export function NewsDashboard() {
         </motion.aside>
       </div>
 
-      <FloatingAiAssistant />
+      <AdPlaceholder slot="banner" className="mt-8" />
     </div>
   );
 }

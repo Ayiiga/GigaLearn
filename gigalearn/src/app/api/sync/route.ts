@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   return NextResponse.json({
     status: "ok",
-    service: "GigaLearn Sync API",
+    service: "GigaTrend TV Sync API",
     timestamp: new Date().toISOString(),
   });
 }
@@ -11,6 +11,6 @@ export async function GET() {
 export async function POST() {
   return NextResponse.json({
     synced: true,
-    message: "Progress sync endpoint — client uses Supabase + IndexedDB offline queue",
+    message: "Content sync endpoint — client uses Supabase + IndexedDB offline queue",
   });
 }

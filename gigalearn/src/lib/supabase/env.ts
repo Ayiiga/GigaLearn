@@ -99,7 +99,7 @@ export function validateSupabaseConfig(): SupabaseConfigStatus {
       const payload = JSON.parse(atob(key.split(".")[1] ?? "")) as { ref?: string };
       if (payload.ref && payload.ref !== SUPABASE_PROJECT_REF) {
         issues.push(
-          `Supabase anon key belongs to project "${payload.ref}" but GigaLearn expects "${SUPABASE_PROJECT_REF}".`,
+          `Supabase anon key belongs to project "${payload.ref}" but GigaTrend TV expects "${SUPABASE_PROJECT_REF}".`,
         );
       }
     } catch {
