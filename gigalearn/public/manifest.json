@@ -1,15 +1,15 @@
 {
-  "name": "GigaLearn",
-  "short_name": "GigaLearn",
-  "description": "Learn, Read, Speak, and Grow Smarter Every Day. Featuring GigaPhonics.",
+  "name": "GigaTrend TV — Africa's Smart News & Live TV",
+  "short_name": "GigaTrend TV",
+  "description": "Africa's Smart News & Live TV Platform. Breaking news, sports, live TV, radio, and AI-powered summaries.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fafbff",
-  "theme_color": "#6c5ce7",
+  "background_color": "#0a1628",
+  "theme_color": "#6366f1",
   "orientation": "any",
   "scope": "/",
   "lang": "en",
-  "categories": ["education", "kids"],
+  "categories": ["news", "entertainment", "sports"],
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -24,22 +24,26 @@
       "purpose": "any maskable"
     }
   ],
-  "screenshots": [],
   "shortcuts": [
     {
-      "name": "Start Learning",
-      "url": "/learn",
-      "description": "Continue your learning journey"
+      "name": "Breaking News",
+      "url": "/breaking",
+      "description": "Latest breaking stories"
     },
     {
-      "name": "GigaPhonics",
-      "url": "/gigaphonics",
-      "description": "Practice phonics sounds"
+      "name": "Live TV",
+      "url": "/live-tv",
+      "description": "Watch official live streams"
     },
     {
-      "name": "AI Tutor",
-      "url": "/ai-tutor",
-      "description": "Get help from AI tutor"
+      "name": "Sports",
+      "url": "/sports",
+      "description": "Scores, fixtures, and analysis"
+    },
+    {
+      "name": "Ask AI",
+      "url": "/ai-assistant",
+      "description": "GigaTrend AI news assistant"
     }
   ]
 }

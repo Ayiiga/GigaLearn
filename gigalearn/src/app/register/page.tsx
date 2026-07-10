@@ -52,7 +52,7 @@ export default function RegisterPage() {
       <div className="flex min-h-[60vh] items-center justify-center px-4">
         <Card className="p-8 text-center max-w-md">
           <span className="text-5xl">🎉</span>
-          <h2 className="font-display mt-4 text-2xl font-bold">Welcome to GigaLearn!</h2>
+          <h2 className="font-display mt-4 text-2xl font-bold">Welcome to GigaTrend TV!</h2>
           <p className="mt-2 text-giga-muted">Your account is ready. Redirecting...</p>
         </Card>
       </div>
@@ -64,7 +64,7 @@ export default function RegisterPage() {
       <Card className="w-full max-w-md p-8">
         <div className="text-center mb-8">
           <span className="text-4xl">🌟</span>
-          <h1 className="font-display mt-4 text-2xl font-bold">Join GigaLearn</h1>
+          <h1 className="font-display mt-4 text-2xl font-bold">Join GigaTrend TV</h1>
           <p className="text-giga-muted mt-2">Create your free account</p>
         </div>
 

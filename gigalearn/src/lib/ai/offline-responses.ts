@@ -32,6 +32,8 @@ export function getOfflineAIResponse(request: AIFeatureRequest): string {
       "📅 Spread practice across the week: phonics, math, reading, and review sessions.",
     revision:
       "🔄 Review vocabulary, try 3 quiz questions, read aloud, and celebrate what you remember!",
+    news_assistant:
+      "📰 Quick briefing: Ghana parliament advances economic reforms, Nigeria tech funding surges, World Cup 2026 prep intensifies. Ask about a specific country or topic!",
   };
 
   return responses[request.feature];

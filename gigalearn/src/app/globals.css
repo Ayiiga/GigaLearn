@@ -1,29 +1,36 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafbff;
-  --foreground: #1a1a2e;
-  --giga-purple: #6c5ce7;
-  --giga-purple-light: #a29bfe;
-  --giga-blue: #0984e3;
-  --giga-orange: #fd9644;
-  --giga-yellow: #feca57;
-  --giga-green: #26de81;
-  --giga-teal: #00cec9;
-  --giga-pink: #fd79a8;
-  --giga-red: #ff6b6b;
-  --giga-indigo: #5f27cd;
+  --background: #f8fafc;
+  --foreground: #0a1628;
+  --giga-purple: #6366f1;
+  --giga-purple-light: #818cf8;
+  --giga-blue: #1e40af;
+  --giga-orange: #f59e0b;
+  --giga-yellow: #fbbf24;
+  --giga-green: #10b981;
+  --giga-teal: #06b6d4;
+  --giga-pink: #ec4899;
+  --giga-red: #ef4444;
+  --giga-indigo: #4f46e5;
   --giga-surface: #ffffff;
-  --giga-muted: #636e72;
-  --giga-border: #e8ecf4;
+  --giga-muted: #64748b;
+  --giga-border: #e2e8f0;
+  --gtv-deep: #0a1628;
+  --gtv-purple: #6366f1;
+  --gtv-cyan: #06b6d4;
+  --gtv-gold: #f59e0b;
+  --gtv-green: #10b981;
+  --gtv-red: #ef4444;
+  --gtv-orange: #f97316;
 }
 
 .dark {
-  --background: #0f0f1a;
-  --foreground: #f5f6fa;
-  --giga-surface: #1a1a2e;
-  --giga-muted: #a4b0be;
-  --giga-border: #2d3436;
+  --background: #0a1628;
+  --foreground: #f1f5f9;
+  --giga-surface: #111827;
+  --giga-muted: #94a3b8;
+  --giga-border: #1e293b;
 }
 
 @theme inline {
@@ -42,10 +49,17 @@
   --color-giga-surface: var(--giga-surface);
   --color-giga-muted: var(--giga-muted);
   --color-giga-border: var(--giga-border);
-  --color-giga-border-dark: #2d3436;
+  --color-giga-border-dark: #1e293b;
   --color-giga-text: var(--foreground);
-  --font-sans: var(--font-nunito);
-  --font-display: var(--font-fredoka);
+  --color-gtv-deep: var(--gtv-deep);
+  --color-gtv-purple: var(--gtv-purple);
+  --color-gtv-cyan: var(--gtv-cyan);
+  --color-gtv-gold: var(--gtv-gold);
+  --color-gtv-green: var(--gtv-green);
+  --color-gtv-red: var(--gtv-red);
+  --color-gtv-orange: var(--gtv-orange);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-outfit);
 }
 
 * {
@@ -91,7 +105,7 @@ html {
 
 /* Gradient text */
 .text-gradient {
-  background: linear-gradient(135deg, var(--giga-purple), var(--giga-blue));
+  background: linear-gradient(135deg, var(--gtv-purple), var(--gtv-cyan));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

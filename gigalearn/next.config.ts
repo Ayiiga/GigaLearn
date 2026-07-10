@@ -9,6 +9,26 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   compress: true,
   poweredByHeader: false,
+  async redirects() {
+    return [
+      { source: "/learn", destination: "/", permanent: false },
+      { source: "/learn/:path*", destination: "/", permanent: false },
+      { source: "/gigaphonics", destination: "/breaking", permanent: false },
+      { source: "/gigamath", destination: "/sports", permanent: false },
+      { source: "/ai-tutor", destination: "/ai-assistant", permanent: false },
+      { source: "/quests", destination: "/trending", permanent: false },
+      { source: "/progress", destination: "/profile", permanent: false },
+      { source: "/achievements", destination: "/profile", permanent: false },
+      { source: "/games", destination: "/entertainment", permanent: false },
+      { source: "/stories", destination: "/videos", permanent: false },
+      { source: "/vocabulary", destination: "/", permanent: false },
+      { source: "/grammar", destination: "/", permanent: false },
+      { source: "/parents", destination: "/about", permanent: false },
+      { source: "/teachers", destination: "/about", permanent: false },
+      { source: "/ecosystems/:path*", destination: "/", permanent: false },
+      { source: "/dashboard/:path*", destination: "/profile", permanent: false },
+    ];
+  },
   ...(isGithubPages
     ? {
         output: "export",

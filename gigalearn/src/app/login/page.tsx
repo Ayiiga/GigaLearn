@@ -50,7 +50,7 @@ function LoginForm() {
     <Card className="w-full max-w-md p-8">
       <div className="text-center mb-8">
         <span className="text-4xl">🎓</span>
-        <h1 className="font-display mt-4 text-2xl font-bold">Welcome to GigaLearn</h1>
+        <h1 className="font-display mt-4 text-2xl font-bold">Welcome to GigaTrend TV</h1>
         <p className="text-giga-muted mt-2">Sign in to continue learning</p>
       </div>
 

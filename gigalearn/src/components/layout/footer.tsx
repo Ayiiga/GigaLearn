@@ -1,55 +1,74 @@
 import Link from "next/link";
+import { BRAND } from "@/lib/brand";
+
+const FOOTER_LINKS = {
+  Platform: [
+    { href: "/breaking", label: "Breaking News" },
+    { href: "/live-tv", label: "Live TV" },
+    { href: "/live-radio", label: "Live Radio" },
+    { href: "/videos", label: "Videos" },
+    { href: "/trending", label: "Trending" },
+  ],
+  Coverage: [
+    { href: "/africa", label: "Africa" },
+    { href: "/world", label: "World" },
+    { href: "/sports", label: "Sports" },
+    { href: "/business", label: "Business" },
+    { href: "/technology", label: "Technology" },
+  ],
+  Company: [
+    { href: "/about", label: "About" },
+    { href: "/advertise", label: "Advertise" },
+    { href: "/careers", label: "Careers" },
+    { href: "/contact", label: "Contact" },
+    { href: "/developers", label: "Developers" },
+  ],
+  Legal: [
+    { href: "/privacy", label: "Privacy" },
+    { href: "/terms", label: "Terms" },
+    { href: "/api-docs", label: "API" },
+    { href: "/help", label: "Help" },
+    { href: "/settings", label: "Settings" },
+  ],
+};
 
 export function Footer() {
   return (
-    <footer className="border-t border-giga-border bg-white dark:bg-giga-surface dark:border-giga-border-dark">
+    <footer className="border-t border-giga-border bg-gtv-deep text-white">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-        <div className="grid gap-8 md:grid-cols-4">
-          <div>
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-2xl">🎓</span>
-              <span className="font-display text-xl font-bold text-gradient">GigaLearn</span>
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-gtv-purple to-gtv-cyan text-sm font-bold">
+                GT
+              </span>
+              <span className="font-display text-xl font-bold">{BRAND.name}</span>
             </div>
-            <p className="text-sm text-giga-muted">
-              Learn, Read, Speak, and Grow Smarter Every Day.
-            </p>
-            <p className="mt-2 text-xs text-giga-muted">
-              GigaPhonics — our flagship phonics module
+            <p className="text-sm text-white/70">{BRAND.tagline}</p>
+            <p className="mt-3 text-xs text-white/50">
+              Part of the Giga ecosystem. News, sports, and live media across Africa and the world.
             </p>
           </div>
 
-          <div>
-            <h4 className="font-bold mb-3">Learn</h4>
-            <ul className="space-y-2 text-sm text-giga-muted">
-              <li><Link href="/learn" className="hover:text-giga-purple">Learning Paths</Link></li>
-              <li><Link href="/gigaphonics" className="hover:text-giga-purple">GigaPhonics</Link></li>
-              <li><Link href="/stories" className="hover:text-giga-purple">Stories</Link></li>
-              <li><Link href="/games" className="hover:text-giga-purple">Games</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-bold mb-3">For Everyone</h4>
-            <ul className="space-y-2 text-sm text-giga-muted">
-              <li><Link href="/teachers" className="hover:text-giga-purple">Teachers</Link></li>
-              <li><Link href="/parents" className="hover:text-giga-purple">Parents</Link></li>
-              <li><Link href="/ai-tutor" className="hover:text-giga-purple">AI Tutor</Link></li>
-              <li><Link href="/help" className="hover:text-giga-purple">Help Center</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-bold mb-3">Account</h4>
-            <ul className="space-y-2 text-sm text-giga-muted">
-              <li><Link href="/login" className="hover:text-giga-purple">Sign In</Link></li>
-              <li><Link href="/register" className="hover:text-giga-purple">Create Account</Link></li>
-              <li><Link href="/settings" className="hover:text-giga-purple">Settings</Link></li>
-            </ul>
-          </div>
+          {Object.entries(FOOTER_LINKS).map(([title, links]) => (
+            <div key={title}>
+              <h4 className="font-bold mb-3 text-gtv-gold">{title}</h4>
+              <ul className="space-y-2 text-sm text-white/70">
+                {links.map(({ href, label }) => (
+                  <li key={href}>
+                    <Link href={href} className="hover:text-gtv-cyan transition-colors">
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        <div className="mt-8 border-t border-giga-border pt-8 text-center text-sm text-giga-muted dark:border-giga-border-dark">
-          <p>© {new Date().getFullYear()} GigaLearn. Safe, fun learning for children worldwide. 🌍</p>
+        <div className="mt-10 border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/50">
+          <p>© {new Date().getFullYear()} {BRAND.name}. All rights reserved.</p>
+          <p className="text-xs">Monetization placeholders: AdSense · Premium · Sponsored · API Access</p>
         </div>
       </div>
     </footer>

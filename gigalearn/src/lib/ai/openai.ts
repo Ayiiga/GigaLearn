@@ -6,6 +6,10 @@ Use simple language, positive reinforcement, and age-appropriate examples.
 Be culturally inclusive for African and global learners. Never use inappropriate content.
 Keep responses concise and engaging for children.`;
 
+const NEWS_SYSTEM_PROMPT = `You are GigaTrend AI, a professional news assistant for Africa's Smart News & Live TV Platform.
+Provide concise, factual summaries about news, sports, politics, and trending topics across Africa and the world.
+Support multi-language responses when asked. Be neutral, accurate, and cite general knowledge without fabricating specific statistics.`;
+
 const FEATURE_PROMPTS: Record<AIFeatureRequest["feature"], string> = {
   reading_coach: "Help the child read and understand the following text. Provide gentle guidance:",
   pronunciation: "Evaluate this pronunciation attempt and give encouraging feedback with tips:",
@@ -22,6 +26,7 @@ const FEATURE_PROMPTS: Record<AIFeatureRequest["feature"], string> = {
   math_tutor: "Provide step-by-step mathematics guidance with encouragement for:",
   study_plan: "Create a personalized study plan based on this learner profile:",
   revision: "Create an adaptive revision session with practice questions for:",
+  news_assistant: "Answer this news-related question with a clear, concise summary:",
 };
 
 export async function runAIFeature(request: AIFeatureRequest): Promise<string> {
@@ -33,10 +38,12 @@ export async function runAIFeature(request: AIFeatureRequest): Promise<string> {
 
   const openai = new OpenAI({ apiKey });
 
+  const systemContent = request.feature === "news_assistant" ? NEWS_SYSTEM_PROMPT : SYSTEM_PROMPT;
+
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
-      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: systemContent },
       {
         role: "user",
         content: `${FEATURE_PROMPTS[request.feature]}\n\n${request.input}`,
@@ -81,6 +88,8 @@ function getOfflineResponse(request: AIFeatureRequest): string {
       "📅 Study Plan:\nMon: Phonics (15 min)\nTue: Math practice (15 min)\nWed: Reading story (20 min)\nThu: Review quiz (10 min)\nFri: Free exploration!",
     revision:
       "🔄 Revision Session:\n1. Review key vocabulary\n2. Practice 3 quiz questions\n3. Read aloud for 2 minutes\n4. Celebrate what you remember!",
+    news_assistant:
+      "📰 Here's a quick news briefing: Check our Breaking News and Sports sections for live updates. Ghana parliament is advancing economic reforms, Nigeria's tech sector saw strong Q2 funding, and World Cup 2026 preparations are underway for African teams. Ask me to focus on a specific country or topic!",
   };
 
   return responses[request.feature];

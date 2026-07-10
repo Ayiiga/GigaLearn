@@ -1,7 +1,7 @@
 "use client";
 
-import { ModernDashboard } from "@/components/dashboard/modern-dashboard";
+import { NewsDashboard } from "@/components/dashboard/news-dashboard";
 
 export default function HomePage() {
-  return <ModernDashboard />;
+  return <NewsDashboard />;
 }
