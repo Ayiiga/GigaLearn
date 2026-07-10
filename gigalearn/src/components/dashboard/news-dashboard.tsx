@@ -9,6 +9,7 @@ import { TrendingPanel } from "@/components/media/trending-panel";
 import { VideoCard } from "@/components/media/video-card";
 import { TvStationCard } from "@/components/media/tv-station-card";
 import { FixtureCard } from "@/components/media/sports-panel";
+import { LiveMatchTracker } from "@/components/media/live-match-tracker";
 import { GlobalSearchBar } from "@/components/media/search-bar";
 import { AdPlaceholder } from "@/components/media/ad-placeholder";
 import { AiComingSoon } from "@/components/media/ai-coming-soon";
@@ -41,6 +42,10 @@ export function NewsDashboard() {
       </motion.div>
 
       <motion.section {...fadeUp} transition={{ delay: 0.1 }} className="mt-10">
+        <LiveMatchTracker compact />
+      </motion.section>
+
+      <motion.section {...fadeUp} transition={{ delay: 0.11 }} className="mt-10">
         <SectionHeader title="Trending Now" subtitle="Real-time stories, videos, and topics" href="/trending" />
         <TrendingPanel
           stories={TRENDING_STORIES}

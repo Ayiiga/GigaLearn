@@ -5,7 +5,7 @@ import { ThemeProvider, OnlineStatusProvider } from "@/components/providers/app-
 import { AuthOfflineBridge } from "@/components/providers/auth-offline-bridge";
 import { MonitoringProvider } from "@/components/providers/monitoring-provider";
 import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
+import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { BRAND } from "@/lib/brand";
 import "./globals.css";
 
@@ -98,7 +98,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <MonitoringProvider />
             <Header />
             <main className="flex-1">{children}</main>
-            <Footer />
+            <ConditionalFooter />
             {process.env.NEXT_PUBLIC_VERCEL_ENV ? <Analytics /> : null}
           </OnlineStatusProvider>
         </ThemeProvider>

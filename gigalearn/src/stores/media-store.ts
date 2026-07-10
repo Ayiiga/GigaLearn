@@ -10,6 +10,7 @@ const defaultPreferences: UserMediaPreferences = {
   followedTopics: [],
   followedJournalists: [],
   searchHistory: [],
+  recentChannels: [],
   language: "en",
   notifications: {
     breakingNews: true,
@@ -32,6 +33,7 @@ interface MediaState {
   updateNotifications: (partial: Partial<UserMediaPreferences["notifications"]>) => void;
   addSearchHistory: (query: string) => void;
   clearSearchHistory: () => void;
+  addRecentChannel: (id: string) => void;
   isArticleSaved: (slug: string) => boolean;
 }
 
@@ -117,6 +119,14 @@ export const useMediaStore = create<MediaState>()(
       clearSearchHistory: () =>
         set((s) => ({
           preferences: { ...s.preferences, searchHistory: [] },
+        })),
+
+      addRecentChannel: (id) =>
+        set((s) => ({
+          preferences: {
+            ...s.preferences,
+            recentChannels: [id, ...(s.preferences.recentChannels ?? []).filter((c) => c !== id)].slice(0, 12),
+          },
         })),
 
       isArticleSaved: (slug) => get().preferences.savedArticles.includes(slug),

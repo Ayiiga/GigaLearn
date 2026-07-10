@@ -51,9 +51,9 @@
       "description": "Search news, sports, TV, and more"
     },
     {
-      "name": "Live TV",
-      "url": "/live-tv",
-      "description": "Watch official live streams"
+      "name": "TV Browser",
+      "url": "/watch",
+      "description": "Watch live TV and movies in-app"
     },
     {
       "name": "Sports",
