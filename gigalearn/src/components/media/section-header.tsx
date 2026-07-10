@@ -15,14 +15,17 @@ export function SectionHeader({
   className?: string;
 }) {
   return (
-    <div className={cn("mb-6 flex items-end justify-between gap-4", className)}>
+    <div className={cn("mb-6 sm:mb-8 flex items-end justify-between gap-4", className)}>
       <div>
-        <h2 className="font-display text-2xl font-bold sm:text-3xl">{title}</h2>
-        {subtitle && <p className="mt-1 text-sm text-giga-muted">{subtitle}</p>}
+        <h2 className="font-display text-[1.65rem] font-extrabold leading-tight sm:text-3xl lg:text-4xl">{title}</h2>
+        {subtitle && <p className="mt-2 text-base text-giga-muted sm:text-lg">{subtitle}</p>}
       </div>
       {href && (
-        <Link href={href} className="flex items-center gap-1 text-sm font-semibold text-gtv-purple hover:underline shrink-0">
-          View all <ChevronRight className="h-4 w-4" />
+        <Link
+          href={href}
+          className="flex items-center gap-1.5 text-base font-bold text-gtv-purple hover:underline shrink-0 min-h-[44px]"
+        >
+          View all <ChevronRight className="h-5 w-5" strokeWidth={2.5} />
         </Link>
       )}
     </div>
@@ -44,10 +47,10 @@ export function MediaPageShell({
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
       {hero ?? (
         <header className="mb-8">
-          <h1 className="font-display text-3xl font-bold sm:text-4xl bg-gradient-to-r from-gtv-deep via-gtv-purple to-gtv-cyan bg-clip-text text-transparent">
+          <h1 className="font-display text-[1.85rem] font-extrabold sm:text-4xl bg-gradient-to-r from-gtv-deep via-gtv-purple to-gtv-cyan bg-clip-text text-transparent">
             {title}
           </h1>
-          {subtitle && <p className="mt-2 text-giga-muted max-w-2xl">{subtitle}</p>}
+          {subtitle && <p className="mt-3 text-base text-giga-muted max-w-2xl sm:text-lg">{subtitle}</p>}
         </header>
       )}
       {children}

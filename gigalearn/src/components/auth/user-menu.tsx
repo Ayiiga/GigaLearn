@@ -26,9 +26,9 @@ export function UserMenu() {
   if (!isAuthenticated || !user) {
     return (
       <Link href="/login" aria-label="Sign in">
-        <Button variant="ghost" size="sm" className="gap-1.5 min-h-[44px]">
-          <LogIn className="h-4 w-4" aria-hidden />
-          <span className="hidden sm:inline">Sign In</span>
+        <Button variant="ghost" size="sm" className="gap-2 min-h-[48px] text-base font-semibold px-3">
+          <LogIn className="h-5 w-5" strokeWidth={2.25} aria-hidden />
+          Sign In
         </Button>
       </Link>
     );

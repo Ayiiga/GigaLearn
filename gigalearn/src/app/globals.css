@@ -69,11 +69,21 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-nunito), system-ui, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (min-width: 640px) {
+  body {
+    font-size: 17px;
+  }
 }
 
 .font-display {
-  font-family: var(--font-fredoka), system-ui, sans-serif;
+  font-family: var(--font-outfit), system-ui, sans-serif;
+  letter-spacing: -0.02em;
 }
 
 /* Child-friendly focus styles (WCAG) */

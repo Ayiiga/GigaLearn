@@ -70,7 +70,7 @@ export function GlobalSearchBar({ className, autoFocus, onSubmit }: GlobalSearch
     <div ref={wrapperRef} className={cn("relative", className)}>
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-giga-muted" aria-hidden />
+          <Search className="absolute left-4 top-1/2 h-6 w-6 -translate-y-1/2 text-giga-muted" aria-hidden strokeWidth={2.25} />
           <input
             ref={inputRef}
             type="search"
@@ -78,8 +78,8 @@ export function GlobalSearchBar({ className, autoFocus, onSubmit }: GlobalSearch
             onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
             onFocus={() => setOpen(true)}
             onKeyDown={(e) => e.key === "Enter" && query.trim() && submit(query)}
-            placeholder="Search news, videos, TV, radio, teams, players, countries..."
-            className="w-full rounded-2xl border border-giga-border bg-white/80 py-3 pl-12 pr-4 text-sm font-medium backdrop-blur-sm focus:border-gtv-purple focus:outline-none focus:ring-2 focus:ring-gtv-purple/20 dark:bg-giga-surface/80 min-h-[48px]"
+            placeholder="Search news, videos, TV, sports..."
+            className="w-full rounded-2xl border-2 border-giga-border bg-white/90 py-4 pl-14 pr-4 text-base font-medium backdrop-blur-sm focus:border-gtv-purple focus:outline-none focus:ring-2 focus:ring-gtv-purple/20 dark:bg-giga-surface/90 min-h-[56px] shadow-sm"
             aria-label="Global search"
             {...(open ? { "aria-controls": "search-results" } : {})}
             autoComplete="off"
@@ -88,12 +88,12 @@ export function GlobalSearchBar({ className, autoFocus, onSubmit }: GlobalSearch
         <button
           onClick={handleVoice}
           className={cn(
-            "touch-target flex items-center justify-center rounded-2xl border px-4 min-h-[48px]",
-            listening ? "border-gtv-red bg-gtv-red/10 text-gtv-red" : "border-giga-border hover:border-gtv-purple",
+            "touch-target flex items-center justify-center rounded-2xl border-2 px-4 min-h-[56px] min-w-[56px]",
+            listening ? "border-gtv-red bg-gtv-red/10 text-gtv-red" : "border-giga-border hover:border-gtv-purple bg-white/90 shadow-sm",
           )}
           aria-label={listening ? "Listening" : "Voice search"}
         >
-          {listening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+          {listening ? <MicOff className="h-6 w-6" strokeWidth={2.25} /> : <Mic className="h-6 w-6" strokeWidth={2.25} />}
         </button>
       </div>
 

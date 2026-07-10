@@ -23,26 +23,28 @@ function filterByPeriod(items: TrendingItem[], period: TrendingPeriod): Trending
 
 function TrendingList({ title, items, icon }: { title: string; items: TrendingItem[]; icon: React.ReactNode }) {
   return (
-    <GlassCard className="h-full">
-      <div className="mb-3 flex items-center gap-2">
-        {icon}
-        <h3 className="font-display font-bold">{title}</h3>
+    <GlassCard className="h-full p-5 sm:p-6">
+      <div className="mb-4 flex items-center gap-3">
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gtv-purple/10">{icon}</span>
+        <h3 className="font-display text-lg font-extrabold sm:text-xl">{title}</h3>
       </div>
-      <ul className="space-y-2">
+      <ul className="space-y-1">
         {items.map((item, i) => (
           <li key={item.id}>
             <Link
               href={`/search?q=${encodeURIComponent(item.label)}`}
-              className="flex items-center gap-3 rounded-xl px-2 py-2 text-sm transition-colors hover:bg-gtv-purple/5"
+              className="flex items-center gap-3 rounded-xl px-3 py-3 text-base transition-colors hover:bg-gtv-purple/5 min-h-[48px]"
             >
-              <span className="w-5 text-center font-bold text-giga-muted">{i + 1}</span>
-              <span className="flex-1 font-medium">{item.label}</span>
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gtv-deep/5 text-sm font-extrabold text-gtv-purple">
+                {i + 1}
+              </span>
+              <span className="flex-1 font-semibold leading-snug">{item.label}</span>
               {item.change === "new" && (
-                <span className="rounded-full bg-gtv-gold/20 px-2 py-0.5 text-[10px] font-bold text-gtv-gold">NEW</span>
+                <span className="rounded-full bg-gtv-gold/20 px-2.5 py-1 text-xs font-bold uppercase text-gtv-gold">NEW</span>
               )}
-              {item.change === "up" && <TrendingUp className="h-3.5 w-3.5 text-gtv-green" aria-label="Trending up" />}
+              {item.change === "up" && <TrendingUp className="h-5 w-5 shrink-0 text-gtv-green" strokeWidth={2.5} aria-label="Trending up" />}
               {item.count && (
-                <span className="text-xs text-giga-muted">{(item.count / 1000).toFixed(1)}k</span>
+                <span className="text-sm font-semibold text-giga-muted">{(item.count / 1000).toFixed(1)}k</span>
               )}
             </Link>
           </li>
@@ -51,6 +53,8 @@ function TrendingList({ title, items, icon }: { title: string; items: TrendingIt
     </GlassCard>
   );
 }
+
+const iconClass = "h-6 w-6";
 
 export function TrendingPanel({
   stories,
@@ -81,7 +85,7 @@ export function TrendingPanel({
   return (
     <div>
       {showPeriodFilter && (
-        <div className="mb-6 flex gap-2" role="tablist" aria-label="Trending period">
+        <div className="mb-6 flex flex-wrap gap-2.5" role="tablist" aria-label="Trending period">
           {(Object.keys(PERIOD_LABELS) as TrendingPeriod[]).map((p) => (
             <button
               key={p}
@@ -89,9 +93,9 @@ export function TrendingPanel({
               aria-selected={period === p}
               onClick={() => setPeriod(p)}
               className={cn(
-                "rounded-full px-4 py-2 text-sm font-semibold transition-colors min-h-[40px]",
+                "rounded-full px-5 py-2.5 text-base font-bold transition-colors min-h-[48px]",
                 period === p
-                  ? "bg-gtv-purple text-white"
+                  ? "bg-gtv-purple text-white shadow-md shadow-gtv-purple/25"
                   : "bg-gtv-purple/10 text-gtv-purple hover:bg-gtv-purple/20",
               )}
             >
@@ -101,13 +105,13 @@ export function TrendingPanel({
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <TrendingList title="Trending Stories" items={filteredStories} icon={<Flame className="h-5 w-5 text-gtv-red" />} />
-        <TrendingList title="Trending Videos" items={filteredVideos} icon={<TrendingUp className="h-5 w-5 text-gtv-cyan" />} />
-        <TrendingList title="Trending Hashtags" items={filteredHashtags} icon={<Hash className="h-5 w-5 text-gtv-purple" />} />
-        <TrendingList title="Trending Searches" items={filteredSearches} icon={<TrendingUp className="h-5 w-5 text-gtv-gold" />} />
-        <TrendingList title="Trending Topics" items={filteredTopics} icon={<Flame className="h-5 w-5 text-gtv-orange" />} />
-        <TrendingList title="Popular People" items={filteredPeople} icon={<TrendingUp className="h-5 w-5 text-gtv-purple" />} />
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <TrendingList title="Trending Stories" items={filteredStories} icon={<Flame className={cn(iconClass, "text-gtv-red")} strokeWidth={2.25} />} />
+        <TrendingList title="Trending Videos" items={filteredVideos} icon={<TrendingUp className={cn(iconClass, "text-gtv-cyan")} strokeWidth={2.25} />} />
+        <TrendingList title="Trending Hashtags" items={filteredHashtags} icon={<Hash className={cn(iconClass, "text-gtv-purple")} strokeWidth={2.25} />} />
+        <TrendingList title="Trending Searches" items={filteredSearches} icon={<TrendingUp className={cn(iconClass, "text-gtv-gold")} strokeWidth={2.25} />} />
+        <TrendingList title="Trending Topics" items={filteredTopics} icon={<Flame className={cn(iconClass, "text-gtv-orange")} strokeWidth={2.25} />} />
+        <TrendingList title="Popular People" items={filteredPeople} icon={<TrendingUp className={cn(iconClass, "text-gtv-purple")} strokeWidth={2.25} />} />
       </div>
     </div>
   );
@@ -115,8 +119,8 @@ export function TrendingPanel({
 
 export function LiveIndicator({ className }: { className?: string }) {
   return (
-    <span className={cn("inline-flex items-center gap-1.5 rounded-full bg-gtv-red/10 px-2.5 py-0.5 text-xs font-bold text-gtv-red", className)}>
-      <span className="h-2 w-2 animate-pulse rounded-full bg-gtv-red" aria-hidden />
+    <span className={cn("inline-flex items-center gap-2 rounded-full bg-gtv-red/10 px-3 py-1 text-sm font-bold uppercase tracking-wide text-gtv-red", className)}>
+      <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-gtv-red" aria-hidden />
       LIVE
     </span>
   );

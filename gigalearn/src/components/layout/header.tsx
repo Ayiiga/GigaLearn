@@ -59,58 +59,58 @@ export function Header() {
   const isOnline = useOnlineStatus();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-giga-border bg-white/90 backdrop-blur-lg dark:bg-giga-surface/90 dark:border-giga-border-dark">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2 shrink-0">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-gtv-purple to-gtv-cyan text-sm font-bold text-white">
+    <header className="sticky top-0 z-50 border-b border-giga-border bg-white/95 backdrop-blur-lg shadow-sm dark:bg-giga-surface/95 dark:border-giga-border-dark">
+      <div className="mx-auto flex h-[4.25rem] sm:h-18 max-w-7xl items-center justify-between px-4 sm:px-6">
+        <Link href="/" className="flex items-center gap-3 shrink-0">
+          <span className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-gtv-purple to-gtv-cyan text-base sm:text-lg font-extrabold text-white shadow-md shadow-gtv-purple/25">
             GT
           </span>
           <div>
-            <span className="font-display text-lg font-bold text-gradient sm:text-xl">{BRAND.name}</span>
-            <p className="hidden text-[10px] text-giga-muted sm:block leading-tight max-w-[180px]">{BRAND.tagline}</p>
+            <span className="font-display text-xl sm:text-2xl font-extrabold text-gradient leading-tight">{BRAND.name}</span>
+            <p className="text-[11px] sm:text-xs text-giga-muted leading-tight max-w-[200px] font-medium">{BRAND.tagline}</p>
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-0.5 xl:flex overflow-x-auto" aria-label="Main navigation">
+        <nav className="hidden items-center gap-1 xl:flex overflow-x-auto" aria-label="Main navigation">
           {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
               className={cn(
-                "flex items-center gap-1 rounded-xl px-2.5 py-2 text-xs font-semibold transition-colors min-h-[40px] whitespace-nowrap",
+                "flex items-center gap-1.5 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors min-h-[44px] whitespace-nowrap",
                 pathname === href || (href !== "/" && pathname.startsWith(href))
                   ? "bg-gtv-purple/10 text-gtv-purple"
                   : "text-giga-muted hover:bg-gtv-purple/5 hover:text-gtv-purple",
               )}
             >
-              <Icon className="h-3.5 w-3.5" />
+              <Icon className="h-4 w-4" strokeWidth={2.25} />
               {label}
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <UserMenu />
 
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="touch-target flex items-center justify-center rounded-xl p-2 text-giga-muted hover:bg-gtv-purple/10"
+            className="touch-target flex items-center justify-center rounded-xl p-2.5 text-giga-muted hover:bg-gtv-purple/10"
             aria-label="Toggle dark mode"
           >
-            {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            {theme === "dark" ? <Sun className="h-6 w-6" strokeWidth={2.25} /> : <Moon className="h-6 w-6" strokeWidth={2.25} />}
           </button>
 
-          <div className="hidden sm:flex items-center gap-1 rounded-full px-2 py-1 text-xs" aria-label={isOnline ? "Online" : "Offline mode"}>
-            {isOnline ? <Wifi className="h-4 w-4 text-gtv-green" /> : <WifiOff className="h-4 w-4 text-gtv-orange" />}
+          <div className="hidden sm:flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-sm" aria-label={isOnline ? "Online" : "Offline mode"}>
+            {isOnline ? <Wifi className="h-5 w-5 text-gtv-green" strokeWidth={2.25} /> : <WifiOff className="h-5 w-5 text-gtv-orange" strokeWidth={2.25} />}
           </div>
 
           <button
-            className="touch-target flex items-center justify-center rounded-xl p-2 xl:hidden"
+            className="touch-target flex items-center justify-center rounded-xl p-2.5 xl:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
           >
-            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {mobileOpen ? <X className="h-7 w-7" strokeWidth={2.25} /> : <Menu className="h-7 w-7" strokeWidth={2.25} />}
           </button>
         </div>
       </div>
@@ -119,21 +119,21 @@ export function Header() {
         <motion.nav
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="border-t border-giga-border bg-white px-4 py-4 xl:hidden dark:bg-giga-surface max-h-[70vh] overflow-y-auto"
+          className="border-t border-giga-border bg-white px-4 py-5 xl:hidden dark:bg-giga-surface max-h-[75vh] overflow-y-auto"
           aria-label="Mobile navigation"
         >
-          <div className="grid grid-cols-2 gap-1">
+          <div className="grid grid-cols-2 gap-2">
             {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
               <Link
                 key={href}
                 href={href}
                 onClick={() => setMobileOpen(false)}
                 className={cn(
-                  "flex items-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold min-h-[48px]",
-                  pathname === href ? "bg-gtv-purple/10 text-gtv-purple" : "text-giga-muted",
+                  "flex items-center gap-3 rounded-2xl px-4 py-3.5 text-base font-semibold min-h-[52px]",
+                  pathname === href ? "bg-gtv-purple/10 text-gtv-purple" : "text-foreground/80",
                 )}
               >
-                <Icon className="h-4 w-4 shrink-0" />
+                <Icon className="h-5 w-5 shrink-0" strokeWidth={2.25} />
                 {label}
               </Link>
             ))}

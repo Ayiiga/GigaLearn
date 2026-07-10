@@ -36,7 +36,7 @@ export function NewsDashboard() {
   return (
     <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
       <motion.div {...fadeUp} className="mb-6">
-        <p className="text-sm font-semibold uppercase tracking-widest text-gtv-deep dark:text-gtv-cyan">{BRAND.tagline}</p>
+        <p className="text-sm font-bold uppercase tracking-[0.2em] text-gtv-deep dark:text-gtv-cyan">{BRAND.tagline}</p>
         <GlobalSearchBar className="mt-4" />
       </motion.div>
 
