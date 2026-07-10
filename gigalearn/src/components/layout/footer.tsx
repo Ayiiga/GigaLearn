@@ -48,14 +48,14 @@ export function Footer() {
               <span className="font-display text-xl font-bold">{BRAND.name}</span>
             </div>
             <p className="text-sm text-white/70">{BRAND.tagline}</p>
-            <p className="mt-3 text-xs text-white/50">
+            <p className="mt-3 text-xs text-white/60">
               Part of the Giga ecosystem. News, sports, and live media across Africa and the world.
             </p>
           </div>
 
           {Object.entries(FOOTER_LINKS).map(([title, links]) => (
             <div key={title}>
-              <h4 className="font-bold mb-3 text-gtv-gold">{title}</h4>
+              <p className="font-bold mb-3 text-gtv-gold">{title}</p>
               <ul className="space-y-2 text-sm text-white/70">
                 {links.map(({ href, label }) => (
                   <li key={href}>
@@ -69,9 +69,9 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-10 border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/50">
+        <div className="mt-10 border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/60">
           <p>© {new Date().getFullYear()} {BRAND.name}. All rights reserved.</p>
-          <p className="text-xs">Monetization placeholders: AdSense · Premium · Sponsored · API Access</p>
+          <p className="text-xs text-white/60">Monetization placeholders: AdSense · Premium · Sponsored · API Access</p>
         </div>
       </div>
     </footer>

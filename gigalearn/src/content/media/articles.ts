@@ -1,7 +1,6 @@
 import type { NewsArticle } from "@/types/media";
 
-const unsplash = (id: string) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1200&q=80`;
+const local = (file: string) => `/images/news/${file}`;
 
 export const NEWS_ARTICLES: NewsArticle[] = [
   {
@@ -11,7 +10,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     summary: "Lawmakers pass key provisions aimed at stabilizing markets and attracting investment ahead of the 2026 fiscal year.",
     category: "politics",
     country: "ghana",
-    imageUrl: unsplash("photo-1529107386315-d8490765596f"),
+    imageUrl: local("politics.jpg"),
     publishedAt: "2026-07-10T14:30:00Z",
     author: "Ama Mensah",
     readMinutes: 4,
@@ -34,7 +33,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     summary: "Fintech and AI ventures lead a $420M investment wave as Lagos strengthens its position as Africa's innovation hub.",
     category: "technology",
     country: "nigeria",
-    imageUrl: unsplash("photo-1551288049-bebda4e38f71"),
+    imageUrl: local("technology.jpg"),
     publishedAt: "2026-07-10T12:00:00Z",
     author: "Chidi Okonkwo",
     readMinutes: 5,
@@ -54,7 +53,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     title: "World Cup 2026: African Teams Draw Tough Groups as Preparations Intensify",
     summary: "Five African nations face challenging paths to the knockout stage with friendlies and training camps underway across the continent.",
     category: "sports",
-    imageUrl: unsplash("photo-1574629810360-7efbbe195018"),
+    imageUrl: local("sports.jpg"),
     publishedAt: "2026-07-10T10:15:00Z",
     author: "Kwame Asante",
     readMinutes: 6,
@@ -76,7 +75,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     summary: "Geothermal and wind projects push Kenya's clean energy share to record levels, drawing interest from neighboring governments.",
     category: "science",
     country: "kenya",
-    imageUrl: unsplash("photo-1509391366360-2e959784a276"),
+    imageUrl: local("science.jpg"),
     publishedAt: "2026-07-10T08:45:00Z",
     author: "Grace Wanjiku",
     readMinutes: 4,
@@ -94,7 +93,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     summary: "Johannesburg equities gain 2.1% as gold and platinum prices rebound, boosting African market sentiment.",
     category: "business",
     country: "south-africa",
-    imageUrl: unsplash("photo-1611974789855-9c9a005a07f0"),
+    imageUrl: local("business.jpg"),
     publishedAt: "2026-07-10T07:30:00Z",
     author: "Thabo Molefe",
     readMinutes: 3,
@@ -111,7 +110,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     title: "AFCON 2027 Host Cities Confirmed Across Three Nations",
     summary: "Kenya, Tanzania, and Uganda finalize venue list for Africa's biggest football tournament.",
     category: "sports",
-    imageUrl: unsplash("photo-1431324155629-1a6deb1dec8d"),
+    imageUrl: local("sports.jpg"),
     publishedAt: "2026-07-09T18:00:00Z",
     author: "David Kariuki",
     readMinutes: 4,
@@ -128,7 +127,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     title: "Global AI Regulation Summit Opens with Africa Representation",
     summary: "Delegates from 40 nations discuss ethical AI frameworks, with African voices pushing for inclusive standards.",
     category: "technology",
-    imageUrl: unsplash("photo-1677442136019-21780ecad995"),
+    imageUrl: local("technology.jpg"),
     publishedAt: "2026-07-09T16:00:00Z",
     author: "Elena Torres",
     readMinutes: 5,
@@ -146,7 +145,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     summary: "Nigerian film industry sees 35% subscriber growth as original series gain international audiences.",
     category: "entertainment",
     country: "nigeria",
-    imageUrl: unsplash("photo-1489599849927-2ee91cede3ba"),
+    imageUrl: local("entertainment.jpg"),
     publishedAt: "2026-07-09T14:00:00Z",
     author: "Funke Adeyemi",
     readMinutes: 3,
@@ -164,7 +163,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     summary: "WHO-backed immunization program accelerates across West and Central Africa, targeting millions of children under five.",
     category: "health",
     country: "ghana",
-    imageUrl: unsplash("photo-1584036561561-dafc5fd22829"),
+    imageUrl: local("health.jpg"),
     publishedAt: "2026-07-10T11:00:00Z",
     author: "Dr. Fatima Bello",
     readMinutes: 4,

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { BRAND } from "@/lib/brand";
-import { HeroSlider } from "@/components/media/hero-slider";
 import { NewsCard, NewsCardCompact } from "@/components/media/news-card";
 import { SectionHeader } from "@/components/media/section-header";
 import { TrendingPanel } from "@/components/media/trending-panel";
@@ -16,7 +15,6 @@ import { AiComingSoon } from "@/components/media/ai-coming-soon";
 import { GlassCard } from "@/components/ui/glass-card";
 import {
   NEWS_ARTICLES,
-  getHeroArticles,
   getAfricaNews,
   TRENDING_STORIES,
   TRENDING_VIDEOS,
@@ -32,19 +30,14 @@ import {
 const fadeUp = { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 } };
 
 export function NewsDashboard() {
-  const heroArticles = getHeroArticles();
   const liveFixtures = SPORTS_FIXTURES.filter((f) => f.status === "live");
   const africaNews = getAfricaNews();
 
   return (
     <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
       <motion.div {...fadeUp} className="mb-6">
-        <p className="text-sm font-semibold uppercase tracking-widest text-gtv-cyan">{BRAND.tagline}</p>
+        <p className="text-sm font-semibold uppercase tracking-widest text-gtv-deep dark:text-gtv-cyan">{BRAND.tagline}</p>
         <GlobalSearchBar className="mt-4" />
-      </motion.div>
-
-      <motion.div {...fadeUp} transition={{ delay: 0.05 }}>
-        <HeroSlider articles={heroArticles} />
       </motion.div>
 
       <motion.section {...fadeUp} transition={{ delay: 0.1 }} className="mt-10">

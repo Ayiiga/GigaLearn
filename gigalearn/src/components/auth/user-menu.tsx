@@ -25,9 +25,9 @@ export function UserMenu() {
 
   if (!isAuthenticated || !user) {
     return (
-      <Link href="/login">
+      <Link href="/login" aria-label="Sign in">
         <Button variant="ghost" size="sm" className="gap-1.5 min-h-[44px]">
-          <LogIn className="h-4 w-4" />
+          <LogIn className="h-4 w-4" aria-hidden />
           <span className="hidden sm:inline">Sign In</span>
         </Button>
       </Link>
@@ -38,7 +38,7 @@ export function UserMenu() {
     user.user_metadata?.full_name ??
     user.user_metadata?.name ??
     user.email?.split("@")[0] ??
-    "Learner";
+    "Member";
 
   const avatar =
     user.user_metadata?.avatar_url ?? user.user_metadata?.picture ?? null;

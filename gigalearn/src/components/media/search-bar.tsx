@@ -81,7 +81,7 @@ export function GlobalSearchBar({ className, autoFocus, onSubmit }: GlobalSearch
             placeholder="Search news, videos, TV, radio, teams, players, countries..."
             className="w-full rounded-2xl border border-giga-border bg-white/80 py-3 pl-12 pr-4 text-sm font-medium backdrop-blur-sm focus:border-gtv-purple focus:outline-none focus:ring-2 focus:ring-gtv-purple/20 dark:bg-giga-surface/80 min-h-[48px]"
             aria-label="Global search"
-            aria-controls="search-results"
+            {...(open ? { "aria-controls": "search-results" } : {})}
             autoComplete="off"
           />
         </div>

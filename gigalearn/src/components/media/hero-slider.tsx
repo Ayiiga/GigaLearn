@@ -45,9 +45,10 @@ export function HeroSlider({ articles }: { articles: NewsArticle[] }) {
             src={article.imageUrl}
             alt=""
             fill
-            priority
+            priority={index === 0}
+            loading={index === 0 ? undefined : "lazy"}
             className="object-cover"
-            sizes="100vw"
+            sizes="(max-width: 768px) 100vw, 1200px"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-gtv-deep/95 via-gtv-deep/70 to-transparent" />
           <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-10">
@@ -70,7 +71,7 @@ export function HeroSlider({ articles }: { articles: NewsArticle[] }) {
               <div className="mt-6">
                 <Link href={`/news/${article.slug}`}>
                   <Button size="lg" className="bg-white text-gtv-deep hover:bg-white/90">
-                    Read More
+                    Read Full Story
                   </Button>
                 </Link>
               </div>
@@ -100,9 +101,11 @@ export function HeroSlider({ articles }: { articles: NewsArticle[] }) {
               <button
                 key={i}
                 onClick={() => setIndex(i)}
-                className={`h-2 rounded-full transition-all ${i === index ? "w-6 bg-gtv-gold" : "w-2 bg-white/40"}`}
+                className={`min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full p-3`}
                 aria-label={`Go to slide ${i + 1}`}
-              />
+              >
+                <span className={`h-2 rounded-full transition-all ${i === index ? "w-6 bg-gtv-gold" : "w-2 bg-white/40"}`} />
+              </button>
             ))}
           </div>
         </>

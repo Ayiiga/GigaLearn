@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="GigaTrend TV">
+  <defs>
+    <linearGradient id="gtv-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="50%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="gtv-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a1628"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="108" fill="url(#gtv-bg)"/>
+  <rect x="56" y="56" width="400" height="400" rx="88" fill="url(#gtv-grad)"/>
+  <text x="256" y="300" text-anchor="middle" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="168" font-weight="800" fill="#ffffff">GT</text>
+  <circle cx="400" cy="112" r="28" fill="#fbbf24" opacity="0.95"/>
+</svg>
