@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { NewsArticle } from "@/types/media";
-import { formatDistanceToNow } from "date-fns";
+import { RelativeTime } from "@/components/ui/relative-time";
 
 export function HeroSlider({ articles }: { articles: NewsArticle[] }) {
   const [index, setIndex] = useState(0);
@@ -65,8 +65,8 @@ export function HeroSlider({ articles }: { articles: NewsArticle[] }) {
                 {article.title}
               </h1>
               <p className="mt-3 text-sm text-white/80 sm:text-base line-clamp-2">{article.summary}</p>
-              <p className="mt-2 text-xs text-white/60">
-                {formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true })} · {article.author}
+              <p className="mt-2 text-xs text-white/60 sm:text-base">
+                <RelativeTime date={article.publishedAt} /> · {article.author}
               </p>
               <div className="mt-6">
                 <Link href={`/news/${article.slug}`}>

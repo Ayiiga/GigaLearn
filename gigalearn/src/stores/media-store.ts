@@ -131,6 +131,6 @@ export const useMediaStore = create<MediaState>()(
 
       isArticleSaved: (slug) => get().preferences.savedArticles.includes(slug),
     }),
-    { name: "gigatrend-media-store" },
+    { name: "gigatrend-media-store", skipHydration: true },
   ),
 );

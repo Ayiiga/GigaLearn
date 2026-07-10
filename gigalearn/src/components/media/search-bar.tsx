@@ -7,6 +7,7 @@ import { globalSearch, getSearchSuggestions } from "@/content/media";
 import type { SearchFilter } from "@/content/media";
 import { useMediaStore } from "@/stores/media-store";
 import { cn } from "@/lib/utils";
+import { useHydrated } from "@/hooks/use-hydrated";
 import { SpeechRecognizer } from "@/lib/speech";
 
 interface GlobalSearchBarProps {
@@ -23,6 +24,7 @@ export function GlobalSearchBar({ className, autoFocus, onSubmit }: GlobalSearch
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestions = getSearchSuggestions();
+  const hydrated = useHydrated();
   const searchHistory = useMediaStore((s) => s.preferences.searchHistory ?? []);
   const addSearchHistory = useMediaStore((s) => s.addSearchHistory);
   const results = query.trim() ? globalSearch(query) : [];
@@ -124,7 +126,7 @@ export function GlobalSearchBar({ className, autoFocus, onSubmit }: GlobalSearch
             )
           ) : (
             <div className="p-3 space-y-4">
-              {searchHistory.length > 0 && (
+              {hydrated && searchHistory.length > 0 && (
                 <div>
                   <p className="flex items-center gap-1.5 px-2 py-1 text-xs font-semibold uppercase text-giga-muted">
                     <Clock className="h-3.5 w-3.5" /> Recent searches

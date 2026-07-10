@@ -6,7 +6,7 @@ import type { SportsFixture } from "@/types/media";
 import { getTvStationById } from "@/content/media";
 import { GlassCard } from "@/components/ui/glass-card";
 import { LiveIndicator } from "@/components/media/trending-panel";
-import { format } from "date-fns";
+import { FixedDateTime } from "@/components/ui/relative-time";
 import { cn } from "@/lib/utils";
 
 export function FixtureCard({ fixture }: { fixture: SportsFixture }) {
@@ -33,7 +33,7 @@ export function FixtureCard({ fixture }: { fixture: SportsFixture }) {
             <span className="text-sm font-bold text-giga-muted">FT</span>
           ) : (
             <span className="text-sm font-semibold text-giga-muted">
-              {format(new Date(fixture.kickoff), "MMM d · HH:mm")}
+            <FixedDateTime date={fixture.kickoff} pattern="MMM d · HH:mm" />
             </span>
           )}
           {fixture.status !== "scheduled" && fixture.homeScore !== undefined && (

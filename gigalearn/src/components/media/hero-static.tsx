@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import type { NewsArticle } from "@/types/media";
 
@@ -39,7 +39,7 @@ export function HeroStatic({ article }: { article: NewsArticle }) {
             </h1>
             <p className="mt-4 text-base leading-relaxed text-white/95 sm:text-lg line-clamp-3">{article.summary}</p>
             <p className="mt-3 text-sm font-medium text-white/80 sm:text-base">
-              {formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true })} · {article.author}
+              {format(new Date(article.publishedAt), "MMM d, yyyy")} · {article.author}
             </p>
             <div className="mt-7">
               <Link href={`/news/${article.slug}`} aria-label={`Read full story: ${article.title}`}>

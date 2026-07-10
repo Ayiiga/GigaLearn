@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDistanceToNow } from "date-fns";
+import { RelativeTime } from "@/components/ui/relative-time";
 import Link from "next/link";
 import Image from "next/image";
 import { Bookmark, Clock } from "lucide-react";
@@ -50,7 +50,7 @@ export function NewsCard({
           <div className="mt-4 flex items-center justify-between text-sm font-medium text-giga-muted">
             <span className="flex items-center gap-1.5">
               <Clock className="h-4 w-4" strokeWidth={2.25} />
-              {formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true })}
+              <RelativeTime date={article.publishedAt} />
             </span>
             <span>{article.readMinutes} min read</span>
           </div>
@@ -70,7 +70,7 @@ export function NewsCardCompact({ article }: { article: NewsArticle }) {
         <p className="text-xs font-bold uppercase tracking-wider text-gtv-cyan sm:text-sm">{article.category}</p>
         <h4 className="mt-1 font-bold text-base leading-snug line-clamp-2 group-hover:text-gtv-purple">{article.title}</h4>
         <p className="mt-1 text-sm text-giga-muted">
-          {formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true })}
+          <RelativeTime date={article.publishedAt} />
         </p>
       </div>
       <Bookmark className="h-5 w-5 shrink-0 text-giga-muted opacity-0 group-hover:opacity-100" strokeWidth={2} aria-hidden />

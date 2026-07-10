@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Play, Eye } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import type { VideoItem } from "@/types/media";
-import { formatDistanceToNow } from "date-fns";
+import { RelativeTime } from "@/components/ui/relative-time";
 
 export function VideoCard({ video }: { video: VideoItem }) {
   return (
@@ -27,7 +27,7 @@ export function VideoCard({ video }: { video: VideoItem }) {
           <h3 className="font-bold text-base leading-snug line-clamp-2 group-hover:text-gtv-purple sm:text-lg">{video.title}</h3>
           <div className="mt-3 flex items-center gap-3 text-sm font-medium text-giga-muted">
             <span className="flex items-center gap-1.5"><Eye className="h-4 w-4" strokeWidth={2.25} />{(video.views / 1000).toFixed(0)}k views</span>
-            <span>{formatDistanceToNow(new Date(video.publishedAt), { addSuffix: true })}</span>
+            <RelativeTime date={video.publishedAt} />
           </div>
         </div>
       </Link>

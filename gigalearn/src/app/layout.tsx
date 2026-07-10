@@ -4,6 +4,7 @@ import { Inter, Outfit } from "next/font/google";
 import { ThemeProvider, OnlineStatusProvider } from "@/components/providers/app-providers";
 import { AuthOfflineBridge } from "@/components/providers/auth-offline-bridge";
 import { MonitoringProvider } from "@/components/providers/monitoring-provider";
+import { MediaStoreHydrator } from "@/components/providers/media-store-hydrator";
 import { Header } from "@/components/layout/header";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { BRAND } from "@/lib/brand";
@@ -96,6 +97,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <OnlineStatusProvider>
             <AuthOfflineBridge />
             <MonitoringProvider />
+            <MediaStoreHydrator />
             <Header />
             <main className="flex-1">{children}</main>
             <ConditionalFooter />

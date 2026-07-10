@@ -70,7 +70,7 @@ export function Footer() {
         </div>
 
         <div className="mt-10 border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/60">
-          <p>© {new Date().getFullYear()} {BRAND.name}. All rights reserved.</p>
+          <p suppressHydrationWarning>© {new Date().getFullYear()} {BRAND.name}. All rights reserved.</p>
           <p className="text-xs text-white/60">Monetization placeholders: AdSense · Premium · Sponsored · API Access</p>
         </div>
       </div>

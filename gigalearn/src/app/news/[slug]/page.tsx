@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import type { Metadata } from "next";
-import { formatDistanceToNow } from "date-fns";
+import { RelativeTime } from "@/components/ui/relative-time";
 import { Clock } from "lucide-react";
 import { getArticleBySlug } from "@/content/media";
 import { ArticleActions } from "@/components/media/article-actions";
@@ -49,7 +49,7 @@ export default async function ArticlePage({ params }: Props) {
       <h1 className="font-display text-3xl font-bold sm:text-4xl leading-tight">{article.title}</h1>
       <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-giga-muted">
         <span>{article.author}</span>
-        <span className="flex items-center gap-1"><Clock className="h-4 w-4" />{formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true })}</span>
+        <span className="flex items-center gap-1"><Clock className="h-4 w-4" /><RelativeTime date={article.publishedAt} /></span>
         <span>{article.readMinutes} min read</span>
       </div>
 

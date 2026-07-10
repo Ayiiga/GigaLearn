@@ -7,7 +7,7 @@ import { getLiveFixtures, getUpcomingFixtures, getTvStationById } from "@/conten
 import type { SportsFixture } from "@/types/media";
 import { GlassCard } from "@/components/ui/glass-card";
 import { LiveIndicator } from "@/components/media/trending-panel";
-import { format } from "date-fns";
+import { FixedDateTime } from "@/components/ui/relative-time";
 import { cn } from "@/lib/utils";
 
 function LiveFixtureRow({ fixture, tick }: { fixture: SportsFixture; tick: number }) {
@@ -66,7 +66,7 @@ function UpcomingRow({ fixture }: { fixture: SportsFixture }) {
         <div className="min-w-0">
           <p className="font-bold text-base truncate">{fixture.homeTeam} vs {fixture.awayTeam}</p>
           <p className="text-sm text-giga-muted">
-            {format(new Date(fixture.kickoff), "EEE, MMM d · HH:mm")} · {fixture.venue}
+            <FixedDateTime date={fixture.kickoff} /> · {fixture.venue}
           </p>
         </div>
       </div>

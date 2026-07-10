@@ -24,11 +24,9 @@ import {
   X,
   Wifi,
   WifiOff,
-  Moon,
-  Sun,
 } from "lucide-react";
 import { useState } from "react";
-import { useTheme } from "next-themes";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { cn } from "@/lib/utils";
 import { useOnlineStatus } from "@/components/providers/app-providers";
 import { UserMenu } from "@/components/auth/user-menu";
@@ -57,7 +55,6 @@ const NAV_ITEMS = [
 export function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
   const isOnline = useOnlineStatus();
 
   return (
@@ -94,13 +91,7 @@ export function Header() {
         <div className="flex items-center gap-1.5 sm:gap-2">
           <UserMenu />
 
-          <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="touch-target flex items-center justify-center rounded-xl p-2.5 text-giga-muted hover:bg-gtv-purple/10"
-            aria-label="Toggle dark mode"
-          >
-            {theme === "dark" ? <Sun className="h-6 w-6" strokeWidth={2.25} /> : <Moon className="h-6 w-6" strokeWidth={2.25} />}
-          </button>
+          <ThemeToggle />
 
           <div className="hidden sm:flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-sm" aria-label={isOnline ? "Online" : "Offline mode"}>
             {isOnline ? <Wifi className="h-5 w-5 text-gtv-green" strokeWidth={2.25} /> : <WifiOff className="h-5 w-5 text-gtv-orange" strokeWidth={2.25} />}
