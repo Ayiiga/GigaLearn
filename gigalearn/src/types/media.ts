@@ -73,6 +73,20 @@ export interface TvStation {
   streamUrl: string;
   isLive: boolean;
   officialSource: string;
+  /** Optional embed-friendly URL when broadcaster allows in-app viewing */
+  embedUrl?: string;
+  channelType?: "news" | "sports" | "movies" | "entertainment" | "business";
+}
+
+export interface MovieChannel {
+  id: string;
+  name: string;
+  country: string;
+  logo: string;
+  streamUrl: string;
+  genre: string;
+  officialSource: string;
+  isLive: boolean;
 }
 
 export interface RadioStation {
@@ -94,6 +108,10 @@ export interface SportsFixture {
   kickoff: string;
   venue: string;
   status: "scheduled" | "live" | "finished";
+  /** Match minute when live */
+  minute?: number;
+  /** TV channel id to watch this match officially */
+  watchChannelId?: string;
 }
 
 export interface TrendingItem {
@@ -112,6 +130,7 @@ export interface UserMediaPreferences {
   followedTopics: string[];
   followedJournalists: string[];
   searchHistory: string[];
+  recentChannels: string[];
   language: string;
   notifications: {
     breakingNews: boolean;

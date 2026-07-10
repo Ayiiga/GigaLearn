@@ -1,7 +1,7 @@
 import { NEWS_ARTICLES, getArticleBySlug, getArticlesByCategory, getBreakingNews, getAfricaNews, getHeroArticles } from "./articles";
 import { RADIO_STATIONS, RADIO_COUNTRIES, getRadioByCountry } from "./radio";
-import { SPORTS_FIXTURES, SPORTS_LEAGUES, LEAGUE_STANDINGS, getFixturesByLeague } from "./sports";
-import { TV_STATIONS, TV_CATEGORIES, getTvByCategory } from "./tv";
+import { SPORTS_FIXTURES, SPORTS_LEAGUES, LEAGUE_STANDINGS, getFixturesByLeague, getLiveFixtures, getUpcomingFixtures, getFixtureById } from "./sports";
+import { TV_STATIONS, TV_CATEGORIES, MOVIE_CHANNELS, getTvByCategory, getMovieChannels, getTvStationById, getMovieChannelById, getAllWatchableChannels } from "./tv";
 import {
   TRENDING_HASHTAGS,
   TRENDING_SEARCHES,
@@ -26,9 +26,17 @@ export {
   SPORTS_LEAGUES,
   LEAGUE_STANDINGS,
   getFixturesByLeague,
+  getLiveFixtures,
+  getUpcomingFixtures,
+  getFixtureById,
   TV_STATIONS,
   TV_CATEGORIES,
+  MOVIE_CHANNELS,
   getTvByCategory,
+  getMovieChannels,
+  getTvStationById,
+  getMovieChannelById,
+  getAllWatchableChannels,
   TRENDING_HASHTAGS,
   TRENDING_SEARCHES,
   TRENDING_STORIES,

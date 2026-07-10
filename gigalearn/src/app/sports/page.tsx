@@ -2,34 +2,37 @@ import type { Metadata } from "next";
 import { MediaPageShell, SectionHeader } from "@/components/media/section-header";
 import { NewsCard } from "@/components/media/news-card";
 import { FixtureCard, StandingsTable } from "@/components/media/sports-panel";
+import { LiveMatchTracker } from "@/components/media/live-match-tracker";
 import { SPORTS_LEAGUES, SPORTS_FIXTURES, LEAGUE_STANDINGS } from "@/content/media";
 import { getArticlesByCategory } from "@/content/media/articles";
 import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Sports Center",
-  description: "Fixtures, results, standings, and sports news across Africa and the world.",
+  description: "Live match tracker, fixtures, results, standings, and sports news across Africa and the world.",
 };
 
 export default function SportsPage() {
   const sportsNews = getArticlesByCategory("sports");
 
   return (
-    <MediaPageShell title="Sports Center" subtitle="Fixtures, results, standings, and match analysis">
-      <div className="mb-8 flex flex-wrap gap-2">
+    <MediaPageShell title="Sports Center" subtitle="Live scores, fixtures, standings, and official watch links">
+      <div className="mb-8 flex flex-wrap gap-2.5">
         {SPORTS_LEAGUES.map((league) => (
           <Link
             key={league.id}
             href={league.id === "world-cup-2026" ? "/world-cup-2026" : `/sports#${league.id}`}
-            className="rounded-full border border-giga-border px-4 py-2 text-sm font-semibold hover:border-gtv-purple hover:bg-gtv-purple/5"
+            className="rounded-full border-2 border-giga-border px-5 py-2.5 text-base font-bold hover:border-gtv-purple hover:bg-gtv-purple/5 min-h-[48px] flex items-center"
           >
             {league.icon} {league.name}
           </Link>
         ))}
       </div>
 
-      <SectionHeader title="Live & Recent Fixtures" />
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 mb-10">
+      <LiveMatchTracker />
+
+      <SectionHeader title="All Fixtures" className="mt-10" />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-10">
         {SPORTS_FIXTURES.map((f) => (
           <FixtureCard key={f.id} fixture={f} />
         ))}

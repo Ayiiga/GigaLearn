@@ -17,6 +17,7 @@ export const SPORTS_FIXTURES: SportsFixture[] = [
     kickoff: "2026-06-15T18:00:00Z",
     venue: "MetLife Stadium, USA",
     status: "scheduled",
+    watchChannelId: "supersport",
   },
   {
     id: "f2",
@@ -26,6 +27,7 @@ export const SPORTS_FIXTURES: SportsFixture[] = [
     kickoff: "2026-06-18T20:00:00Z",
     venue: "SoFi Stadium, USA",
     status: "scheduled",
+    watchChannelId: "supersport",
   },
   {
     id: "f3",
@@ -37,6 +39,7 @@ export const SPORTS_FIXTURES: SportsFixture[] = [
     kickoff: "2026-07-10T15:00:00Z",
     venue: "Emirates Stadium",
     status: "finished",
+    watchChannelId: "espn",
   },
   {
     id: "f4",
@@ -48,6 +51,8 @@ export const SPORTS_FIXTURES: SportsFixture[] = [
     kickoff: "2026-07-10T17:30:00Z",
     venue: "Anfield",
     status: "live",
+    minute: 67,
+    watchChannelId: "supersport",
   },
   {
     id: "f5",
@@ -57,6 +62,7 @@ export const SPORTS_FIXTURES: SportsFixture[] = [
     kickoff: "2026-07-15T19:00:00Z",
     venue: "Santiago Bernabéu",
     status: "scheduled",
+    watchChannelId: "espn",
   },
   {
     id: "f6",
@@ -68,6 +74,7 @@ export const SPORTS_FIXTURES: SportsFixture[] = [
     kickoff: "2026-07-09T20:00:00Z",
     venue: "Stade Mohammed V",
     status: "finished",
+    watchChannelId: "supersport",
   },
   {
     id: "f7",
@@ -77,6 +84,20 @@ export const SPORTS_FIXTURES: SportsFixture[] = [
     kickoff: "2026-07-12T16:00:00Z",
     venue: "Accra Sports Stadium",
     status: "scheduled",
+    watchChannelId: "gtv",
+  },
+  {
+    id: "f8",
+    league: "premier-league",
+    homeTeam: "Man United",
+    awayTeam: "Tottenham",
+    homeScore: 0,
+    awayScore: 0,
+    kickoff: "2026-07-10T20:00:00Z",
+    venue: "Old Trafford",
+    status: "live",
+    minute: 23,
+    watchChannelId: "espn",
   },
 ];
 
@@ -111,4 +132,16 @@ export const LEAGUE_STANDINGS: Record<SportsLeague, { team: string; played: numb
 
 export function getFixturesByLeague(league: SportsLeague): SportsFixture[] {
   return SPORTS_FIXTURES.filter((f) => f.league === league);
+}
+
+export function getLiveFixtures(): SportsFixture[] {
+  return SPORTS_FIXTURES.filter((f) => f.status === "live");
+}
+
+export function getUpcomingFixtures(): SportsFixture[] {
+  return SPORTS_FIXTURES.filter((f) => f.status === "scheduled");
+}
+
+export function getFixtureById(id: string): SportsFixture | undefined {
+  return SPORTS_FIXTURES.find((f) => f.id === id);
 }
