@@ -31,29 +31,38 @@ export function LiveEmergencyPanel() {
       return;
     }
     const controller = new AbortController();
-    setLoading(true);
-    setError(null);
-    void (async () => {
-      try {
-        const res = await fetch(
-          `/api/geo/nearby?lat=${userLocation.lat}&lng=${userLocation.lng}&radiusM=8000`,
-          { signal: controller.signal, cache: "no-store" },
-        );
-        const data = (await res.json()) as { results?: NearbyPoi[]; source?: string; error?: string };
-        if (!res.ok) throw new Error(data.error || "Nearby lookup failed");
-        setItems(data.results ?? []);
-        setSource(data.source ?? "");
-      } catch (e) {
-        if (!controller.signal.aborted) {
-          setError(e instanceof Error ? e.message : "Nearby lookup failed");
-          setItems([]);
+    const timer = window.setTimeout(() => {
+      setLoading(true);
+      setError(null);
+      void (async () => {
+        try {
+          const res = await fetch(
+            `/api/geo/nearby?lat=${userLocation.lat}&lng=${userLocation.lng}&radiusM=8000`,
+            { signal: controller.signal, cache: "no-store" },
+          );
+          const data = (await res.json()) as {
+            results?: NearbyPoi[];
+            source?: string;
+            error?: string;
+          };
+          if (!res.ok) throw new Error(data.error || "Nearby lookup failed");
+          setItems(data.results ?? []);
+          setSource(data.source ?? "");
+        } catch (e) {
+          if (!controller.signal.aborted) {
+            setError(e instanceof Error ? e.message : "Nearby lookup failed");
+            setItems([]);
+          }
+        } finally {
+          if (!controller.signal.aborted) setLoading(false);
         }
-      } finally {
-        if (!controller.signal.aborted) setLoading(false);
-      }
-    })();
-    return () => controller.abort();
-  }, [userLocation, permission]);
+      })();
+    }, 500);
+    return () => {
+      controller.abort();
+      window.clearTimeout(timer);
+    };
+  }, [userLocation?.lat, userLocation?.lng, permission]);
 
   if (!userLocation || permission === "denied") return null;
 

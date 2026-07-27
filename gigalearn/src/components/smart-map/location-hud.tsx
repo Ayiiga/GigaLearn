@@ -77,6 +77,9 @@ export function LocationHud() {
 
   if (permission !== "granted" || !userLocation) return null;
 
+  const accuracyLabel = formatAccuracy(meta?.accuracyM ?? null);
+  const updatedLabel = meta?.updatedAt ? new Date(meta.updatedAt).toLocaleTimeString() : "—";
+
   return (
     <div className="rounded-3xl border border-white/30 bg-white/92 p-3 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#0B3A63]/94">
       <div className="flex items-start justify-between gap-2">
@@ -122,11 +125,11 @@ export function LocationHud() {
         </div>
         <div>
           <dt className="font-semibold text-slate-500">GPS accuracy</dt>
-          <dd>{formatAccuracy(meta.accuracyM)}</dd>
+          <dd>{accuracyLabel}</dd>
         </div>
         <div>
           <dt className="font-semibold text-slate-500">Updated</dt>
-          <dd>{meta.updatedAt ? new Date(meta.updatedAt).toLocaleTimeString() : "—"}</dd>
+          <dd>{updatedLabel}</dd>
         </div>
       </dl>
     </div>

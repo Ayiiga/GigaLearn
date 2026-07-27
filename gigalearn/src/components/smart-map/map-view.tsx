@@ -254,7 +254,13 @@ export function MapView({
         map.flyTo({ center: [userLocation.lng, userLocation.lat], zoom: 15, essential: true });
         didFlyToUser.current = true;
       } else {
-        map.easeTo({ center: [userLocation.lng, userLocation.lat], duration: 600 });
+        const center = map.getCenter();
+        const moved =
+          Math.abs(center.lat - userLocation.lat) > 0.00005 ||
+          Math.abs(center.lng - userLocation.lng) > 0.00005;
+        if (moved) {
+          map.easeTo({ center: [userLocation.lng, userLocation.lat], duration: 600 });
+        }
       }
     }
   }, [userLocation, ready, followUser]);
