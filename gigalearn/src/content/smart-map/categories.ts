@@ -13,6 +13,7 @@ export const PLACE_CATEGORIES: PlaceCategoryMeta[] = [
   { id: "fire", label: "Fire Service", emoji: "🚒", color: "#DC2626", keywords: ["fire", "rescue"] },
   { id: "ambulance", label: "Ambulance", emoji: "🚑", color: "#DC2626", keywords: ["ambulance", "ems"] },
   { id: "hospital", label: "Hospitals", emoji: "🏥", color: "#0E9F6E", keywords: ["hospital", "clinic"] },
+  { id: "clinic", label: "Clinics", emoji: "🩺", color: "#0E9F6E", keywords: ["clinic", "health"] },
   { id: "pharmacy", label: "Pharmacies", emoji: "🏪", color: "#0E9F6E", keywords: ["pharmacy", "chemist"] },
   { id: "school", label: "Schools", emoji: "🏫", color: "#0F4C81", keywords: ["school"] },
   { id: "university", label: "Universities", emoji: "🎓", color: "#0F4C81", keywords: ["university", "campus"] },
@@ -33,6 +34,8 @@ export const PLACE_CATEGORIES: PlaceCategoryMeta[] = [
   { id: "court", label: "Courts", emoji: "⚖", color: "#0F4C81", keywords: ["court"] },
   { id: "attraction", label: "Attractions", emoji: "🏖", color: "#0E9F6E", keywords: ["tourist", "attraction"] },
   { id: "park", label: "Parks", emoji: "🌳", color: "#0E9F6E", keywords: ["park", "garden"] },
+  { id: "shelter", label: "Safe shelters", emoji: "🏕", color: "#F59E0B", keywords: ["shelter", "safe"] },
+  { id: "disaster_center", label: "Disaster centers", emoji: "🆘", color: "#DC2626", keywords: ["disaster", "nadmo"] },
   { id: "toilet", label: "Public Toilets", emoji: "🚻", color: "#64748b", keywords: ["toilet", "washroom"] },
   { id: "ev_charger", label: "EV Chargers", emoji: "⚡", color: "#0E9F6E", keywords: ["ev", "charger"] },
 ];
