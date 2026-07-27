@@ -9,6 +9,9 @@ import { signOut } from "@/lib/supabase/auth-actions";
 import { useOnlineStatus } from "@/components/providers/app-providers";
 import { useMapStore } from "@/stores/map-store";
 import { BRAND } from "@/lib/brand";
+import { FEATURE_FLAGS } from "@/lib/features/flags";
+import { applyA11yPrefs, DEFAULT_A11Y, type A11yPrefs } from "@/lib/a11y/prefs";
+import { useEffect, useState } from "react";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -19,6 +22,11 @@ export default function SettingsPage() {
   const setMapStyle = useMapStore((s) => s.setMapStyle);
   const voiceNav = useMapStore((s) => s.voiceNav);
   const setVoiceNav = useMapStore((s) => s.setVoiceNav);
+  const [a11y, setA11y] = useState<A11yPrefs>(DEFAULT_A11Y);
+
+  useEffect(() => {
+    applyA11yPrefs(a11y);
+  }, [a11y]);
 
   const handleLogout = async () => {
     await signOut();
@@ -124,12 +132,39 @@ export default function SettingsPage() {
         </div>
       </section>
 
+      <section className="mt-4 rounded-3xl border border-sm-border bg-white p-5 dark:border-white/10 dark:bg-sm-primary-deep">
+        <h2 className="font-bold">Accessibility</h2>
+        <div className="mt-3 space-y-2">
+          {(
+            [
+              ["largeText", "Large text"],
+              ["highContrast", "High contrast"],
+              ["reduceMotion", "Reduce motion"],
+            ] as const
+          ).map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setA11y((prev) => ({ ...prev, [key]: !prev[key] }))}
+              className="flex w-full items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold dark:bg-white/5"
+            >
+              {label}
+              <span>{a11y[key] ? "On" : "Off"}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
       <section className="mt-4 rounded-3xl border border-dashed border-sm-border bg-white/60 p-5 text-sm dark:border-white/10 dark:bg-sm-primary-deep/60">
         <h2 className="font-bold">Rollout flags</h2>
-        <p className="mt-2 text-slate-500">
-          Phase 1 Foundation: On · Phase 2 Public Safety: Off by default · Phase 3 AI & Expansion: Off by
-          default
-        </p>
+        <ul className="mt-2 space-y-1 text-slate-500">
+          <li>Phase 1 Foundation: On</li>
+          <li>Phase 2 Public Safety: {FEATURE_FLAGS.publicSafetyPhase2 ? "On" : "Off"}</li>
+          <li>Phase 3 AI & Expansion: {FEATURE_FLAGS.aiExpansionPhase3 ? "On" : "Off"}</li>
+          <li>Phase 4 Smart Services: {FEATURE_FLAGS.smartServicesPhase4 ? "On" : "Off"}</li>
+          <li>Phase 5 Business & Community: {FEATURE_FLAGS.businessCommunityPhase5 ? "On" : "Off"}</li>
+          <li>Phase 6 Africa Expansion: {FEATURE_FLAGS.africaExpansionPhase6 ? "On" : "Off"}</li>
+        </ul>
       </section>
     </div>
   );

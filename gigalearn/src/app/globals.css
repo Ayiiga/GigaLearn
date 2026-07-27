@@ -157,3 +157,41 @@ html {
 .sm-fade-up {
   animation: sm-fade-up 0.55s ease-out both;
 }
+
+/* Accessibility preferences */
+.sm-a11y-large-text {
+  font-size: 18px;
+}
+.sm-a11y-large-text body {
+  font-size: 1.125rem;
+  line-height: 1.7;
+}
+.sm-a11y-high-contrast {
+  --background: #ffffff;
+  --foreground: #000000;
+  --sm-primary: #003366;
+  --sm-emerald: #006644;
+  --sm-muted: #222222;
+  --sm-border: #111111;
+}
+.dark.sm-a11y-high-contrast {
+  --background: #000000;
+  --foreground: #ffffff;
+  --sm-primary: #66b3ff;
+  --sm-emerald: #3dd68c;
+  --sm-muted: #dddddd;
+  --sm-border: #ffffff;
+}
+.sm-a11y-reduce-motion *,
+.sm-a11y-reduce-motion *::before,
+.sm-a11y-reduce-motion *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* Color-blind friendly status accents */
+.sm-status-ok { color: #0E9F6E; }
+.sm-status-warn { color: #B45309; }
+.sm-status-danger { color: #DC2626; }
+
