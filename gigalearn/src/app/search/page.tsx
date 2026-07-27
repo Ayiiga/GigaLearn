@@ -2,10 +2,12 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { MapPin, Navigation, Search as SearchIcon, Star } from "lucide-react";
+import { MapPin, Navigation, Search as SearchIcon } from "lucide-react";
 import { PLACE_CATEGORIES } from "@/content/smart-map/categories";
-import { nearbyPlaces, searchPlaces } from "@/content/smart-map/places";
+import { haversineKm, nearbyPlaces, searchPlaces } from "@/content/smart-map/places";
 import { DEFAULT_CENTER } from "@/lib/map/styles";
+import { PHASE1_NEARBY_CATEGORIES } from "@/lib/features/flags";
+import { usePublicSafetyEnabled } from "@/lib/features/use-feature-flag";
 import { useMapStore } from "@/stores/map-store";
 import { getCategoryMeta } from "@/content/smart-map/categories";
 
@@ -16,16 +18,29 @@ export default function SearchPage() {
   const setSelectedPlaceId = useMapStore((s) => s.setSelectedPlaceId);
   const setDestination = useMapStore((s) => s.setDestination);
   const userLocation = useMapStore((s) => s.userLocation) ?? DEFAULT_CENTER;
+  const publicSafety = usePublicSafetyEnabled();
+
+  const categories = publicSafety
+    ? PLACE_CATEGORIES
+    : PLACE_CATEGORIES.filter((c) =>
+        (PHASE1_NEARBY_CATEGORIES as readonly string[]).includes(c.id),
+      );
 
   const results = useMemo(() => {
-    if (!query.trim() && activeCategory === "all") {
-      return nearbyPlaces(userLocation, "all", 20);
-    }
-    return searchPlaces(query, activeCategory).map((p) => ({
-      ...p,
-      distanceKm: nearbyPlaces(userLocation, "all", 100).find((n) => n.id === p.id)?.distanceKm ?? 0,
-    }));
-  }, [query, activeCategory, userLocation]);
+    const base =
+      !query.trim() && activeCategory === "all"
+        ? nearbyPlaces(userLocation, "all", 40)
+        : searchPlaces(query, activeCategory).map((p) => ({
+            ...p,
+            distanceKm: haversineKm(userLocation, p.coordinates),
+          }));
+
+    if (publicSafety) return base.slice(0, 20);
+
+    return base
+      .filter((p) => (PHASE1_NEARBY_CATEGORIES as readonly string[]).includes(p.category))
+      .slice(0, 20);
+  }, [query, activeCategory, userLocation, publicSafety]);
 
   return (
     <div className="mx-auto max-w-3xl px-4 pb-8 pt-6 sm:px-6">
@@ -35,7 +50,7 @@ export default function SearchPage() {
           Find trusted places nearby
         </h1>
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-          Police, hospitals, fuel, banks, markets, and essential services across Ghana.
+          Phase 1 essentials: police, fire, hospitals, pharmacies, schools, universities, and hostels.
         </p>
       </header>
 
@@ -44,9 +59,10 @@ export default function SearchPage() {
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search hospitals, police, fuel…"
+          placeholder="Search hospitals, police, schools…"
           className="w-full bg-transparent text-base outline-none placeholder:text-slate-400"
           autoFocus
+          aria-label="Search places"
         />
       </div>
 
@@ -60,7 +76,7 @@ export default function SearchPage() {
         >
           All
         </button>
-        {PLACE_CATEGORIES.map((cat) => (
+        {categories.map((cat) => (
           <button
             key={cat.id}
             type="button"
@@ -95,12 +111,6 @@ export default function SearchPage() {
                     <MapPin className="h-3.5 w-3.5" />
                     {place.address}
                   </p>
-                  {place.rating != null && (
-                    <p className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-amber-600">
-                      <Star className="h-3.5 w-3.5 fill-current" />
-                      {place.rating.toFixed(1)}
-                    </p>
-                  )}
                 </div>
                 <div className="flex flex-col gap-2">
                   <Link

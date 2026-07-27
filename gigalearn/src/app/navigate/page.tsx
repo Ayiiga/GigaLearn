@@ -8,6 +8,7 @@ import { haversineKm } from "@/content/smart-map/places";
 import { DEFAULT_CENTER } from "@/lib/map/styles";
 import type { TravelMode } from "@/types/smart-map";
 import { cn } from "@/lib/utils";
+import { useAiExpansionEnabled } from "@/lib/features/use-feature-flag";
 
 const MapView = dynamic(
   () => import("@/components/smart-map/map-view").then((m) => m.MapView),
@@ -29,6 +30,7 @@ export default function NavigatePage() {
   const setVoiceNav = useMapStore((s) => s.setVoiceNav);
   const userLocation = useMapStore((s) => s.userLocation) ?? DEFAULT_CENTER;
   const [navigating, setNavigating] = useState(false);
+  const aiExpansion = useAiExpansionEnabled();
 
   const plan = useMemo(() => {
     if (!destination) return null;
@@ -109,17 +111,19 @@ export default function NavigatePage() {
             >
               {navigating ? "Navigating…" : "Start navigation"}
             </button>
-            <button
-              type="button"
-              onClick={() => setVoiceNav(!voiceNav)}
-              className={cn(
-                "inline-flex items-center justify-center rounded-2xl px-4 py-3",
-                voiceNav ? "bg-sm-emerald text-white" : "bg-slate-100 dark:bg-white/10",
-              )}
-              aria-label="Toggle voice navigation"
-            >
-              <Mic className="h-5 w-5" />
-            </button>
+            {aiExpansion && (
+              <button
+                type="button"
+                onClick={() => setVoiceNav(!voiceNav)}
+                className={cn(
+                  "inline-flex items-center justify-center rounded-2xl px-4 py-3",
+                  voiceNav ? "bg-sm-emerald text-white" : "bg-slate-100 dark:bg-white/10",
+                )}
+                aria-label="Toggle voice navigation"
+              >
+                <Mic className="h-5 w-5" />
+              </button>
+            )}
           </div>
           {!destination && (
             <p className="mt-3 text-xs text-slate-500">

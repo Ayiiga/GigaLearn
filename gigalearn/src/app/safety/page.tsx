@@ -1,5 +1,6 @@
 "use client";
 
+import { FeatureGate } from "@/components/smart-map/feature-gate";
 import { useState } from "react";
 import {
   Baby,
@@ -14,8 +15,9 @@ import {
 } from "lucide-react";
 import { getCountry, LAUNCH_COUNTRY } from "@/content/smart-map/countries";
 import { useMapStore } from "@/stores/map-store";
+import { isValidPhone, sanitizeText } from "@/lib/security/validate";
 
-export default function SafetyPage() {
+function SafetyPageContent() {
   const country = getCountry(useMapStore((s) => s.countryCode));
   const sosActive = useMapStore((s) => s.sosActive);
   const setSosActive = useMapStore((s) => s.setSosActive);
@@ -203,11 +205,13 @@ export default function SafetyPage() {
           <button
             type="button"
             onClick={() => {
-              if (!name || !phone) return;
+              const cleanName = sanitizeText(name, 80);
+              const cleanPhone = sanitizeText(phone, 24);
+              if (!cleanName || !isValidPhone(cleanPhone)) return;
               addEmergencyContact({
                 id: crypto.randomUUID(),
-                name,
-                phone,
+                name: cleanName,
+                phone: cleanPhone,
                 relationship: "Trusted",
               });
               setName("");
@@ -233,5 +237,19 @@ export default function SafetyPage() {
         </ul>
       </section>
     </div>
+  );
+}
+
+
+export default function SafetyPage() {
+  return (
+    <FeatureGate
+      flag="publicSafetyPhase2"
+      title="Smart Safety Center"
+      phase="Phase 2"
+      description="SOS, emergency contacts, live location sharing, and family safety tools are ready behind the Phase 2 flag."
+    >
+      <SafetyPageContent />
+    </FeatureGate>
   );
 }

@@ -118,7 +118,18 @@ export default function SettingsPage() {
           <Link href="/help" className="text-sm-primary">
             Help
           </Link>
+          <Link href="/favorites" className="text-sm-primary">
+            Favorites
+          </Link>
         </div>
+      </section>
+
+      <section className="mt-4 rounded-3xl border border-dashed border-sm-border bg-white/60 p-5 text-sm dark:border-white/10 dark:bg-sm-primary-deep/60">
+        <h2 className="font-bold">Rollout flags</h2>
+        <p className="mt-2 text-slate-500">
+          Phase 1 Foundation: On · Phase 2 Public Safety: Off by default · Phase 3 AI & Expansion: Off by
+          default
+        </p>
       </section>
     </div>
   );

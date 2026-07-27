@@ -7,7 +7,7 @@ import { getPlaceById } from "@/content/smart-map/places";
 import { getCategoryMeta } from "@/content/smart-map/categories";
 import { useMapStore } from "@/stores/map-store";
 
-export function PlaceSheet() {
+export function PlaceSheet({ showVerification = false }: { showVerification?: boolean }) {
   const selectedPlaceId = useMapStore((s) => s.selectedPlaceId);
   const setSelectedPlaceId = useMapStore((s) => s.setSelectedPlaceId);
   const setDestination = useMapStore((s) => s.setDestination);
@@ -17,6 +17,8 @@ export function PlaceSheet() {
   const place = selectedPlaceId ? getPlaceById(selectedPlaceId) : undefined;
   const meta = place ? getCategoryMeta(place.category) : null;
   const saved = place ? savedPlaceIds.includes(place.id) : false;
+  const showVerified = showVerification && Boolean(place?.verified);
+  const showRating = showVerification && place?.rating != null;
 
   return (
     <AnimatePresence>
@@ -32,13 +34,13 @@ export function PlaceSheet() {
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-sm-emerald">
                 {meta.emoji} {meta.label}
-                {place.verified ? " · Verified" : ""}
+                {showVerified ? " · Verified" : ""}
               </p>
               <h2 className="mt-1 font-display text-xl font-extrabold text-slate-900 dark:text-white">
                 {place.name}
               </h2>
               <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{place.address}</p>
-              {place.rating != null && (
+              {showRating && place.rating != null && (
                 <p className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-amber-600">
                   <Star className="h-4 w-4 fill-current" />
                   {place.rating.toFixed(1)}
@@ -62,7 +64,7 @@ export function PlaceSheet() {
             {place.hours && <span className="rounded-full bg-slate-100 px-2.5 py-1 dark:bg-white/10">{place.hours}</span>}
             {place.accessibility && <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-200">Accessible</span>}
             {place.parking && <span className="rounded-full bg-blue-50 px-2.5 py-1 text-blue-700 dark:bg-blue-500/20 dark:text-blue-200">Parking</span>}
-            {place.verified && (
+            {place.verified && showVerification && (
               <span className="inline-flex items-center gap-1 rounded-full bg-sm-primary/10 px-2.5 py-1 text-sm-primary dark:text-sky-200">
                 <ShieldCheck className="h-3.5 w-3.5" />
                 {place.verified}

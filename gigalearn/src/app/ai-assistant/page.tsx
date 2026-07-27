@@ -1,5 +1,6 @@
 "use client";
 
+import { FeatureGate } from "@/components/smart-map/feature-gate";
 import { useState, useTransition } from "react";
 import { Bot, Send, Sparkles } from "lucide-react";
 
@@ -11,7 +12,7 @@ const SUGGESTIONS = [
   "Plan a tourist day in Accra with safe stops",
 ];
 
-export default function AIAssistantPage() {
+function AIAssistantPageContent() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<
     { role: "user" | "assistant"; content: string }[]
@@ -144,4 +145,18 @@ function offlineReply(input: string): string {
     return "Twi: “Polis station no wɔ he?” (Where is the police station?) · Ga: “Polis station yɛ mli?” Keep the Safety Center numbers handy: Police 191, Fire 192, Ambulance 193.";
   }
   return "I can help with nearest services, safer routes, landmark context, emergency steps, and travel planning across Ghana and expanding African cities. Ask me something specific about where you are going.";
+}
+
+
+export default function AIAssistantPage() {
+  return (
+    <FeatureGate
+      flag="aiExpansionPhase3"
+      title="Smart Map AI"
+      phase="Phase 3"
+      description="AI assistant, voice search, and travel guidance are ready behind the Phase 3 flag."
+    >
+      <AIAssistantPageContent />
+    </FeatureGate>
+  );
 }

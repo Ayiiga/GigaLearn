@@ -1,13 +1,16 @@
 "use client";
 
+import { FeatureGate } from "@/components/smart-map/feature-gate";
 import { useState } from "react";
 import { Camera, MapPin, Mic, Plus } from "lucide-react";
 import { REPORT_TYPES } from "@/content/smart-map/reports";
 import { useMapStore } from "@/stores/map-store";
 import type { ReportType } from "@/types/smart-map";
 import { DEFAULT_CENTER } from "@/lib/map/styles";
+import { sanitizeText } from "@/lib/security/validate";
+import { isValidCoord } from "@/lib/security/validate";
 
-export default function CommunityPage() {
+function CommunityPageContent() {
   const reports = useMapStore((s) => s.reports);
   const addReport = useMapStore((s) => s.addReport);
   const userLocation = useMapStore((s) => s.userLocation) ?? DEFAULT_CENTER;
@@ -15,24 +18,32 @@ export default function CommunityPage() {
   const [type, setType] = useState<ReportType>("accident");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [mediaCount, setMediaCount] = useState(0);
+  const [hasVoice, setHasVoice] = useState(false);
 
   function submit() {
-    if (!title.trim() || !description.trim()) return;
+    const cleanTitle = sanitizeText(title, 120);
+    const cleanDescription = sanitizeText(description, 2000);
+    if (!cleanTitle || !cleanDescription) return;
+    if (!isValidCoord(userLocation.lat, userLocation.lng)) return;
+
     addReport({
       id: crypto.randomUUID(),
       type,
-      title: title.trim(),
-      description: description.trim(),
+      title: cleanTitle,
+      description: cleanDescription,
       coordinates: userLocation,
       city: "Accra",
       countryCode: "GH",
       status: "submitted",
       createdAt: new Date().toISOString(),
-      mediaCount: 0,
+      mediaCount: mediaCount + (hasVoice ? 1 : 0),
       aiSummary: `AI draft: community reported ${type.replace("_", " ")} near current GPS. Pending verification.`,
     });
     setTitle("");
     setDescription("");
+    setMediaCount(0);
+    setHasVoice(false);
     setOpen(false);
   }
 
@@ -91,12 +102,32 @@ export default function CommunityPage() {
             <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 dark:bg-white/10">
               <MapPin className="h-3.5 w-3.5" /> GPS attached
             </span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 dark:bg-white/10">
-              <Camera className="h-3.5 w-3.5" /> Photo / video ready
-            </span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 dark:bg-white/10">
-              <Mic className="h-3.5 w-3.5" /> Voice note ready
-            </span>
+            <label className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 dark:bg-white/10">
+              <Camera className="h-3.5 w-3.5" />
+              Photo / video
+              <input
+                type="file"
+                accept="image/*,video/*"
+                multiple
+                className="sr-only"
+                onChange={(e) => setMediaCount(e.target.files?.length ?? 0)}
+              />
+            </label>
+            <label className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 dark:bg-white/10">
+              <Mic className="h-3.5 w-3.5" />
+              Voice note
+              <input
+                type="file"
+                accept="audio/*"
+                className="sr-only"
+                onChange={(e) => setHasVoice(Boolean(e.target.files?.length))}
+              />
+            </label>
+            {(mediaCount > 0 || hasVoice) && (
+              <span className="rounded-full bg-sm-emerald/15 px-3 py-1.5 text-sm-emerald">
+                {mediaCount + (hasVoice ? 1 : 0)} media attached
+              </span>
+            )}
           </div>
           <button
             type="button"
@@ -138,5 +169,19 @@ export default function CommunityPage() {
         })}
       </ul>
     </div>
+  );
+}
+
+
+export default function CommunityPage() {
+  return (
+    <FeatureGate
+      flag="publicSafetyPhase2"
+      title="Community Reporting"
+      phase="Phase 2"
+      description="Hazard reporting with photos, video, voice notes, and AI summaries is ready behind the Phase 2 flag."
+    >
+      <CommunityPageContent />
+    </FeatureGate>
   );
 }

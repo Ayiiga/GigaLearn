@@ -1,10 +1,11 @@
 "use client";
 
+import { FeatureGate } from "@/components/smart-map/feature-gate";
 import { AFRICA_COUNTRY_CODES, COUNTRIES } from "@/content/smart-map/countries";
 import { PLACES } from "@/content/smart-map/places";
 import { useMapStore } from "@/stores/map-store";
 
-export default function AdminDashboardPage() {
+function AdminDashboardPageContent() {
   const reports = useMapStore((s) => s.reports);
   const verifiedPlaces = PLACES.filter((p) => p.verified).length;
 
@@ -77,5 +78,19 @@ export default function AdminDashboardPage() {
         </p>
       </section>
     </div>
+  );
+}
+
+
+export default function AdminDashboardPage() {
+  return (
+    <FeatureGate
+      flag="aiExpansionPhase3"
+      title="Admin Dashboard"
+      phase="Phase 3"
+      description="Admin analytics, country management, and verification queues are ready behind the Phase 3 flag."
+    >
+      <AdminDashboardPageContent />
+    </FeatureGate>
   );
 }

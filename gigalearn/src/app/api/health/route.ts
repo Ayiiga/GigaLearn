@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { validateSupabaseConfig, getSupabasePublishableKey } from "@/lib/supabase/env";
+import { FEATURE_FLAGS } from "@/lib/features/flags";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +30,11 @@ export async function GET() {
       service: "smart-map",
       timestamp: new Date().toISOString(),
       latencyMs: Date.now() - started,
+      features: {
+        phase1Foundation: FEATURE_FLAGS.phase1Foundation,
+        publicSafetyPhase2: FEATURE_FLAGS.publicSafetyPhase2,
+        aiExpansionPhase3: FEATURE_FLAGS.aiExpansionPhase3,
+      },
       supabase: {
         project: config.projectRef,
         configured: config.ok,

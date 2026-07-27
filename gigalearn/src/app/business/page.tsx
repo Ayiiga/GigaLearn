@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { BadgeCheck, BarChart3, Megaphone, Store } from "lucide-react";
+import { FeatureGate } from "@/components/smart-map/feature-gate";
 
-export default function BusinessPage() {
+function BusinessPageContent() {
   return (
     <div className="mx-auto max-w-4xl px-4 pb-10 pt-6 sm:px-6">
       <header className="sm-fade-up">
@@ -10,7 +13,8 @@ export default function BusinessPage() {
           Grow with Smart Map
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
-          Claim your location, verify your listing, advertise to nearby travelers, manage reviews, and unlock analytics across Ghana and Africa.
+          Claim your location, verify your listing, advertise to nearby travelers, manage reviews, and unlock
+          analytics across Ghana and Africa.
         </p>
       </header>
 
@@ -66,5 +70,18 @@ export default function BusinessPage() {
         </Link>
       </section>
     </div>
+  );
+}
+
+export default function BusinessPage() {
+  return (
+    <FeatureGate
+      flag="aiExpansionPhase3"
+      title="Business Platform"
+      phase="Phase 3"
+      description="Business listings, verification, and advertising are ready behind the Phase 3 flag."
+    >
+      <BusinessPageContent />
+    </FeatureGate>
   );
 }
