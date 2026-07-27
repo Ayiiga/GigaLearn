@@ -63,7 +63,7 @@ describe("supabase env resolution", () => {
     const status = validateSupabaseConfig();
     expect(status.ok).toBe(false);
     expect(status.issues.some((issue) => issue.includes("wrongproject"))).toBe(true);
-    expect(status.issues.some((issue) => issue.includes("GigaTrend TV expects"))).toBe(true);
+    expect(status.issues.some((issue) => issue.includes("Smart Map expects"))).toBe(true);
   });
 
   it("strips invisible unicode from keys", () => {

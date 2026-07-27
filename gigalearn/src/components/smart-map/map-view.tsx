@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import maplibregl, { type Map, type Marker } from "maplibre-gl";
+import {
+  Map as MapLibreMap,
+  Marker,
+  NavigationControl,
+  GeolocateControl,
+  ScaleControl,
+} from "maplibre-gl";
+import type { Map as MapLibreMapType, Marker as MarkerType } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { PLACES } from "@/content/smart-map/places";
 import { getCategoryMeta } from "@/content/smart-map/categories";
@@ -24,9 +31,9 @@ export function MapView({
   onPlaceSelect,
 }: MapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<Map | null>(null);
-  const markersRef = useRef<Marker[]>([]);
-  const userMarkerRef = useRef<Marker | null>(null);
+  const mapRef = useRef<MapLibreMapType | null>(null);
+  const markersRef = useRef<MarkerType[]>([]);
+  const userMarkerRef = useRef<MarkerType | null>(null);
   const [ready, setReady] = useState(false);
 
   const mapStyle = useMapStore((s) => s.mapStyle);
@@ -41,7 +48,7 @@ export function MapView({
     if (!containerRef.current || mapRef.current) return;
 
     const country = getCountry(countryCode);
-    const map = new maplibregl.Map({
+    const map = new MapLibreMap({
       container: containerRef.current,
       style: MAP_STYLE_URLS[mapStyle] ?? MAP_STYLE_URLS.streets,
       center: [country.center.lng, country.center.lat],
@@ -50,12 +57,15 @@ export function MapView({
       interactive,
     });
 
-    map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "bottom-right");
-    map.addControl(new maplibregl.GeolocateControl({
-      positionOptions: { enableHighAccuracy: true },
-      trackUserLocation: true,
-    }), "bottom-right");
-    map.addControl(new maplibregl.ScaleControl({ maxWidth: 100 }), "bottom-left");
+    map.addControl(new NavigationControl({ visualizePitch: true }), "bottom-right");
+    map.addControl(
+      new GeolocateControl({
+        positionOptions: { enableHighAccuracy: true },
+        trackUserLocation: true,
+      }),
+      "bottom-right",
+    );
+    map.addControl(new ScaleControl({ maxWidth: 100 }), "bottom-left");
 
     map.on("load", () => setReady(true));
     mapRef.current = map;
@@ -126,7 +136,7 @@ export function MapView({
         el.style.zIndex = "2";
       }
 
-      const marker = new maplibregl.Marker({ element: el, anchor: "bottom" })
+      const marker = new Marker({ element: el, anchor: "bottom" })
         .setLngLat([place.coordinates.lng, place.coordinates.lat])
         .addTo(map);
       markersRef.current.push(marker);
@@ -143,7 +153,7 @@ export function MapView({
       width: 18px; height: 18px; border-radius: 999px; background: #0E9F6E;
       border: 3px solid white; box-shadow: 0 0 0 6px rgba(14,159,110,0.25);
     `;
-    userMarkerRef.current = new maplibregl.Marker({ element: el })
+    userMarkerRef.current = new Marker({ element: el })
       .setLngLat([userLocation.lng, userLocation.lat])
       .addTo(map);
   }, [userLocation, ready]);
