@@ -66,8 +66,8 @@ export default function NavigatePage() {
   const workLocation = useMapStore((s) => s.workLocation);
   const setHomeLocation = useMapStore((s) => s.setHomeLocation);
   const setWorkLocation = useMapStore((s) => s.setWorkLocation);
-  const recentPlaces = useMapStore((s) => s.recentPlaces);
-  const savedPlaceIds = useMapStore((s) => s.savedPlaceIds);
+  const recentPlaces = useMapStore((s) => s.recentPlaces) ?? [];
+  const savedPlaceIds = useMapStore((s) => s.savedPlaceIds) ?? [];
   const setPickOnMapMode = useMapStore((s) => s.setPickOnMapMode);
   const destination = useMapStore((s) => s.destination);
 
@@ -78,18 +78,33 @@ export default function NavigatePage() {
   );
   const [navigating, setNavigating] = useState(false);
 
-  // Default From = current GPS location (do not overwrite Home/Work/Search/Map picks)
+  // Default From = current GPS. Only write when missing or values actually changed
+  // (avoid Maximum update depth from recreating navOrigin every render / GPS tick).
   useEffect(() => {
     if (!userLocation) return;
     if (navOrigin && navOrigin.source !== "gps") return;
+
+    const label = resolvedAddress?.label
+      ? `Current Location · ${resolvedAddress.city || resolvedAddress.label}`
+      : "📍 Current Location";
+    const address = resolvedAddress?.label;
+
+    if (
+      navOrigin?.source === "gps" &&
+      Math.abs(navOrigin.coordinates.lat - userLocation.lat) < 1e-7 &&
+      Math.abs(navOrigin.coordinates.lng - userLocation.lng) < 1e-7 &&
+      navOrigin.label === label &&
+      navOrigin.address === address
+    ) {
+      return;
+    }
+
     setNavOrigin({
       id: "gps-current",
-      label: resolvedAddress?.label
-        ? `Current Location · ${resolvedAddress.city || resolvedAddress.label}`
-        : "📍 Current Location",
+      label,
       coordinates: userLocation,
       source: "gps",
-      address: resolvedAddress?.label,
+      address,
     });
   }, [userLocation, resolvedAddress, navOrigin, setNavOrigin]);
 

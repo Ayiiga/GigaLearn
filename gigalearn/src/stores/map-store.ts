@@ -130,8 +130,35 @@ export const useMapStore = create<MapState>()(
           get().addRecentPlace(endpoint);
         }
       },
-      setNavOrigin: (endpoint) => set({ navOrigin: endpoint }),
+      setNavOrigin: (endpoint) => {
+        const current = get().navOrigin;
+        if (
+          current &&
+          endpoint &&
+          current.id === endpoint.id &&
+          current.source === endpoint.source &&
+          current.label === endpoint.label &&
+          current.address === endpoint.address &&
+          Math.abs(current.coordinates.lat - endpoint.coordinates.lat) < 1e-7 &&
+          Math.abs(current.coordinates.lng - endpoint.coordinates.lng) < 1e-7
+        ) {
+          return;
+        }
+        set({ navOrigin: endpoint });
+      },
       setNavDestination: (endpoint) => {
+        const current = get().navDestination;
+        if (
+          current &&
+          endpoint &&
+          current.id === endpoint.id &&
+          current.source === endpoint.source &&
+          current.label === endpoint.label &&
+          Math.abs(current.coordinates.lat - endpoint.coordinates.lat) < 1e-7 &&
+          Math.abs(current.coordinates.lng - endpoint.coordinates.lng) < 1e-7
+        ) {
+          return;
+        }
         set({ navDestination: endpoint });
         if (endpoint) get().addRecentPlace(endpoint);
       },
@@ -166,6 +193,26 @@ export const useMapStore = create<MapState>()(
     }),
     {
       name: "smart-map-store",
+      version: 2,
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<MapState>;
+        return {
+          ...current,
+          ...p,
+          // Ensure new GPS/nav fields always exist after rehydrate from older clients
+          recentPlaces: Array.isArray(p.recentPlaces) ? p.recentPlaces : current.recentPlaces,
+          homeLocation: p.homeLocation ?? current.homeLocation,
+          workLocation: p.workLocation ?? current.workLocation,
+          locationPermission: current.locationPermission,
+          locationMeta: current.locationMeta,
+          resolvedAddress: current.resolvedAddress,
+          navOrigin: current.navOrigin,
+          navDestination: current.navDestination,
+          pickOnMapMode: current.pickOnMapMode,
+          followUser: current.followUser,
+          userLocation: current.userLocation,
+        };
+      },
       partialize: (state) => ({
         countryCode: state.countryCode,
         savedPlaceIds: state.savedPlaceIds,
