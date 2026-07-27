@@ -67,7 +67,14 @@ export function MapView({
     );
     map.addControl(new ScaleControl({ maxWidth: 100 }), "bottom-left");
 
-    map.on("load", () => setReady(true));
+    const markReady = () => setReady(true);
+    map.on("load", markReady);
+    map.on("idle", markReady);
+    map.on("error", () => {
+      // Style/tile errors should not trap users on the splash forever.
+      setReady(true);
+    });
+    const readyFallback = window.setTimeout(markReady, 2500);
     mapRef.current = map;
 
     if (typeof navigator !== "undefined" && navigator.geolocation) {
@@ -84,6 +91,7 @@ export function MapView({
     }
 
     return () => {
+      window.clearTimeout(readyFallback);
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = [];
       userMarkerRef.current?.remove();
