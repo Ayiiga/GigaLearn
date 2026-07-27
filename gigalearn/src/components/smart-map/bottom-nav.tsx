@@ -2,20 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, Navigation, Shield, LayoutDashboard, Bot } from "lucide-react";
+import { Home, Search, Navigation, Shield, LayoutDashboard, Bot, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const ITEMS = [
-  { href: "/", label: "Map", icon: Home },
-  { href: "/search", label: "Search", icon: Search },
-  { href: "/navigate", label: "Navigate", icon: Navigation },
-  { href: "/safety", label: "Safety", icon: Shield },
-  { href: "/ai-assistant", label: "AI", icon: Bot },
-  { href: "/dashboard", label: "Hub", icon: LayoutDashboard },
-];
+import { useAiExpansionEnabled, usePublicSafetyEnabled } from "@/lib/features/use-feature-flag";
 
 export function BottomNav() {
   const pathname = usePathname();
+  const publicSafety = usePublicSafetyEnabled();
+  const aiExpansion = useAiExpansionEnabled();
+
+  const items = [
+    { href: "/", label: "Map", icon: Home, show: true },
+    { href: "/search", label: "Search", icon: Search, show: true },
+    { href: "/navigate", label: "Navigate", icon: Navigation, show: true },
+    { href: "/safety", label: "Safety", icon: Shield, show: publicSafety },
+    { href: "/ai-assistant", label: "AI", icon: Bot, show: aiExpansion },
+    { href: "/dashboard", label: "Hub", icon: LayoutDashboard, show: true },
+    { href: "/profile", label: "Profile", icon: User, show: !publicSafety && !aiExpansion },
+  ].filter((item) => item.show);
 
   return (
     <nav
@@ -23,7 +27,7 @@ export function BottomNav() {
       aria-label="Primary"
     >
       <ul className="mx-auto flex max-w-lg items-stretch justify-between gap-0.5">
-        {ITEMS.map(({ href, label, icon: Icon }) => {
+        {items.map(({ href, label, icon: Icon }) => {
           const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
           return (
             <li key={href} className="flex-1">

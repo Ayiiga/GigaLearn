@@ -1,12 +1,19 @@
 "use client";
 
 import { PLACE_CATEGORIES } from "@/content/smart-map/categories";
+import { PHASE1_NEARBY_CATEGORIES } from "@/lib/features/flags";
 import { useMapStore } from "@/stores/map-store";
 import { cn } from "@/lib/utils";
 
-export function CategoryChips() {
+export function CategoryChips({ phase1Only = true }: { phase1Only?: boolean }) {
   const activeCategory = useMapStore((s) => s.activeCategory);
   const setActiveCategory = useMapStore((s) => s.setActiveCategory);
+
+  const categories = phase1Only
+    ? PLACE_CATEGORIES.filter((c) =>
+        (PHASE1_NEARBY_CATEGORIES as readonly string[]).includes(c.id),
+      )
+    : PLACE_CATEGORIES;
 
   return (
     <div className="pointer-events-auto flex gap-2 overflow-x-auto pb-1 scrollbar-none">
@@ -22,7 +29,7 @@ export function CategoryChips() {
       >
         Nearby
       </button>
-      {PLACE_CATEGORIES.slice(0, 14).map((cat) => (
+      {categories.map((cat) => (
         <button
           key={cat.id}
           type="button"

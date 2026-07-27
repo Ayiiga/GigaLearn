@@ -11,12 +11,17 @@ import { ACCRA_WEATHER } from "@/content/smart-map/weather";
 import { LAUNCH_COUNTRY } from "@/content/smart-map/countries";
 import { useMapStore } from "@/stores/map-store";
 import { BRAND } from "@/lib/brand";
+import { useAiExpansionEnabled, usePublicSafetyEnabled } from "@/lib/features/use-feature-flag";
 
 export function HomeOverlay() {
   const setSosActive = useMapStore((s) => s.setSosActive);
   const setAiOpen = useMapStore((s) => s.setAiOpen);
   const reports = useMapStore((s) => s.reports);
-  const alertCount = reports.filter((r) => r.status === "verified" || r.status === "verifying").length;
+  const publicSafety = usePublicSafetyEnabled();
+  const aiExpansion = useAiExpansionEnabled();
+  const alertCount = publicSafety
+    ? reports.filter((r) => r.status === "verified" || r.status === "verifying").length
+    : 0;
 
   return (
     <>
@@ -36,13 +41,15 @@ export function HomeOverlay() {
               </p>
             </div>
           </Link>
-          <Link
-            href="/weather"
-            className="inline-flex items-center gap-1.5 rounded-2xl border border-white/30 bg-white/85 px-3 py-2.5 text-sm font-semibold shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-[#0B3A63]/88"
-          >
-            <CloudSun className="h-4 w-4 text-sm-safety" />
-            {ACCRA_WEATHER.tempC}°
-          </Link>
+          {publicSafety && (
+            <Link
+              href="/weather"
+              className="inline-flex items-center gap-1.5 rounded-2xl border border-white/30 bg-white/85 px-3 py-2.5 text-sm font-semibold shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-[#0B3A63]/88"
+            >
+              <CloudSun className="h-4 w-4 text-sm-safety" />
+              {ACCRA_WEATHER.tempC}°
+            </Link>
+          )}
           <ThemeToggle />
           <UserMenu />
         </div>
@@ -60,10 +67,10 @@ export function HomeOverlay() {
         </div>
 
         <div className="mx-auto mt-3 max-w-3xl">
-          <CategoryChips />
+          <CategoryChips phase1Only={!publicSafety} />
         </div>
 
-        {alertCount > 0 && (
+        {publicSafety && alertCount > 0 && (
           <div className="pointer-events-auto mx-auto mt-3 max-w-3xl">
             <Link
               href="/community"
@@ -77,25 +84,29 @@ export function HomeOverlay() {
       </div>
 
       <div className="pointer-events-none absolute right-3 top-[42%] z-20 flex flex-col gap-3 sm:right-5">
-        <Link
-          href="/ai-assistant"
-          onClick={() => setAiOpen(true)}
-          className="pointer-events-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-sm-primary to-sm-emerald text-white shadow-xl shadow-sm-primary/30"
-          aria-label="Open AI Assistant"
-        >
-          <Bot className="h-6 w-6" />
-        </Link>
-        <Link
-          href="/safety"
-          onClick={() => setSosActive(true)}
-          className="pointer-events-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-sm-danger text-white shadow-xl shadow-red-500/40 animate-pulse"
-          aria-label="Emergency SOS"
-        >
-          <span className="font-display text-xs font-black tracking-wide">SOS</span>
-        </Link>
+        {aiExpansion && (
+          <Link
+            href="/ai-assistant"
+            onClick={() => setAiOpen(true)}
+            className="pointer-events-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-sm-primary to-sm-emerald text-white shadow-xl shadow-sm-primary/30"
+            aria-label="Open AI Assistant"
+          >
+            <Bot className="h-6 w-6" />
+          </Link>
+        )}
+        {publicSafety && (
+          <Link
+            href="/safety"
+            onClick={() => setSosActive(true)}
+            className="pointer-events-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-sm-danger text-white shadow-xl shadow-red-500/40 animate-pulse"
+            aria-label="Emergency SOS"
+          >
+            <span className="font-display text-xs font-black tracking-wide">SOS</span>
+          </Link>
+        )}
       </div>
 
-      <PlaceSheet />
+      <PlaceSheet showVerification={publicSafety} />
     </>
   );
 }
