@@ -3,6 +3,7 @@ export type PlaceCategory =
   | "fire"
   | "ambulance"
   | "hospital"
+  | "clinic"
   | "pharmacy"
   | "school"
   | "university"
@@ -24,7 +25,9 @@ export type PlaceCategory =
   | "attraction"
   | "park"
   | "toilet"
-  | "ev_charger";
+  | "ev_charger"
+  | "shelter"
+  | "disaster_center";
 
 export type VerificationBadge =
   | "government"
@@ -34,7 +37,7 @@ export type VerificationBadge =
   | "business"
   | "ngo";
 
-export type TravelMode = "driving" | "walking" | "cycling" | "transit";
+export type TravelMode = "driving" | "walking" | "cycling" | "transit" | "motorcycle";
 
 export type MapStyle = "streets" | "satellite" | "terrain" | "dark";
 

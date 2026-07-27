@@ -37,6 +37,7 @@ export async function GET() {
         smartServicesPhase4: FEATURE_FLAGS.smartServicesPhase4,
         businessCommunityPhase5: FEATURE_FLAGS.businessCommunityPhase5,
         africaExpansionPhase6: FEATURE_FLAGS.africaExpansionPhase6,
+        advancedNavigationPhase7: FEATURE_FLAGS.advancedNavigationPhase7,
       },
       supabase: {
         project: config.projectRef,

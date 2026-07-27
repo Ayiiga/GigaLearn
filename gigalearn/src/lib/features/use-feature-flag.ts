@@ -25,3 +25,7 @@ export function useBusinessCommunityEnabled(): boolean {
 export function useAfricaExpansionEnabled(): boolean {
   return FEATURE_FLAGS.africaExpansionPhase6;
 }
+
+export function useAdvancedNavigationEnabled(): boolean {
+  return FEATURE_FLAGS.advancedNavigationPhase7;
+}

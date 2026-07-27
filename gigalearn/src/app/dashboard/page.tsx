@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Bookmark, Compass, MapPin, User } from "lucide-react";
 import { nearbyPlaces, getPlaceById } from "@/content/smart-map/places";
 import { PHASE1_NEARBY_CATEGORIES } from "@/lib/features/flags";
-import { useAiExpansionEnabled, usePublicSafetyEnabled } from "@/lib/features/use-feature-flag";
+import { useAiExpansionEnabled, useAdvancedNavigationEnabled, usePublicSafetyEnabled } from "@/lib/features/use-feature-flag";
 import { DEFAULT_CENTER } from "@/lib/map/styles";
 import { useMapStore } from "@/stores/map-store";
 
@@ -13,6 +13,7 @@ export default function DashboardPage() {
   const savedPlaceIds = useMapStore((s) => s.savedPlaceIds);
   const publicSafety = usePublicSafetyEnabled();
   const aiExpansion = useAiExpansionEnabled();
+  const advancedNav = useAdvancedNavigationEnabled();
 
   const nearby = nearbyPlaces(userLocation, "all", 12).filter((p) =>
     publicSafety ? true : (PHASE1_NEARBY_CATEGORIES as readonly string[]).includes(p.category),
@@ -100,11 +101,20 @@ export default function DashboardPage() {
         </section>
       </div>
 
-      {(publicSafety || aiExpansion) && (
+      {(publicSafety || aiExpansion || advancedNav) && (
         <p className="mt-6 text-xs text-slate-500">
           Advanced modules enabled:
           {publicSafety ? " Public Safety (Phase 2)" : ""}
           {aiExpansion ? " AI & Expansion (Phase 3)" : ""}
+          {advancedNav ? " Advanced Navigation (Phase 7)" : ""}
+          {advancedNav ? (
+            <>
+              {" "}
+              <Link href="/advanced-navigation" className="font-bold text-sm-primary">
+                Open →
+              </Link>
+            </>
+          ) : null}
         </p>
       )}
     </div>

@@ -2,7 +2,7 @@
  * Smart Map phased rollout flags.
  *
  * Phase 1 (foundation) is always enabled.
- * Phases 2–6 stay OFF unless explicitly enabled via env.
+ * Phases 2–7 stay OFF unless explicitly enabled via env.
  *
  * Env overrides (string "true" / "1"):
  * - NEXT_PUBLIC_FEATURE_PUBLIC_SAFETY
@@ -10,6 +10,7 @@
  * - NEXT_PUBLIC_FEATURE_SMART_SERVICES
  * - NEXT_PUBLIC_FEATURE_BUSINESS_COMMUNITY
  * - NEXT_PUBLIC_FEATURE_AFRICA_EXPANSION
+ * - NEXT_PUBLIC_FEATURE_ADVANCED_NAVIGATION
  */
 
 function envFlag(name: string, fallback: boolean): boolean {
@@ -36,6 +37,9 @@ export const FEATURE_FLAGS = {
 
   /** Phase 6 — Africa expansion, enterprise dashboards, advanced AI, scalability */
   africaExpansionPhase6: envFlag("NEXT_PUBLIC_FEATURE_AFRICA_EXPANSION", false),
+
+  /** Phase 7 — advanced navigation, layers, AI route safety, emergency nav, trip summary */
+  advancedNavigationPhase7: envFlag("NEXT_PUBLIC_FEATURE_ADVANCED_NAVIGATION", false),
 } as const;
 
 export type FeatureFlagKey = keyof typeof FEATURE_FLAGS;
@@ -45,7 +49,8 @@ export type FeaturePhaseLabel =
   | "Phase 3"
   | "Phase 4"
   | "Phase 5"
-  | "Phase 6";
+  | "Phase 6"
+  | "Phase 7";
 
 export function isFeatureEnabled(flag: FeatureFlagKey): boolean {
   return Boolean(FEATURE_FLAGS[flag]);
@@ -71,6 +76,9 @@ export const PHASE5_ROUTES = ["/portal", "/groups", "/reviews"] as const;
 /** Routes that require Phase 6 Africa expansion & enterprise. */
 export const PHASE6_ROUTES = ["/enterprise", "/countries", "/command-center"] as const;
 
+/** Routes that require Phase 7 advanced navigation. */
+export const PHASE7_ROUTES = ["/advanced-navigation", "/trip-summary"] as const;
+
 function matchesRoute(pathname: string, routes: readonly string[]): boolean {
   return routes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 }
@@ -93,6 +101,10 @@ export function isPhase5Route(pathname: string): boolean {
 
 export function isPhase6Route(pathname: string): boolean {
   return matchesRoute(pathname, PHASE6_ROUTES);
+}
+
+export function isPhase7Route(pathname: string): boolean {
+  return matchesRoute(pathname, PHASE7_ROUTES);
 }
 
 /** Phase 1 essential nearby categories shown on the home map. */
