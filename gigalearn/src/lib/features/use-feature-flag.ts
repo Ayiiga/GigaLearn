@@ -13,3 +13,15 @@ export function usePublicSafetyEnabled(): boolean {
 export function useAiExpansionEnabled(): boolean {
   return FEATURE_FLAGS.aiExpansionPhase3;
 }
+
+export function useSmartServicesEnabled(): boolean {
+  return FEATURE_FLAGS.smartServicesPhase4;
+}
+
+export function useBusinessCommunityEnabled(): boolean {
+  return FEATURE_FLAGS.businessCommunityPhase5;
+}
+
+export function useAfricaExpansionEnabled(): boolean {
+  return FEATURE_FLAGS.africaExpansionPhase6;
+}

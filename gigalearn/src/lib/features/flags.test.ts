@@ -4,27 +4,38 @@ import {
   isFeatureEnabled,
   isPhase2Route,
   isPhase3Route,
+  isPhase4Route,
+  isPhase5Route,
+  isPhase6Route,
   PHASE1_NEARBY_CATEGORIES,
 } from "./flags";
 
 describe("feature flags", () => {
-  it("keeps Phase 1 always on and Phase 2/3 off by default", () => {
+  it("keeps Phase 1 on and Phases 2–6 off by default", () => {
     expect(FEATURE_FLAGS.phase1Foundation).toBe(true);
     expect(FEATURE_FLAGS.publicSafetyPhase2).toBe(false);
     expect(FEATURE_FLAGS.aiExpansionPhase3).toBe(false);
-    expect(isFeatureEnabled("publicSafetyPhase2")).toBe(false);
-    expect(isFeatureEnabled("aiExpansionPhase3")).toBe(false);
+    expect(FEATURE_FLAGS.smartServicesPhase4).toBe(false);
+    expect(FEATURE_FLAGS.businessCommunityPhase5).toBe(false);
+    expect(FEATURE_FLAGS.africaExpansionPhase6).toBe(false);
+    expect(isFeatureEnabled("smartServicesPhase4")).toBe(false);
+    expect(isFeatureEnabled("businessCommunityPhase5")).toBe(false);
+    expect(isFeatureEnabled("africaExpansionPhase6")).toBe(false);
   });
 
   it("classifies phase routes correctly", () => {
     expect(isPhase2Route("/safety")).toBe(true);
-    expect(isPhase2Route("/community")).toBe(true);
-    expect(isPhase2Route("/weather")).toBe(true);
-    expect(isPhase2Route("/search")).toBe(false);
     expect(isPhase3Route("/ai-assistant")).toBe(true);
-    expect(isPhase3Route("/business")).toBe(true);
-    expect(isPhase3Route("/dashboard/admin")).toBe(true);
-    expect(isPhase3Route("/dashboard")).toBe(false);
+    expect(isPhase4Route("/services")).toBe(true);
+    expect(isPhase4Route("/transport")).toBe(true);
+    expect(isPhase4Route("/trips")).toBe(true);
+    expect(isPhase5Route("/portal")).toBe(true);
+    expect(isPhase5Route("/groups")).toBe(true);
+    expect(isPhase5Route("/reviews")).toBe(true);
+    expect(isPhase6Route("/enterprise")).toBe(true);
+    expect(isPhase6Route("/countries")).toBe(true);
+    expect(isPhase6Route("/command-center")).toBe(true);
+    expect(isPhase4Route("/search")).toBe(false);
   });
 
   it("defines Phase 1 nearby essentials", () => {
