@@ -1,0 +1,48 @@
+import type { Place } from "@/types/smart-map";
+
+/** Phase 3 tourism layer points (gated by aiExpansionPhase3). */
+export const TOURISM_PLACES: Place[] = [
+  {
+    id: "gh-tourism-independence",
+    name: "Independence Square",
+    category: "attraction",
+    coordinates: { lat: 5.548, lng: -0.192 },
+    address: "Black Star Square, Accra",
+    city: "Accra",
+    region: "Greater Accra",
+    country: "Ghana",
+    countryCode: "GH",
+    rating: 4.5,
+    reviewCount: 2800,
+    description: "Iconic national square and parade grounds.",
+    parking: true,
+  },
+  {
+    id: "gh-tourism-labadi-beach",
+    name: "Labadi Beach",
+    category: "attraction",
+    coordinates: { lat: 5.561, lng: -0.145 },
+    address: "La, Accra",
+    city: "Accra",
+    region: "Greater Accra",
+    country: "Ghana",
+    countryCode: "GH",
+    rating: 4.3,
+    reviewCount: 1900,
+    description: "Popular Accra beachfront for visitors.",
+  },
+  {
+    id: "gh-tourism-kwame-nkrumah",
+    name: "Kwame Nkrumah Memorial Park",
+    category: "attraction",
+    coordinates: { lat: 5.545, lng: -0.206 },
+    address: "High Street, Accra",
+    city: "Accra",
+    region: "Greater Accra",
+    country: "Ghana",
+    countryCode: "GH",
+    rating: 4.6,
+    reviewCount: 1200,
+    description: "Memorial park and museum for Ghana’s first president.",
+  },
+];

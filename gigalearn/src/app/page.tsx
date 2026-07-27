@@ -1,14 +1,25 @@
-import { getHeroArticles } from "@/content/media";
-import { HeroStatic } from "@/components/media/hero-static";
-import { NewsDashboard } from "@/components/dashboard/news-dashboard";
+"use client";
+
+import dynamic from "next/dynamic";
+import { HomeOverlay } from "@/components/smart-map/home-overlay";
+
+const MapView = dynamic(
+  () => import("@/components/smart-map/map-view").then((m) => m.MapView),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="grid h-full place-items-center bg-gradient-to-br from-sm-primary via-sm-primary-deep to-sm-emerald text-white">
+        <p className="font-display text-xl font-bold">Opening Smart Map…</p>
+      </div>
+    ),
+  },
+);
 
 export default function HomePage() {
-  const heroArticle = getHeroArticles()[0];
-
   return (
-    <div className="py-6 sm:py-8">
-      {heroArticle && <HeroStatic article={heroArticle} />}
-      <NewsDashboard />
+    <div className="relative h-[100dvh] w-full">
+      <MapView />
+      <HomeOverlay />
     </div>
   );
 }

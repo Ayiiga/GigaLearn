@@ -19,7 +19,7 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") ?? "/learn";
+  const redirect = searchParams.get("redirect") ?? "/dashboard";
   const { guard } = useSubmitGuard();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -43,15 +43,15 @@ function LoginForm() {
   };
 
   const handleDemo = () => {
-    router.push("/learn");
+    router.push("/");
   };
 
   return (
     <Card className="w-full max-w-md p-8">
       <div className="text-center mb-8">
-        <span className="text-4xl">🎓</span>
-        <h1 className="font-display mt-4 text-2xl font-bold">Welcome to GigaTrend TV</h1>
-        <p className="text-giga-muted mt-2">Sign in to continue learning</p>
+        <span className="text-4xl">🗺️</span>
+        <h1 className="font-display mt-4 text-2xl font-bold">Welcome to Smart Map</h1>
+        <p className="text-giga-muted mt-2">Sign in to sync places, safety profile, and alerts</p>
       </div>
 
       <AuthConfigBanner />

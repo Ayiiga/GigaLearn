@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 /**
- * Generate GigaTrend TV PWA icons from brand SVG.
- * Uses sharp (bundled with Next.js).
+ * Generate Smart Map PWA icons from brand SVG.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -10,7 +9,7 @@ import sharp from "sharp";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
-const svg = readFileSync(join(root, "public/brand/gigatrend-icon.svg"));
+const svg = readFileSync(join(root, "public/brand/smart-map-icon.svg"));
 
 const outputs = [
   { path: "public/icons/icon-192.png", size: 192 },
@@ -32,7 +31,7 @@ async function generateSplash() {
       width,
       height,
       channels: 4,
-      background: { r: 10, g: 22, b: 40, alpha: 1 },
+      background: { r: 11, g: 58, b: 99, alpha: 1 },
     },
   })
     .composite([
@@ -45,7 +44,10 @@ async function generateSplash() {
 async function main() {
   for (const { path, size, height } of outputs) {
     const out = join(root, path);
-    let pipeline = sharp(svg).resize(size, height ?? size, { fit: "contain", background: { r: 10, g: 22, b: 40, alpha: 1 } });
+    let pipeline = sharp(svg).resize(size, height ?? size, {
+      fit: "contain",
+      background: { r: 11, g: 58, b: 99, alpha: 1 },
+    });
 
     if (path.endsWith("og-image.png")) {
       pipeline = sharp(svg)
@@ -55,7 +57,7 @@ async function main() {
           bottom: 115,
           left: 400,
           right: 400,
-          background: { r: 10, g: 22, b: 40, alpha: 1 },
+          background: { r: 11, g: 58, b: 99, alpha: 1 },
         });
     }
 
@@ -64,7 +66,6 @@ async function main() {
     console.log(`✓ ${path} (${info.width}x${info.height})`);
   }
 
-  // favicon.ico — multi-size PNG embedded as ICO substitute (32px PNG, widely supported)
   const favicon32 = await sharp(svg).resize(32, 32).png().toBuffer();
   writeFileSync(join(root, "public/favicon.ico"), favicon32);
   console.log("✓ public/favicon.ico (32x32)");

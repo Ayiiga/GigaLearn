@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { validateSupabaseConfig, getSupabasePublishableKey } from "@/lib/supabase/env";
+import { FEATURE_FLAGS } from "@/lib/features/flags";
 
 export const dynamic = "force-dynamic";
 
@@ -26,9 +27,17 @@ export async function GET() {
   return NextResponse.json(
     {
       status,
-      service: "gigatrend-tv",
+      service: "smart-map",
       timestamp: new Date().toISOString(),
       latencyMs: Date.now() - started,
+      features: {
+        phase1Foundation: FEATURE_FLAGS.phase1Foundation,
+        publicSafetyPhase2: FEATURE_FLAGS.publicSafetyPhase2,
+        aiExpansionPhase3: FEATURE_FLAGS.aiExpansionPhase3,
+        smartServicesPhase4: FEATURE_FLAGS.smartServicesPhase4,
+        businessCommunityPhase5: FEATURE_FLAGS.businessCommunityPhase5,
+        africaExpansionPhase6: FEATURE_FLAGS.africaExpansionPhase6,
+      },
       supabase: {
         project: config.projectRef,
         configured: config.ok,

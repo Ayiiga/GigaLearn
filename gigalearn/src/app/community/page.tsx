@@ -1,87 +1,187 @@
 "use client";
 
-import Link from "next/link";
-import { Heart, MessageCircle, Share2, Bookmark, Bell } from "lucide-react";
-import { GlassCard } from "@/components/ui/glass-card";
-import { MediaPageShell } from "@/components/media/section-header";
-import { NewsCardCompact } from "@/components/media/news-card";
-import { useMediaStore } from "@/stores/media-store";
-import { useAuth } from "@/hooks/use-auth";
-import { NEWS_ARTICLES } from "@/content/media";
-import { TRENDING_HASHTAGS } from "@/content/media/trending";
+import { FeatureGate } from "@/components/smart-map/feature-gate";
+import { useState } from "react";
+import { Camera, MapPin, Mic, Plus } from "lucide-react";
+import { REPORT_TYPES } from "@/content/smart-map/reports";
+import { useMapStore } from "@/stores/map-store";
+import type { ReportType } from "@/types/smart-map";
+import { DEFAULT_CENTER } from "@/lib/map/styles";
+import { sanitizeText } from "@/lib/security/validate";
+import { isValidCoord } from "@/lib/security/validate";
 
-export default function CommunityPage() {
-  const { isAuthenticated } = useAuth();
-  const followedTopics = useMediaStore((s) => s.preferences.followedTopics);
-  const toggleFollowTopic = useMediaStore((s) => s.toggleFollowTopic);
-  const savedCount = useMediaStore((s) => s.preferences.savedArticles.length);
+function CommunityPageContent() {
+  const reports = useMapStore((s) => s.reports);
+  const addReport = useMapStore((s) => s.addReport);
+  const userLocation = useMapStore((s) => s.userLocation) ?? DEFAULT_CENTER;
+  const [open, setOpen] = useState(false);
+  const [type, setType] = useState<ReportType>("accident");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [mediaCount, setMediaCount] = useState(0);
+  const [hasVoice, setHasVoice] = useState(false);
+
+  function submit() {
+    const cleanTitle = sanitizeText(title, 120);
+    const cleanDescription = sanitizeText(description, 2000);
+    if (!cleanTitle || !cleanDescription) return;
+    if (!isValidCoord(userLocation.lat, userLocation.lng)) return;
+
+    addReport({
+      id: crypto.randomUUID(),
+      type,
+      title: cleanTitle,
+      description: cleanDescription,
+      coordinates: userLocation,
+      city: "Accra",
+      countryCode: "GH",
+      status: "submitted",
+      createdAt: new Date().toISOString(),
+      mediaCount: mediaCount + (hasVoice ? 1 : 0),
+      aiSummary: `AI draft: community reported ${type.replace("_", " ")} near current GPS. Pending verification.`,
+    });
+    setTitle("");
+    setDescription("");
+    setMediaCount(0);
+    setHasVoice(false);
+    setOpen(false);
+  }
 
   return (
-    <MediaPageShell
-      title="Community"
-      subtitle="Like, comment, share, bookmark, and follow topics across GigaTrend TV"
-    >
-      <div className="grid gap-4 sm:grid-cols-4 mb-8">
-        {[
-          { icon: Heart, label: "Like & React", desc: "Engage with stories" },
-          { icon: MessageCircle, label: "Comment", desc: "Join discussions" },
-          { icon: Share2, label: "Share", desc: "Spread the news" },
-          { icon: Bookmark, label: "Bookmark", desc: `${savedCount} saved` },
-        ].map(({ icon: Icon, label, desc }) => (
-          <GlassCard key={label} className="text-center">
-            <Icon className="mx-auto h-8 w-8 text-gtv-purple" />
-            <p className="mt-2 font-bold">{label}</p>
-            <p className="text-xs text-giga-muted">{desc}</p>
-          </GlassCard>
-        ))}
-      </div>
+    <div className="mx-auto max-w-3xl px-4 pb-10 pt-6 sm:px-6">
+      <header className="flex items-start justify-between gap-3 sm-fade-up">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wide text-sm-safety">Community Reporting</p>
+          <h1 className="mt-1 font-display text-3xl font-extrabold text-sm-primary dark:text-white">
+            Report what you see
+          </h1>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+            Crime, accidents, floods, outages, road damage, and more — with GPS, media, and AI summaries.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="inline-flex items-center gap-2 rounded-2xl bg-sm-primary px-4 py-3 text-sm font-bold text-white"
+        >
+          <Plus className="h-4 w-4" />
+          Report
+        </button>
+      </header>
 
-      <h2 className="font-display text-xl font-bold mb-4">Follow Topics</h2>
-      <div className="flex flex-wrap gap-2 mb-8">
-        {TRENDING_HASHTAGS.map((tag) => {
-          const followed = followedTopics.includes(tag.label);
-          return (
-            <button
-              key={tag.id}
-              onClick={() => toggleFollowTopic(tag.label)}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
-                followed ? "bg-gtv-purple text-white" : "border border-giga-border hover:border-gtv-purple"
-              }`}
-            >
-              {followed ? "✓ " : ""}{tag.label}
-            </button>
-          );
-        })}
-      </div>
-
-      <h2 className="font-display text-xl font-bold mb-4">Trending Discussions</h2>
-      <div className="space-y-2 mb-8">
-        {NEWS_ARTICLES.slice(0, 5).map((article) => {
-          const likes = 80 + Number(article.id) * 37;
-          const comments = 8 + Number(article.id) * 5;
-          return (
-          <GlassCard key={article.id} className="!p-3">
-            <NewsCardCompact article={article} />
-            <div className="mt-2 flex gap-4 text-xs text-giga-muted pl-2">
-              <span className="flex items-center gap-1"><Heart className="h-3.5 w-3.5" /> {likes}</span>
-              <span className="flex items-center gap-1"><MessageCircle className="h-3.5 w-3.5" /> {comments}</span>
-              <span className="flex items-center gap-1"><Share2 className="h-3.5 w-3.5" /> Share</span>
-            </div>
-          </GlassCard>
-          );
-        })}
-      </div>
-
-      {!isAuthenticated && (
-        <GlassCard className="text-center bg-gtv-purple/5">
-          <Bell className="mx-auto h-8 w-8 text-gtv-purple" />
-          <p className="mt-2 font-bold">Get notifications for topics you follow</p>
-          <p className="text-sm text-giga-muted mt-1">Sign in to receive breaking news and trending alerts.</p>
-          <Link href="/login" className="mt-4 inline-block text-sm font-bold text-gtv-purple hover:underline">
-            Sign in →
-          </Link>
-        </GlassCard>
+      {open && (
+        <section className="mt-5 rounded-3xl border border-sm-border bg-white p-4 dark:border-white/10 dark:bg-sm-primary-deep">
+          <div className="flex flex-wrap gap-2">
+            {REPORT_TYPES.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setType(t.id)}
+                className={`rounded-full px-3 py-2 text-xs font-bold ${
+                  type === t.id ? "bg-sm-primary text-white" : "bg-slate-100 dark:bg-white/10"
+                }`}
+              >
+                {t.emoji} {t.label}
+              </button>
+            ))}
+          </div>
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Short title"
+            className="mt-4 w-full rounded-2xl border border-sm-border bg-transparent px-4 py-3 outline-none dark:border-white/15"
+          />
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Describe what happened…"
+            rows={4}
+            className="mt-3 w-full rounded-2xl border border-sm-border bg-transparent px-4 py-3 outline-none dark:border-white/15"
+          />
+          <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-slate-500">
+            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 dark:bg-white/10">
+              <MapPin className="h-3.5 w-3.5" /> GPS attached
+            </span>
+            <label className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 dark:bg-white/10">
+              <Camera className="h-3.5 w-3.5" />
+              Photo / video
+              <input
+                type="file"
+                accept="image/*,video/*"
+                multiple
+                className="sr-only"
+                onChange={(e) => setMediaCount(e.target.files?.length ?? 0)}
+              />
+            </label>
+            <label className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 dark:bg-white/10">
+              <Mic className="h-3.5 w-3.5" />
+              Voice note
+              <input
+                type="file"
+                accept="audio/*"
+                className="sr-only"
+                onChange={(e) => setHasVoice(Boolean(e.target.files?.length))}
+              />
+            </label>
+            {(mediaCount > 0 || hasVoice) && (
+              <span className="rounded-full bg-sm-emerald/15 px-3 py-1.5 text-sm-emerald">
+                {mediaCount + (hasVoice ? 1 : 0)} media attached
+              </span>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={submit}
+            className="mt-4 w-full rounded-2xl bg-sm-emerald px-4 py-3 text-sm font-bold text-white"
+          >
+            Submit report
+          </button>
+        </section>
       )}
-    </MediaPageShell>
+
+      <ul className="mt-6 space-y-3">
+        {reports.map((report) => {
+          const meta = REPORT_TYPES.find((t) => t.id === report.type);
+          return (
+            <li
+              key={report.id}
+              className="rounded-3xl border border-sm-border bg-white p-4 shadow-sm dark:border-white/10 dark:bg-sm-primary-deep"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wide" style={{ color: meta?.color }}>
+                    {meta?.emoji} {meta?.label} · {report.status}
+                  </p>
+                  <h2 className="mt-1 font-display text-lg font-bold">{report.title}</h2>
+                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{report.description}</p>
+                  {report.aiSummary && (
+                    <p className="mt-2 rounded-2xl bg-sm-primary/5 px-3 py-2 text-sm text-sm-primary dark:bg-white/5 dark:text-sky-200">
+                      {report.aiSummary}
+                    </p>
+                  )}
+                </div>
+                <span className="shrink-0 text-xs text-slate-400">
+                  {new Date(report.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                </span>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+
+export default function CommunityPage() {
+  return (
+    <FeatureGate
+      flag="publicSafetyPhase2"
+      title="Community Reporting"
+      phase="Phase 2"
+      description="Hazard reporting with photos, video, voice notes, and AI summaries is ready behind the Phase 2 flag."
+    >
+      <CommunityPageContent />
+    </FeatureGate>
   );
 }

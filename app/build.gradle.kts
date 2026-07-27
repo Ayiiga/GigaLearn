@@ -6,10 +6,10 @@ plugins {
 }
 
 android {
-    namespace = "com.ayiiga3.gigalearn"
+    namespace = "com.ayiiga3.smartmap"
     compileSdk = 33
     defaultConfig {
-        applicationId = "com.ayiiga3.gigalearn"
+        applicationId = "com.ayiiga3.smartmap"
         minSdk = 23
         targetSdk = 33
         versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()

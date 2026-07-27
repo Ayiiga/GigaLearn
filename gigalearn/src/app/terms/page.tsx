@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
-import { StaticPage } from "@/components/media/static-page";
+import { BRAND } from "@/lib/brand";
 
-export const metadata: Metadata = { title: "Terms of Service" };
+export const metadata: Metadata = { title: "Terms" };
 
 export default function TermsPage() {
   return (
-    <StaticPage title="Terms of Service" subtitle="Usage terms for GigaTrend TV">
-      <p>By using GigaTrend TV, you agree to use the platform for lawful purposes. Live TV and radio links redirect to official broadcaster sources only.</p>
-      <p className="mt-4">Content is provided for informational purposes. We are not responsible for third-party broadcaster availability. Premium features may require a subscription.</p>
-    </StaticPage>
+    <div className="mx-auto max-w-3xl px-4 pb-10 pt-6 sm:px-6">
+      <h1 className="font-display text-3xl font-extrabold text-sm-primary dark:text-white">Terms</h1>
+      <p className="mt-4 text-sm text-slate-600 dark:text-slate-300">
+        By using {BRAND.name}, you agree to use community reporting responsibly, respect verified place data,
+        and understand that navigation and safety tools are decision-support aids — not a substitute for official
+        emergency services. Always call local emergency numbers in life-threatening situations.
+      </p>
+    </div>
   );
 }

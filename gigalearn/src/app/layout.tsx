@@ -1,23 +1,21 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/react";
-import { Inter, Outfit } from "next/font/google";
+import { Manrope, Sora } from "next/font/google";
 import { ThemeProvider, OnlineStatusProvider } from "@/components/providers/app-providers";
 import { AuthOfflineBridge } from "@/components/providers/auth-offline-bridge";
 import { MonitoringProvider } from "@/components/providers/monitoring-provider";
-import { MediaStoreHydrator } from "@/components/providers/media-store-hydrator";
-import { Header } from "@/components/layout/header";
-import { ConditionalFooter } from "@/components/layout/conditional-footer";
+import { AppShell } from "@/components/smart-map/app-shell";
 import { BRAND } from "@/lib/brand";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const bodyFont = Manrope({
+  variable: "--font-body",
   subsets: ["latin"],
   display: "swap",
 });
 
-const outfit = Outfit({
-  variable: "--font-outfit",
+const displayFont = Sora({
+  variable: "--font-display",
   subsets: ["latin"],
   display: "swap",
 });
@@ -29,14 +27,15 @@ export const metadata: Metadata = {
   },
   description: BRAND.description,
   keywords: [
-    "African news",
-    "live TV",
-    "sports",
-    "World Cup 2026",
-    "breaking news",
-    "GigaTrend TV",
+    "Smart Map",
+    "Africa maps",
+    "Ghana navigation",
+    "public safety",
+    "emergency SOS",
+    "AI navigation",
+    "trusted places",
+    "community reporting",
     "PWA",
-    "African media",
   ],
   authors: [{ name: BRAND.name }],
   manifest: "/manifest.json",
@@ -77,8 +76,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#6366f1" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a1628" },
+    { media: "(prefers-color-scheme: light)", color: "#0F4C81" },
+    { media: "(prefers-color-scheme: dark)", color: "#071827" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -88,19 +87,12 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://images.unsplash.com" />
-      </head>
-      <body className={`${inter.variable} ${outfit.variable} antialiased min-h-screen flex flex-col`}>
+      <body className={`${bodyFont.variable} ${displayFont.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <OnlineStatusProvider>
             <AuthOfflineBridge />
             <MonitoringProvider />
-            <MediaStoreHydrator />
-            <Header />
-            <main className="flex-1">{children}</main>
-            <ConditionalFooter />
+            <AppShell>{children}</AppShell>
             {process.env.NEXT_PUBLIC_VERCEL_ENV ? <Analytics /> : null}
           </OnlineStatusProvider>
         </ThemeProvider>

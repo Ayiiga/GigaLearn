@@ -43,7 +43,7 @@ export const showLearningReminder = showNewsNotification;
 
 export function scheduleBreakingNewsReminder(hour = 8) {
   if (typeof window === "undefined") return;
-  const key = "gigatrend-daily-briefing";
+  const key = "smartmap-daily-briefing";
   const last = localStorage.getItem(key);
   const today = new Date().toISOString().split("T")[0];
   if (last === today) return;
@@ -51,8 +51,8 @@ export function scheduleBreakingNewsReminder(hour = 8) {
   const now = new Date();
   if (now.getHours() >= hour) {
     showNewsNotification(
-      "Your morning briefing is ready 📰",
-      "Catch up on breaking news, sports, and trending stories on GigaTrend TV.",
+      "Your Smart Map safety briefing is ready",
+      "Review community alerts, weather risks, and saved safe places before you travel.",
     );
     localStorage.setItem(key, today);
   }

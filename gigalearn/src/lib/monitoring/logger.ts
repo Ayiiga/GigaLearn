@@ -45,7 +45,7 @@ export async function logEvent({ level = "info", event, message, context }: LogP
 
   if (process.env.NODE_ENV === "development") {
     const fn = level === "error" ? console.error : level === "warn" ? console.warn : console.info;
-    fn("[GigaLearn]", entry);
+    fn("[SmartMap]", entry);
   }
 
   if (typeof window === "undefined") return;

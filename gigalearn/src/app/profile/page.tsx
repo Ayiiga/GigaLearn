@@ -1,146 +1,102 @@
 "use client";
 
 import Link from "next/link";
+import { Bookmark, Shield, User } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { useMediaStore } from "@/stores/media-store";
-import { MediaPageShell } from "@/components/media/section-header";
-import { GlassCard } from "@/components/ui/glass-card";
+import { useMapStore } from "@/stores/map-store";
+import { getPlaceById } from "@/content/smart-map/places";
 import { Button } from "@/components/ui/button";
-import { getArticleBySlug } from "@/content/media/articles";
-import { TV_STATIONS } from "@/content/media/tv";
-import { RADIO_STATIONS } from "@/content/media/radio";
-import { Bookmark, Tv, Radio, Bell, Globe, History } from "lucide-react";
 
 export default function ProfilePage() {
   const { user, isAuthenticated, loading } = useAuth();
-  const preferences = useMediaStore((s) => s.preferences);
-  const updateNotifications = useMediaStore((s) => s.updateNotifications);
-  const setLanguage = useMediaStore((s) => s.setLanguage);
+  const savedPlaceIds = useMapStore((s) => s.savedPlaceIds);
+  const emergencyContacts = useMapStore((s) => s.emergencyContacts);
+  const bloodGroup = useMapStore((s) => s.bloodGroup);
+  const womenSafetyMode = useMapStore((s) => s.womenSafetyMode);
+  const saved = savedPlaceIds.map(getPlaceById).filter(Boolean);
 
   if (loading) {
-    return <div className="p-12 text-center text-giga-muted">Loading profile...</div>;
+    return <div className="p-12 text-center text-sm-muted">Loading profile…</div>;
   }
 
   if (!isAuthenticated) {
     return (
-      <MediaPageShell title="Profile" subtitle="Sign in to access your saved content and preferences">
-        <GlassCard className="max-w-md mx-auto text-center">
-          <p className="text-giga-muted mb-4">Create an account to save articles, favourite stations, and manage notifications.</p>
-          <div className="flex gap-3 justify-center">
-            <Link href="/login"><Button>Sign In</Button></Link>
-            <Link href="/register"><Button variant="outline">Register</Button></Link>
-          </div>
-        </GlassCard>
-      </MediaPageShell>
+      <div className="mx-auto max-w-md px-4 pb-10 pt-10 text-center">
+        <User className="mx-auto h-10 w-10 text-sm-primary" />
+        <h1 className="mt-3 font-display text-2xl font-extrabold">Your Smart Map profile</h1>
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+          Sign in with email, Google, Apple, or phone — or continue exploring in Guest Mode from the map.
+        </p>
+        <div className="mt-5 flex justify-center gap-3">
+          <Link href="/login">
+            <Button>Sign In</Button>
+          </Link>
+          <Link href="/register">
+            <Button variant="outline">Register</Button>
+          </Link>
+        </div>
+        <Link href="/" className="mt-4 inline-block text-sm font-bold text-sm-primary">
+          Continue as guest →
+        </Link>
+      </div>
     );
   }
 
-  const savedArticles = preferences.savedArticles
-    .map((slug) => getArticleBySlug(slug))
-    .filter(Boolean);
-
-  const favTv = TV_STATIONS.filter((s) => preferences.favoriteTvStations.includes(s.id));
-  const favRadio = RADIO_STATIONS.filter((s) => preferences.favoriteRadioStations.includes(s.id));
-
   return (
-    <MediaPageShell
-      title="My Profile"
-      subtitle={user?.user_metadata?.full_name ?? user?.email ?? "GigaTrend TV member"}
-    >
-      <div className="grid gap-6 lg:grid-cols-2">
-        <GlassCard>
-          <div className="flex items-center gap-2 mb-4">
-            <Bookmark className="h-5 w-5 text-gtv-purple" />
-            <h2 className="font-display font-bold">Saved Articles</h2>
-          </div>
-          {savedArticles.length > 0 ? (
-            <ul className="space-y-2">
-              {savedArticles.map((a) => a && (
-                <li key={a.slug}>
-                  <Link href={`/news/${a.slug}`} className="text-sm font-medium hover:text-gtv-purple">{a.title}</Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-sm text-giga-muted">No saved articles yet.</p>
-          )}
-        </GlassCard>
+    <div className="mx-auto max-w-3xl px-4 pb-10 pt-6 sm:px-6">
+      <p className="text-sm font-semibold uppercase tracking-wide text-sm-emerald">Profile</p>
+      <h1 className="mt-1 font-display text-3xl font-extrabold text-sm-primary dark:text-white">
+        {user?.user_metadata?.full_name ?? user?.email ?? "Smart Map member"}
+      </h1>
+      <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+        Saved places, emergency contacts, and privacy-aware safety preferences.
+      </p>
 
-        <GlassCard>
-          <div className="flex items-center gap-2 mb-4">
-            <History className="h-5 w-5 text-gtv-cyan" />
-            <h2 className="font-display font-bold">Watch History</h2>
-          </div>
-          <p className="text-sm text-giga-muted">
-            {preferences.watchHistory.length > 0
-              ? `${preferences.watchHistory.length} items in history`
-              : "Your watch history will appear here."}
-          </p>
-        </GlassCard>
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <section className="rounded-3xl border border-sm-border bg-white p-5 dark:border-white/10 dark:bg-sm-primary-deep">
+          <h2 className="flex items-center gap-2 font-display text-lg font-bold">
+            <Bookmark className="h-5 w-5 text-sm-primary" />
+            Saved places
+          </h2>
+          <ul className="mt-3 space-y-2 text-sm">
+            {saved.length > 0 ? (
+              saved.map((p) =>
+                p ? (
+                  <li key={p.id} className="rounded-2xl bg-slate-50 px-3 py-2 dark:bg-white/5">
+                    {p.name}
+                  </li>
+                ) : null,
+              )
+            ) : (
+              <li className="text-slate-500">No saved places yet.</li>
+            )}
+          </ul>
+        </section>
 
-        <GlassCard>
-          <div className="flex items-center gap-2 mb-4">
-            <Tv className="h-5 w-5 text-gtv-purple" />
-            <h2 className="font-display font-bold">Favourite TV Stations</h2>
-          </div>
-          {favTv.length > 0 ? (
-            <ul className="space-y-1">{favTv.map((s) => <li key={s.id} className="text-sm">{s.logo} {s.name}</li>)}</ul>
-          ) : (
-            <p className="text-sm text-giga-muted">Favourite stations from <Link href="/live-tv" className="text-gtv-purple hover:underline">Live TV</Link>.</p>
-          )}
-        </GlassCard>
-
-        <GlassCard>
-          <div className="flex items-center gap-2 mb-4">
-            <Radio className="h-5 w-5 text-gtv-cyan" />
-            <h2 className="font-display font-bold">Favourite Radio</h2>
-          </div>
-          {favRadio.length > 0 ? (
-            <ul className="space-y-1">{favRadio.map((s) => <li key={s.id} className="text-sm">{s.logo} {s.name}</li>)}</ul>
-          ) : (
-            <p className="text-sm text-giga-muted">Favourite stations from <Link href="/live-radio" className="text-gtv-purple hover:underline">Live Radio</Link>.</p>
-          )}
-        </GlassCard>
-
-        <GlassCard className="lg:col-span-2">
-          <div className="flex items-center gap-2 mb-4">
-            <Bell className="h-5 w-5 text-gtv-gold" />
-            <h2 className="font-display font-bold">Notification Preferences</h2>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {Object.entries(preferences.notifications).map(([key, value]) => (
-              <label key={key} className="flex items-center gap-3 text-sm cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={value}
-                  onChange={(e) => updateNotifications({ [key]: e.target.checked })}
-                  className="h-4 w-4 accent-gtv-purple"
-                />
-                <span className="capitalize">{key.replace(/([A-Z])/g, " $1")}</span>
-              </label>
-            ))}
-          </div>
-        </GlassCard>
-
-        <GlassCard className="lg:col-span-2">
-          <div className="flex items-center gap-2 mb-4">
-            <Globe className="h-5 w-5 text-gtv-purple" />
-            <h2 className="font-display font-bold">Language</h2>
-          </div>
-          <select
-            value={preferences.language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="rounded-xl border border-giga-border px-4 py-2 text-sm bg-white dark:bg-giga-surface"
-            aria-label="Language preference"
-          >
-            <option value="en">English</option>
-            <option value="fr">Français</option>
-            <option value="sw">Kiswahili</option>
-            <option value="ha">Hausa</option>
-            <option value="tw">Twi</option>
-          </select>
-        </GlassCard>
+        <section className="rounded-3xl border border-sm-border bg-white p-5 dark:border-white/10 dark:bg-sm-primary-deep">
+          <h2 className="flex items-center gap-2 font-display text-lg font-bold">
+            <Shield className="h-5 w-5 text-sm-danger" />
+            Safety profile
+          </h2>
+          <ul className="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
+            <li>Blood group: {bloodGroup || "Not set"}</li>
+            <li>Emergency contacts: {emergencyContacts.length}</li>
+            <li>Women Safety Mode: {womenSafetyMode ? "On" : "Off"}</li>
+          </ul>
+          <Link href="/safety" className="mt-4 inline-block text-sm font-bold text-sm-primary">
+            Open Safety Center →
+          </Link>
+        </section>
       </div>
-    </MediaPageShell>
+
+      <div className="mt-4 flex flex-wrap gap-3">
+        <Link href="/settings" className="rounded-2xl bg-sm-primary px-4 py-3 text-sm font-bold text-white">
+          Privacy settings
+        </Link>
+        <Link href="/dashboard" className="rounded-2xl border border-sm-border px-4 py-3 text-sm font-bold dark:border-white/15">
+          Open dashboard
+        </Link>
+      </div>
+    </div>
   );
 }

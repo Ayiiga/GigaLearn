@@ -33,7 +33,9 @@ export function getOfflineAIResponse(request: AIFeatureRequest): string {
     revision:
       "🔄 Review vocabulary, try 3 quiz questions, read aloud, and celebrate what you remember!",
     news_assistant:
-      "📰 Quick briefing: Ghana parliament advances economic reforms, Nigeria tech funding surges, World Cup 2026 prep intensifies. Ask about a specific country or topic!",
+      "Smart Map briefing: check Community Alerts for floods, traffic, and verified hazards. Ask about a city, route, or emergency service.",
+    map_assistant:
+      "I can help with nearest services, safer routes, landmark context, emergency steps, and travel planning across Ghana and Africa. Ask something specific.",
   };
 
   return responses[request.feature];
