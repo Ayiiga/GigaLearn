@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   return NextResponse.json({
     status: "ok",
-    service: "GigaTrend TV Sync API",
+    service: "Smart Map Sync API",
     timestamp: new Date().toISOString(),
   });
 }

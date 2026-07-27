@@ -1,13 +1,20 @@
 import type { Metadata } from "next";
-import { StaticPage } from "@/components/media/static-page";
 
 export const metadata: Metadata = { title: "API" };
 
-export default function ApiPage() {
+export default function ApiDocsPage() {
   return (
-    <StaticPage title="GigaTrend API" subtitle="Programmatic access to news and media data">
-      <p>The GigaTrend API provides access to articles, sports data, trending topics, and live station metadata for approved partners.</p>
-      <p className="mt-4">API access is available with premium membership. Documentation and keys: developers@gigatrend.tv</p>
-    </StaticPage>
+    <div className="mx-auto max-w-3xl px-4 pb-10 pt-6 sm:px-6">
+      <h1 className="font-display text-3xl font-extrabold text-sm-primary dark:text-white">Smart Map API</h1>
+      <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
+        Programmatic access to places, community reports, country emergency profiles, and partner integrations.
+        Contact partnerships for API keys, rate limits, and commercial access.
+      </p>
+      <pre className="mt-5 overflow-x-auto rounded-3xl bg-[#071827] p-4 text-xs text-emerald-200">
+{`GET /api/health
+POST /api/ai { "feature": "map_assistant", "input": "..." }
+POST /api/sync`}
+      </pre>
+    </div>
   );
 }

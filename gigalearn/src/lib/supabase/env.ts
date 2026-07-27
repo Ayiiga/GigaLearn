@@ -141,11 +141,11 @@ export function validateSupabaseConfig(): SupabaseConfigStatus {
 
   if (urlRef && keyRef && urlRef !== keyRef) {
     issues.push(
-      `Supabase anon key belongs to project "${keyRef}" but GigaTrend TV expects "${urlRef}".`,
+      `Supabase anon key belongs to project "${keyRef}" but Smart Map expects "${urlRef}".`,
     );
   } else if (key.startsWith("eyJ") && keyRef && keyRef !== projectRef) {
     issues.push(
-      `Supabase anon key belongs to project "${keyRef}" but GigaTrend TV expects "${projectRef}".`,
+      `Supabase anon key belongs to project "${keyRef}" but Smart Map expects "${projectRef}".`,
     );
   }
 

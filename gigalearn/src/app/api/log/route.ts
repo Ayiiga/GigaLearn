@@ -41,11 +41,11 @@ export async function POST(request: NextRequest) {
     };
 
     if (level === "error") {
-      console.error("[GigaTrendTV:client]", JSON.stringify(payload));
+      console.error("[SmartMap:client]", JSON.stringify(payload));
     } else if (level === "warn") {
-      console.warn("[GigaTrendTV:client]", JSON.stringify(payload));
+      console.warn("[SmartMap:client]", JSON.stringify(payload));
     } else {
-      console.info("[GigaTrendTV:client]", JSON.stringify(payload));
+      console.info("[SmartMap:client]", JSON.stringify(payload));
     }
 
     return NextResponse.json({ ok: true });

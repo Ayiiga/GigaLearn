@@ -178,7 +178,8 @@ export interface AIFeatureRequest {
     | "math_tutor"
     | "study_plan"
     | "revision"
-    | "news_assistant";
+    | "news_assistant"
+    | "map_assistant";
   input: string;
   context?: Record<string, unknown>;
 }

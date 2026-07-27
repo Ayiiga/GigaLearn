@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Smart Map Dark">
+  <rect width="512" height="512" rx="112" fill="#071827"/>
+  <circle cx="256" cy="256" r="210" fill="#0F4C81"/>
+  <path d="M256 78c-72 0-130 58-130 130 0 92 110 196 122 208a12 12 0 0 0 16 0c12-12 122-116 122-208 0-72-58-130-130-130z" fill="#FFFFFF"/>
+  <circle cx="256" cy="200" r="78" fill="#0B3A63"/>
+  <path d="M248 150c18-6 36 2 42 18 8 20-2 36-8 52-4 10 2 18 10 22 10 6 14 18 8 28-8 14-24 18-38 14-16-4-22-18-20-34 2-12-6-20-16-22-12-2-18-14-12-24 6-12 20-18 34-14z" fill="#0E9F6E"/>
+  <path d="M256 268c28 10 48 28 48 52v18c-30 16-48 22-48 22s-18-6-48-22v-18c0-24 20-42 48-52z" fill="#F59E0B"/>
+  <path d="M140 360h48M160 380h70M180 400h40M324 360h48M282 380h70M292 400h40" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round" opacity="0.55"/>
+  <circle cx="256" cy="200" r="10" fill="#FFFFFF"/>
+</svg>

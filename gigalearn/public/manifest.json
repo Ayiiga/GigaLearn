@@ -1,15 +1,15 @@
 {
-  "name": "GigaTrend TV — Africa's Smart News & Live TV",
-  "short_name": "GigaTrend TV",
-  "description": "Africa's Smart News & Live TV Platform. Breaking news, sports, live TV, radio, and powerful search.",
+  "name": "Smart Map — Explore • Connect • Stay Safe",
+  "short_name": "Smart Map",
+  "description": "AI-powered mapping, navigation, and public safety for Ghana and Africa.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a1628",
-  "theme_color": "#6366f1",
+  "background_color": "#0B3A63",
+  "theme_color": "#0F4C81",
   "orientation": "any",
   "scope": "/",
   "lang": "en",
-  "categories": ["news", "entertainment", "sports"],
+  "categories": ["navigation", "travel", "utilities", "lifestyle"],
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -36,29 +36,29 @@
       "sizes": "1284x2778",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "GigaTrend TV splash screen"
+      "label": "Smart Map splash screen"
     }
   ],
   "shortcuts": [
     {
-      "name": "Breaking News",
-      "url": "/breaking",
-      "description": "Latest breaking stories"
+      "name": "Emergency SOS",
+      "url": "/safety",
+      "description": "Open Safety Center and SOS tools"
     },
     {
-      "name": "Search",
+      "name": "Search Places",
       "url": "/search",
-      "description": "Search news, sports, TV, and more"
+      "description": "Find hospitals, police, fuel, and more"
     },
     {
-      "name": "TV Browser",
-      "url": "/watch",
-      "description": "Watch live TV and movies in-app"
+      "name": "Navigate",
+      "url": "/navigate",
+      "description": "Start turn-by-turn navigation"
     },
     {
-      "name": "Sports",
-      "url": "/sports",
-      "description": "Scores, fixtures, and analysis"
+      "name": "AI Assistant",
+      "url": "/ai-assistant",
+      "description": "Ask Smart Map AI for safe routes"
     }
   ]
 }

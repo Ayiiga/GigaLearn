@@ -1,102 +1,81 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { ArrowLeft, Users, School, BookOpen, BarChart3 } from "lucide-react";
-import { Card, CardTitle, CardDescription } from "@/components/ui/card";
-import { GlassCard } from "@/components/ui/glass-card";
-import { useAuth } from "@/hooks/use-auth";
-import { fetchSchoolStats, type SchoolStats } from "@/lib/classroom";
+import { AFRICA_COUNTRY_CODES, COUNTRIES } from "@/content/smart-map/countries";
+import { PLACES } from "@/content/smart-map/places";
+import { useMapStore } from "@/stores/map-store";
 
-export default function AdminDashboard() {
-  const { isAuthenticated } = useAuth();
-  const [stats, setStats] = useState<SchoolStats | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setLoading(false);
-      return;
-    }
-    fetchSchoolStats().then((data) => {
-      setStats(data);
-      setLoading(false);
-    });
-  }, [isAuthenticated]);
-
-  const display = stats ?? { total_users: 0, active_students: 0, schools: 0, lessons_published: 0 };
+export default function AdminDashboardPage() {
+  const reports = useMapStore((s) => s.reports);
+  const verifiedPlaces = PLACES.filter((p) => p.verified).length;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
-      <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-giga-purple hover:underline mb-6">
-        <ArrowLeft className="h-4 w-4" /> Back to Dashboard
-      </Link>
-
-      <h1 className="font-display text-3xl font-bold">School Administrator Dashboard</h1>
-      <p className="mt-2 text-giga-muted">School management, analytics, and platform oversight</p>
-
-      {!isAuthenticated && (
-        <p className="mt-4 rounded-xl bg-giga-orange/10 px-4 py-3 text-sm">
-          Sign in with an administrator account to view live school data from Supabase.
+    <div className="mx-auto max-w-5xl px-4 pb-10 pt-6 sm:px-6">
+      <header>
+        <p className="text-sm font-semibold uppercase tracking-wide text-sm-primary">Admin Dashboard</p>
+        <h1 className="mt-1 font-display text-3xl font-extrabold">Operate Smart Map</h1>
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+          Manage users, places, reports, analytics, heat maps, notifications, countries, and verification requests.
         </p>
-      )}
+      </header>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-8 mb-10">
-        <GlassCard className="text-center">
-          <Users className="h-6 w-6 text-giga-purple mx-auto" />
-          <p className="text-3xl font-bold mt-2">{loading ? "…" : display.total_users}</p>
-          <CardDescription>Total Users</CardDescription>
-        </GlassCard>
-        <GlassCard className="text-center">
-          <BarChart3 className="h-6 w-6 text-giga-orange mx-auto" />
-          <p className="text-3xl font-bold mt-2">{loading ? "…" : display.active_students}</p>
-          <CardDescription>Active Students</CardDescription>
-        </GlassCard>
-        <GlassCard className="text-center">
-          <School className="h-6 w-6 text-giga-green mx-auto" />
-          <p className="text-3xl font-bold mt-2">{loading ? "…" : display.schools}</p>
-          <CardDescription>Schools</CardDescription>
-        </GlassCard>
-        <GlassCard className="text-center">
-          <BookOpen className="h-6 w-6 text-giga-blue mx-auto" />
-          <p className="text-3xl font-bold mt-2">{loading ? "…" : display.lessons_published}</p>
-          <CardDescription>Lessons Published</CardDescription>
-        </GlassCard>
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {[
+          ["Places", PLACES.length],
+          ["Verified", verifiedPlaces],
+          ["Reports", reports.length],
+          ["Countries ready", COUNTRIES.length + AFRICA_COUNTRY_CODES.length],
+        ].map(([label, value]) => (
+          <div
+            key={label as string}
+            className="rounded-3xl border border-sm-border bg-white p-4 dark:border-white/10 dark:bg-sm-primary-deep"
+          >
+            <p className="text-sm text-slate-500">{label}</p>
+            <p className="mt-2 font-display text-3xl font-extrabold">{value}</p>
+          </div>
+        ))}
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        <Card>
-          <CardTitle>School Notifications</CardTitle>
-          <CardDescription className="mt-2">Send announcements to teachers and parents</CardDescription>
-          <p className="mt-4 text-sm text-giga-muted">
-            School-wide notifications are managed through Supabase. Connect your school account to enable messaging.
-          </p>
-          <Link href="/settings" className="mt-4 inline-block text-giga-purple font-bold text-sm hover:underline">
-            Configure in Settings →
-          </Link>
-        </Card>
-        <Card>
-          <CardTitle>Learning Analytics</CardTitle>
-          <CardDescription className="mt-2">Platform-wide progress and engagement metrics</CardDescription>
-          <Link href="/progress" className="mt-4 inline-block text-giga-purple font-bold text-sm hover:underline">
-            View progress analytics →
-          </Link>
-        </Card>
-        <Card>
-          <CardTitle>Classroom Oversight</CardTitle>
-          <CardDescription className="mt-2">Monitor classrooms across your school</CardDescription>
-          <Link href="/dashboard/teacher" className="mt-4 inline-block text-giga-purple font-bold text-sm hover:underline">
-            Open teacher tools →
-          </Link>
-        </Card>
-        <Card>
-          <CardTitle>Community & Rankings</CardTitle>
-          <CardDescription className="mt-2">Optional school leaderboards and competitions</CardDescription>
-          <Link href="/community" className="mt-4 inline-block text-giga-purple font-bold text-sm hover:underline">
-            Manage community features →
-          </Link>
-        </Card>
-      </div>
+      <section className="mt-6 grid gap-4 lg:grid-cols-2">
+        <div className="rounded-3xl border border-sm-border bg-white p-5 dark:border-white/10 dark:bg-sm-primary-deep">
+          <h2 className="font-display text-xl font-bold">Verification queue</h2>
+          <ul className="mt-3 space-y-2 text-sm">
+            {PLACES.filter((p) => !p.verified).slice(0, 6).map((p) => (
+              <li key={p.id} className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-2 dark:bg-white/5">
+                <span>{p.name}</span>
+                <span className="font-semibold text-sm-safety">Review</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="rounded-3xl border border-sm-border bg-white p-5 dark:border-white/10 dark:bg-sm-primary-deep">
+          <h2 className="font-display text-xl font-bold">Country management</h2>
+          <ul className="mt-3 max-h-72 space-y-2 overflow-y-auto text-sm">
+            {COUNTRIES.filter((c) => c.code !== "GH-EXPAND").map((c) => (
+              <li key={c.code} className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-2 dark:bg-white/5">
+                <span>
+                  {c.flag} {c.name}
+                </span>
+                <span className="font-semibold text-sm-emerald">Live profile</span>
+              </li>
+            ))}
+            {AFRICA_COUNTRY_CODES.slice(0, 12).map((c) => (
+              <li key={c.code} className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-2 dark:bg-white/5">
+                <span>
+                  {c.flag} {c.name}
+                </span>
+                <span className="text-slate-500">Expansion ready</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section className="mt-6 rounded-3xl border border-sm-border bg-white p-5 dark:border-white/10 dark:bg-sm-primary-deep">
+        <h2 className="font-display text-xl font-bold">Heat map insights</h2>
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+          Highest report density currently clusters around Circle, Spintex, and Nima corridors. Push flood and traffic notifications to users within 3 km of verified incidents.
+        </p>
+      </section>
     </div>
   );
 }

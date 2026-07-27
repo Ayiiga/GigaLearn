@@ -6,8 +6,8 @@
 
 | Path | Purpose |
 | --- | --- |
-| `app/`, `gradlew` | Android app (GigaLearn, `com.ayiiga3.gigalearn`) |
-| `gigalearn/` | Next.js website / PWA |
+| `app/`, `gradlew` | Android app (Smart Map, `com.ayiiga3.smartmap`) |
+| `gigalearn/` | Next.js website / PWA (Smart Map) |
 | `.github/workflows/deploy-vercel.yml` | Vercel production deploy |
 | `scripts/push-github.sh` | Push `main` → GitHub `Ayiiga/GigaLearn` |
 

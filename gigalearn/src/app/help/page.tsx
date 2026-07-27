@@ -1,40 +1,51 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { Card, CardTitle, CardDescription } from "@/components/ui/card";
-import { BRAND } from "@/lib/brand";
 
-export const metadata: Metadata = { title: "Help Center" };
+export const metadata: Metadata = { title: "Help" };
 
 const FAQ = [
-  { q: `How do I install ${BRAND.name}?`, a: "Open GigaTrend TV in Chrome or Edge, tap the install icon in the address bar, or use 'Add to Home Screen' on mobile for the full PWA experience." },
-  { q: "Does it work offline?", a: "Yes! Saved articles and cached content are available offline. Breaking news syncs when you're back online." },
-  { q: "Where do Live TV streams come from?", a: "We only link to official broadcaster sources. Tap 'Watch Official' to open the authorized stream on the broadcaster's website." },
-  { q: "How do I search for content?", a: "Use the Search page or the search bar on the homepage. You can find news, videos, TV stations, radio, teams, players, countries, and trending topics with instant suggestions and search history." },
-  { q: "What is GigaTrend AI?", a: "GigaTrend AI is coming soon. It will offer intelligent news summaries, sports insights, multilingual explanations, and voice assistance. Tap 'Notify Me' on the AI page to get notified at launch." },
-  { q: "How do I save articles?", a: "Open any article and tap Save, or sign in to sync bookmarks across devices via your profile." },
+  {
+    q: "How do I use Emergency SOS?",
+    a: "Open Safety Center and tap SOS. Smart Map alerts your emergency contacts and attaches GPS when available.",
+  },
+  {
+    q: "Can I use Smart Map offline?",
+    a: "Yes — the PWA caches core shells and recent map data. Offline maps expand with background sync.",
+  },
+  {
+    q: "Which country launches first?",
+    a: "Ghana first, then expansion across all 54 African countries with local emergency numbers and languages.",
+  },
+  {
+    q: "How do businesses get verified?",
+    a: "Visit the Business Platform to claim a listing and submit verification documents for a trusted badge.",
+  },
 ];
 
 export default function HelpPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
-      <h1 className="font-display text-3xl font-bold">Help Center</h1>
-      <p className="mt-2 text-giga-muted">Get answers and support for {BRAND.name}</p>
-
-      <div className="mt-10 space-y-4">
+    <div className="mx-auto max-w-3xl px-4 pb-10 pt-6 sm:px-6">
+      <p className="text-sm font-semibold uppercase tracking-wide text-sm-emerald">Help</p>
+      <h1 className="mt-1 font-display text-3xl font-extrabold text-sm-primary dark:text-white">
+        How Smart Map works
+      </h1>
+      <ul className="mt-6 space-y-3">
         {FAQ.map((item) => (
-          <Card key={item.q}>
-            <CardTitle>{item.q}</CardTitle>
-            <CardDescription className="mt-2 text-base">{item.a}</CardDescription>
-          </Card>
+          <li
+            key={item.q}
+            className="rounded-3xl border border-sm-border bg-white p-4 dark:border-white/10 dark:bg-sm-primary-deep"
+          >
+            <p className="font-bold">{item.q}</p>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{item.a}</p>
+          </li>
         ))}
-      </div>
-
-      <div className="mt-12 text-center">
-        <p className="text-giga-muted">Need more help?</p>
-        <Link href="/contact" className="text-gtv-purple font-bold hover:underline">
-          Contact us
+      </ul>
+      <p className="mt-6 text-sm">
+        Need more help?{" "}
+        <Link href="/contact" className="font-bold text-sm-primary">
+          Contact support
         </Link>
-      </div>
+      </p>
     </div>
   );
 }

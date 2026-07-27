@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
-import { StaticPage } from "@/components/media/static-page";
 
 export const metadata: Metadata = { title: "Careers" };
 
 export default function CareersPage() {
   return (
-    <StaticPage title="Careers" subtitle="Join the GigaTrend TV team">
-      <p>We are building Africa&apos;s premier news and media platform. Open roles in journalism, engineering, design, and partnerships.</p>
-      <p className="mt-4">Send your CV to careers@gigatrend.tv with the role title in the subject line.</p>
-    </StaticPage>
+    <div className="mx-auto max-w-3xl px-4 pb-10 pt-6 sm:px-6">
+      <h1 className="font-display text-3xl font-extrabold text-sm-primary dark:text-white">Careers</h1>
+      <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
+        Join Smart Map to build navigation, public safety, and AI tools for Africa. Roles span maps engineering,
+        community trust & safety, partnerships, and design.
+      </p>
+      <a href="mailto:careers@smartmap.africa" className="mt-5 inline-block font-bold text-sm-primary">
+        careers@smartmap.africa
+      </a>
+    </div>
   );
 }

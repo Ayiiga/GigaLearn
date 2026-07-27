@@ -6,6 +6,6 @@ pluginManagement {
     }
 }
 
-rootProject.name = "GigaLearn"
+rootProject.name = "SmartMap"
 
 include(":app")
