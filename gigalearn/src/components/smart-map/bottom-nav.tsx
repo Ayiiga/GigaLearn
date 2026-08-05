@@ -2,21 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, Navigation, Shield, LayoutDashboard, Bot, User } from "lucide-react";
+import { Home, Search, Navigation, Shield, LayoutDashboard, Bot, User, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAiExpansionEnabled, usePublicSafetyEnabled } from "@/lib/features/use-feature-flag";
+import { useAi40Enabled, useAiExpansionEnabled, usePublicSafetyEnabled } from "@/lib/features/use-feature-flag";
 
 export function BottomNav() {
   const pathname = usePathname();
   const publicSafety = usePublicSafetyEnabled();
   const aiExpansion = useAiExpansionEnabled();
+  const ai40 = useAi40Enabled();
 
   const items = [
     { href: "/", label: "Map", icon: Home, show: true },
     { href: "/search", label: "Search", icon: Search, show: true },
     { href: "/navigate", label: "Navigate", icon: Navigation, show: true },
+    { href: "/smart-safety", label: "AI 4.0", icon: Sparkles, show: ai40 },
     { href: "/safety", label: "Safety", icon: Shield, show: publicSafety },
-    { href: "/ai-assistant", label: "AI", icon: Bot, show: aiExpansion },
+    { href: "/ai-assistant", label: "AI", icon: Bot, show: aiExpansion && !ai40 },
     { href: "/dashboard", label: "Hub", icon: LayoutDashboard, show: true },
     { href: "/profile", label: "Profile", icon: User, show: !publicSafety && !aiExpansion },
   ].filter((item) => item.show);

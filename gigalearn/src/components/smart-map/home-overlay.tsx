@@ -13,7 +13,7 @@ import { LiveLayerToggles } from "@/components/smart-map/live-layer-toggles";
 import { ACCRA_WEATHER } from "@/content/smart-map/weather";
 import { useMapStore } from "@/stores/map-store";
 import { BRAND } from "@/lib/brand";
-import { useAiExpansionEnabled, usePublicSafetyEnabled } from "@/lib/features/use-feature-flag";
+import { useAi40Enabled, useAiExpansionEnabled, usePublicSafetyEnabled } from "@/lib/features/use-feature-flag";
 
 export function HomeOverlay() {
   const setSosActive = useMapStore((s) => s.setSosActive);
@@ -22,6 +22,7 @@ export function HomeOverlay() {
   const resolvedAddress = useMapStore((s) => s.resolvedAddress);
   const publicSafety = usePublicSafetyEnabled();
   const aiExpansion = useAiExpansionEnabled();
+  const ai40 = useAi40Enabled();
   const alertCount = publicSafety
     ? reports.filter((r) => r.status === "verified" || r.status === "verifying").length
     : 0;
@@ -89,7 +90,16 @@ export function HomeOverlay() {
       </div>
 
       <div className="pointer-events-none absolute right-3 top-[42%] z-20 flex flex-col gap-3 sm:right-5">
-        {aiExpansion && (
+        {ai40 && (
+          <Link
+            href="/smart-safety"
+            className="pointer-events-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-sm-primary text-white shadow-xl"
+            aria-label="AI 4.0 Predictive Safety"
+          >
+            <span className="text-lg font-extrabold">4.0</span>
+          </Link>
+        )}
+        {aiExpansion && !ai40 && (
           <Link
             href="/ai-assistant"
             onClick={() => setAiOpen(true)}
