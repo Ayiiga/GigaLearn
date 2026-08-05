@@ -29,3 +29,7 @@ export function useAfricaExpansionEnabled(): boolean {
 export function useAdvancedNavigationEnabled(): boolean {
   return FEATURE_FLAGS.advancedNavigationPhase7;
 }
+
+export function useAi40Enabled(): boolean {
+  return FEATURE_FLAGS.ai40PredictiveSafety;
+}

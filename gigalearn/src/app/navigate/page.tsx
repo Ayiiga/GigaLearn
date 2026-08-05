@@ -27,6 +27,8 @@ import {
   planAdvancedRoutes,
 } from "@/lib/navigation/route-engine";
 import { analyzeRouteSafety } from "@/lib/navigation/safety-analysis";
+import { useAi40Enabled } from "@/lib/features/use-feature-flag";
+import Link from "next/link";
 
 const MapView = dynamic(
   () => import("@/components/smart-map/map-view").then((m) => m.MapView),
@@ -77,6 +79,7 @@ export default function NavigatePage() {
     "fastest",
   );
   const [navigating, setNavigating] = useState(false);
+  const ai40 = useAi40Enabled();
 
   // Default From = current GPS. Only write when missing or values actually changed
   // (avoid Maximum update depth from recreating navOrigin every render / GPS tick).
@@ -397,6 +400,16 @@ export default function NavigatePage() {
                   ))}
                 </ol>
               </div>
+            )}
+
+            {ai40 && origin && dest && (
+              <Link
+                href="/smart-safety"
+                className="mt-3 flex items-center justify-between rounded-2xl border border-sm-primary/30 bg-gradient-to-r from-sm-primary/10 to-sm-emerald/10 px-4 py-3 text-sm font-bold text-sm-primary"
+              >
+                <span>✨ View AI 4.0 route scores & predictive safety</span>
+                <span>→</span>
+              </Link>
             )}
 
             {safety.length > 0 && (

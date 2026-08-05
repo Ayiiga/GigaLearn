@@ -11,6 +11,7 @@
  * - NEXT_PUBLIC_FEATURE_BUSINESS_COMMUNITY
  * - NEXT_PUBLIC_FEATURE_AFRICA_EXPANSION
  * - NEXT_PUBLIC_FEATURE_ADVANCED_NAVIGATION
+ * - NEXT_PUBLIC_FEATURE_AI_40
  */
 
 function envFlag(name: string, fallback: boolean): boolean {
@@ -40,6 +41,9 @@ export const FEATURE_FLAGS = {
 
   /** Phase 7 — advanced navigation, layers, AI route safety, emergency nav, trip summary */
   advancedNavigationPhase7: envFlag("NEXT_PUBLIC_FEATURE_ADVANCED_NAVIGATION", false),
+
+  /** Phase 8 / AI 4.0 — predictive safety, intelligent routes, privacy-first travel assistant */
+  ai40PredictiveSafety: envFlag("NEXT_PUBLIC_FEATURE_AI_40", false),
 } as const;
 
 export type FeatureFlagKey = keyof typeof FEATURE_FLAGS;
@@ -50,7 +54,8 @@ export type FeaturePhaseLabel =
   | "Phase 4"
   | "Phase 5"
   | "Phase 6"
-  | "Phase 7";
+  | "Phase 7"
+  | "AI 4.0";
 
 export function isFeatureEnabled(flag: FeatureFlagKey): boolean {
   return Boolean(FEATURE_FLAGS[flag]);
@@ -79,6 +84,9 @@ export const PHASE6_ROUTES = ["/enterprise", "/countries", "/command-center"] as
 /** Routes that require Phase 7 advanced navigation. */
 export const PHASE7_ROUTES = ["/advanced-navigation", "/trip-summary"] as const;
 
+/** Routes that require AI 4.0 predictive safety. */
+export const AI40_ROUTES = ["/smart-safety"] as const;
+
 function matchesRoute(pathname: string, routes: readonly string[]): boolean {
   return routes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 }
@@ -105,6 +113,10 @@ export function isPhase6Route(pathname: string): boolean {
 
 export function isPhase7Route(pathname: string): boolean {
   return matchesRoute(pathname, PHASE7_ROUTES);
+}
+
+export function isAi40Route(pathname: string): boolean {
+  return matchesRoute(pathname, AI40_ROUTES);
 }
 
 /** Phase 1 essential nearby categories shown on the home map. */

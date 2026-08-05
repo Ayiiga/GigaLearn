@@ -13,6 +13,8 @@ import type {
   UserMapPreferences,
 } from "@/types/smart-map";
 import type { LocationPermission, NavEndpoint, ResolvedAddress } from "@/lib/geo/types";
+import type { PrivacyConsent, PrivacyConsentKey } from "@/lib/ai40/types";
+import { DEFAULT_CONSENTS, grantConsent, revokeConsent, revokeAllConsents } from "@/lib/ai40/privacy";
 import { SAMPLE_REPORTS } from "@/content/smart-map/reports";
 
 interface LocationMeta {
@@ -43,6 +45,8 @@ interface MapState extends UserMapPreferences {
   searchQuery: string;
   sosActive: boolean;
   aiOpen: boolean;
+  privacyConsents: PrivacyConsent[];
+  selectedAi40RouteId: string | null;
   setCountryCode: (code: string) => void;
   setUserLocation: (coords: Coordinates | null) => void;
   setLocationPermission: (permission: LocationPermission) => void;
@@ -64,6 +68,9 @@ interface MapState extends UserMapPreferences {
   toggleSavedPlace: (id: string) => void;
   setSosActive: (active: boolean) => void;
   setAiOpen: (open: boolean) => void;
+  setPrivacyConsent: (key: PrivacyConsentKey, granted: boolean) => void;
+  revokeAllPrivacyConsents: () => void;
+  setSelectedAi40RouteId: (id: string | null) => void;
   addEmergencyContact: (contact: EmergencyContact) => void;
   removeEmergencyContact: (id: string) => void;
   setSafetyModes: (
@@ -97,6 +104,8 @@ export const useMapStore = create<MapState>()(
       searchQuery: "",
       sosActive: false,
       aiOpen: false,
+      privacyConsents: DEFAULT_CONSENTS,
+      selectedAi40RouteId: null,
       savedPlaceIds: [],
       favoriteRouteIds: [],
       emergencyContacts: [],
@@ -182,6 +191,15 @@ export const useMapStore = create<MapState>()(
       },
       setSosActive: (active) => set({ sosActive: active }),
       setAiOpen: (open) => set({ aiOpen: open }),
+      setPrivacyConsent: (key, granted) =>
+        set({
+          privacyConsents: granted
+            ? grantConsent(get().privacyConsents, key)
+            : revokeConsent(get().privacyConsents, key),
+        }),
+      revokeAllPrivacyConsents: () =>
+        set({ privacyConsents: revokeAllConsents(get().privacyConsents) }),
+      setSelectedAi40RouteId: (id) => set({ selectedAi40RouteId: id }),
       addEmergencyContact: (contact) =>
         set({ emergencyContacts: [...get().emergencyContacts, contact] }),
       removeEmergencyContact: (id) =>
@@ -193,7 +211,7 @@ export const useMapStore = create<MapState>()(
     }),
     {
       name: "smart-map-store",
-      version: 2,
+      version: 3,
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<MapState>;
         return {
@@ -226,6 +244,7 @@ export const useMapStore = create<MapState>()(
         mapStyle: state.mapStyle,
         voiceNav: state.voiceNav,
         reports: state.reports,
+        privacyConsents: state.privacyConsents,
         homeLocation: state.homeLocation,
         workLocation: state.workLocation,
         recentPlaces: state.recentPlaces,

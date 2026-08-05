@@ -165,6 +165,7 @@ export default function SettingsPage() {
           <li>Phase 5 Business & Community: {FEATURE_FLAGS.businessCommunityPhase5 ? "On" : "Off"}</li>
           <li>Phase 6 Africa Expansion: {FEATURE_FLAGS.africaExpansionPhase6 ? "On" : "Off"}</li>
           <li>Phase 7 Advanced Navigation: {FEATURE_FLAGS.advancedNavigationPhase7 ? "On" : "Off"}</li>
+          <li>AI 4.0 Predictive Safety: {FEATURE_FLAGS.ai40PredictiveSafety ? "On" : "Off"}</li>
         </ul>
       </section>
     </div>

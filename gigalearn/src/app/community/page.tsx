@@ -9,6 +9,7 @@ import type { ReportType } from "@/types/smart-map";
 import { DEFAULT_CENTER } from "@/lib/map/styles";
 import { sanitizeText } from "@/lib/security/validate";
 import { isValidCoord } from "@/lib/security/validate";
+import { verifyCommunityReport } from "@/lib/ai40/report-verification";
 
 function CommunityPageContent() {
   const reports = useMapStore((s) => s.reports);
@@ -27,6 +28,13 @@ function CommunityPageContent() {
     if (!cleanTitle || !cleanDescription) return;
     if (!isValidCoord(userLocation.lat, userLocation.lng)) return;
 
+    const verification = verifyCommunityReport({
+      type,
+      title: cleanTitle,
+      description: cleanDescription,
+      hasMedia: mediaCount > 0 || hasVoice,
+    });
+
     addReport({
       id: crypto.randomUUID(),
       type,
@@ -35,10 +43,10 @@ function CommunityPageContent() {
       coordinates: userLocation,
       city: "Accra",
       countryCode: "GH",
-      status: "submitted",
+      status: verification.verified ? "verifying" : "submitted",
       createdAt: new Date().toISOString(),
       mediaCount: mediaCount + (hasVoice ? 1 : 0),
-      aiSummary: `AI draft: community reported ${type.replace("_", " ")} near current GPS. Pending verification.`,
+      aiSummary: verification.summary,
     });
     setTitle("");
     setDescription("");

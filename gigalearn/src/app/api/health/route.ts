@@ -46,6 +46,7 @@ export async function GET() {
         businessCommunityPhase5: FEATURE_FLAGS.businessCommunityPhase5,
         africaExpansionPhase6: FEATURE_FLAGS.africaExpansionPhase6,
         advancedNavigationPhase7: FEATURE_FLAGS.advancedNavigationPhase7,
+        ai40PredictiveSafety: FEATURE_FLAGS.ai40PredictiveSafety,
       },
       supabase: {
         project: config.projectRef,
