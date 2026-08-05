@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { AuthConfigBanner } from "@/components/auth/auth-config-banner";
 import { AuthFormSkeleton } from "@/components/auth/auth-form-skeleton";
+import { DEFAULT_POST_AUTH_PATH } from "@/lib/auth/constants";
 import { signInWithEmailPassword } from "@/lib/auth/supabase-auth";
 import { useSubmitGuard } from "@/hooks/use-submit-guard";
 
@@ -19,7 +20,7 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") ?? "/dashboard";
+  const redirect = searchParams.get("redirect") ?? DEFAULT_POST_AUTH_PATH;
   const { guard } = useSubmitGuard();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -114,7 +115,7 @@ function LoginForm() {
 
       <p className="mt-6 text-center text-sm text-giga-muted">
         No account?{" "}
-        <Link href="/register" className="text-giga-purple font-bold hover:underline">
+        <Link href={`/register?redirect=${encodeURIComponent(redirect)}`} className="text-giga-purple font-bold hover:underline">
           Create one free
         </Link>
       </p>

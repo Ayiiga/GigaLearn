@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { DEFAULT_POST_AUTH_PATH } from "@/lib/auth/constants";
 import {
   getAuthCallbackUrl,
   getRequiredRedirectUrls,
@@ -33,8 +34,8 @@ describe("site-url OAuth helpers", () => {
 
   it("builds auth callback with redirect param", () => {
     process.env.NEXT_PUBLIC_APP_URL = "https://gigalearn.app";
-    expect(getAuthCallbackUrl("/learn")).toBe(
-      "https://gigalearn.app/auth/callback?redirect=%2Flearn",
+    expect(getAuthCallbackUrl(DEFAULT_POST_AUTH_PATH)).toBe(
+      "https://gigalearn.app/auth/callback?redirect=%2Fdashboard",
     );
   });
 

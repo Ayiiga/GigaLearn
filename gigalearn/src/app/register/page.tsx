@@ -2,16 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { AuthConfigBanner } from "@/components/auth/auth-config-banner";
+import { AuthFormSkeleton } from "@/components/auth/auth-form-skeleton";
 import { signUpWithEmailPassword } from "@/lib/auth/supabase-auth";
+import { DEFAULT_POST_AUTH_PATH } from "@/lib/auth/constants";
 import { useSubmitGuard } from "@/hooks/use-submit-guard";
 import type { UserRole } from "@/types";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -19,7 +22,10 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") ?? DEFAULT_POST_AUTH_PATH;
   const { guard } = useSubmitGuard();
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -28,7 +34,7 @@ export default function RegisterPage() {
 
     const result = await guard(async () => {
       setLoading(true);
-      const { error: authError } = await signUpWithEmailPassword(email, password, {
+      const { data, error: authError } = await signUpWithEmailPassword(email, password, {
         full_name: fullName.trim(),
         role,
       });
@@ -38,22 +44,39 @@ export default function RegisterPage() {
         return false;
       }
 
+      if (data?.needsEmailConfirmation) {
+        setNeedsEmailConfirmation(true);
+        setSuccess(true);
+        return true;
+      }
+
       setSuccess(true);
-      setTimeout(() => router.push("/dashboard"), 2000);
+      setTimeout(() => router.push(redirect), 2000);
       return true;
     });
 
+    setLoading(false);
     if (result === null) return;
-    if (!success) setLoading(false);
   };
 
   if (success) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center px-4">
         <Card className="p-8 text-center max-w-md">
-          <span className="text-5xl">🎉</span>
-          <h2 className="font-display mt-4 text-2xl font-bold">Welcome to Smart Map!</h2>
-          <p className="mt-2 text-giga-muted">Your account is ready. Redirecting...</p>
+          <span className="text-5xl">{needsEmailConfirmation ? "📧" : "🎉"}</span>
+          <h2 className="font-display mt-4 text-2xl font-bold">
+            {needsEmailConfirmation ? "Check your email" : "Welcome to Smart Map!"}
+          </h2>
+          <p className="mt-2 text-giga-muted">
+            {needsEmailConfirmation
+              ? `We sent a confirmation link to ${email}. Open it to activate your account, then sign in.`
+              : "Your account is ready. Redirecting..."}
+          </p>
+          {needsEmailConfirmation && (
+            <Link href={`/login?redirect=${encodeURIComponent(redirect)}`} className="mt-6 inline-block">
+              <Button className="w-full">Go to Sign In</Button>
+            </Link>
+          )}
         </Card>
       </div>
     );
@@ -70,7 +93,7 @@ export default function RegisterPage() {
 
         <AuthConfigBanner />
 
-        <GoogleSignInButton redirectPath="/dashboard" className="mb-6" />
+        <GoogleSignInButton redirectPath={redirect} className="mb-6" />
 
         <div className="relative mb-6">
           <div className="absolute inset-0 flex items-center">
@@ -149,9 +172,22 @@ export default function RegisterPage() {
 
         <p className="mt-6 text-center text-sm text-giga-muted">
           Already have an account?{" "}
-          <Link href="/login" className="text-giga-purple font-bold hover:underline">Sign in</Link>
+          <Link
+            href={`/login?redirect=${encodeURIComponent(redirect)}`}
+            className="text-giga-purple font-bold hover:underline"
+          >
+            Sign in
+          </Link>
         </p>
       </Card>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<AuthFormSkeleton />}>
+      <RegisterForm />
+    </Suspense>
   );
 }

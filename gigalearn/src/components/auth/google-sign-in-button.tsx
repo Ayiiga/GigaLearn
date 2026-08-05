@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { DEFAULT_POST_AUTH_PATH } from "@/lib/auth/constants";
 import { Button } from "@/components/ui/button";
 import { signInWithGoogle } from "@/lib/auth/supabase-auth";
 import { useSubmitGuard } from "@/hooks/use-submit-guard";
@@ -12,7 +13,7 @@ interface GoogleSignInButtonProps {
 }
 
 export function GoogleSignInButton({
-  redirectPath = "/learn",
+  redirectPath = DEFAULT_POST_AUTH_PATH,
   label = "Continue with Google",
   className,
 }: GoogleSignInButtonProps) {
@@ -29,14 +30,19 @@ export function GoogleSignInButton({
 
       if (authError) {
         setError(authError.message);
-        setLoading(false);
         return false;
       }
       // On success, browser redirects to Google — keep loading state
       return true;
     });
 
-    if (result === null) return;
+    if (result === null) {
+      setLoading(false);
+      return;
+    }
+    if (result === false) {
+      setLoading(false);
+    }
   };
 
   return (

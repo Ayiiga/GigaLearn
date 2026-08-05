@@ -147,10 +147,10 @@ export function validateSupabaseConfig(): SupabaseConfigStatus {
     issues.push(
       `Supabase anon key belongs to project "${keyRef}" but Smart Map expects "${projectRef}".`,
     );
-  }
-
-  if (urlRef && urlRef !== projectRef) {
-    issues.push(`Supabase URL does not match project ${projectRef}.`);
+  } else if (!keyRef && urlRef && urlRef !== projectRef) {
+    issues.push(
+      `Supabase URL points to project "${urlRef}" but Smart Map expects "${projectRef}".`,
+    );
   }
 
   return {

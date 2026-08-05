@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { DEFAULT_POST_AUTH_PATH } from "@/lib/auth/constants";
 import { getSupabasePublishableKey, getSupabaseUrl } from "@/lib/supabase/env";
 
 export async function updateSession(request: NextRequest) {
@@ -42,7 +43,12 @@ export async function updateSession(request: NextRequest) {
 
     if (user && (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/register")) {
       const url = request.nextUrl.clone();
-      url.pathname = "/learn";
+      const redirect = request.nextUrl.searchParams.get("redirect");
+      url.pathname =
+        redirect && redirect.startsWith("/") && !redirect.startsWith("//")
+          ? redirect
+          : DEFAULT_POST_AUTH_PATH;
+      url.searchParams.delete("redirect");
       return NextResponse.redirect(url);
     }
 

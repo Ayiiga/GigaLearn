@@ -1,3 +1,4 @@
+import { DEFAULT_POST_AUTH_PATH } from "@/lib/auth/constants";
 import { getSupabaseProjectRef } from "@/lib/supabase/env";
 
 function cleanAppUrl(value: string | undefined): string | undefined {
@@ -13,12 +14,24 @@ function cleanAppUrl(value: string | undefined): string | undefined {
  */
 export function getSiteUrl(): string {
   const configured = cleanAppUrl(process.env.NEXT_PUBLIC_APP_URL);
-  if (configured) {
-    return configured;
+
+  if (typeof window !== "undefined" && !process.env.VITEST) {
+    if (!configured) {
+      return window.location.origin;
+    }
+    try {
+      const configuredHost = new URL(configured).host;
+      if (configuredHost === window.location.host) {
+        return configured;
+      }
+    } catch {
+      // Fall through to current origin when configured URL is invalid.
+    }
+    return window.location.origin;
   }
 
-  if (typeof window !== "undefined") {
-    return window.location.origin;
+  if (configured) {
+    return configured;
   }
 
   if (process.env.VERCEL_URL) {
@@ -28,9 +41,9 @@ export function getSiteUrl(): string {
   return "http://localhost:3000";
 }
 
-export function getAuthCallbackUrl(redirectPath = "/learn"): string {
+export function getAuthCallbackUrl(redirectPath = DEFAULT_POST_AUTH_PATH): string {
   const site = getSiteUrl();
-  const safeRedirect = redirectPath.startsWith("/") ? redirectPath : "/learn";
+  const safeRedirect = redirectPath.startsWith("/") ? redirectPath : DEFAULT_POST_AUTH_PATH;
   return `${site}/auth/callback?redirect=${encodeURIComponent(safeRedirect)}`;
 }
 

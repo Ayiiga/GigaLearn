@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
+import { normalizeRedirectPath } from "@/lib/auth/constants";
 import { createClient } from "@/lib/supabase/server";
 import { ensureUserProfile } from "@/lib/supabase/ensure-profile";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const redirectParam = searchParams.get("redirect") ?? "/learn";
-  const nextPath = redirectParam.startsWith("/") ? redirectParam : "/learn";
+  const nextPath = normalizeRedirectPath(searchParams.get("redirect"));
   const errorParam = searchParams.get("error_description") ?? searchParams.get("error");
 
   if (errorParam) {

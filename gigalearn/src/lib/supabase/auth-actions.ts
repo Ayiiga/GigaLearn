@@ -1,8 +1,9 @@
 import { signInWithGoogle as signInWithGoogleAuth } from "@/lib/auth/supabase-auth";
+import { DEFAULT_POST_AUTH_PATH } from "@/lib/auth/constants";
 import { createClient } from "@/lib/supabase/client";
 
 /** @deprecated Use `@/lib/auth/supabase-auth` directly — kept for backward compatibility. */
-export async function signInWithGoogle(redirectPath = "/learn") {
+export async function signInWithGoogle(redirectPath = DEFAULT_POST_AUTH_PATH) {
   const result = await signInWithGoogleAuth(redirectPath);
   return { data: result.data, error: result.error };
 }

@@ -1,3 +1,4 @@
+import { DEFAULT_POST_AUTH_PATH } from "@/lib/auth/constants";
 import { createClient } from "@/lib/supabase/client";
 import { getAuthCallbackUrl } from "@/lib/supabase/site-url";
 import { validateSupabaseConfig, getSupabasePublishableKey } from "@/lib/supabase/env";
@@ -107,16 +108,18 @@ export async function signInWithEmailPassword(
   }
 }
 
+export type SignUpResult = { needsEmailConfirmation: boolean };
+
 export async function signUpWithEmailPassword(
   email: string,
   password: string,
   metadata: { full_name: string; role: string },
-): Promise<AuthResult<true>> {
+): Promise<AuthResult<SignUpResult>> {
   try {
     assertSupabaseReady();
     const supabase = createClient();
 
-    const { error } = await withAuthRetry(() =>
+    const { data, error } = await withAuthRetry(() =>
       supabase.auth.signUp({
         email: email.trim(),
         password,
@@ -130,7 +133,8 @@ export async function signUpWithEmailPassword(
       return { data: null, error: mapped };
     }
 
-    return { data: true, error: null };
+    const needsEmailConfirmation = !data.session;
+    return { data: { needsEmailConfirmation }, error: null };
   } catch (error) {
     const mapped = mapAuthError(error);
     logClientError("auth_sign_up_exception", { code: mapped.code, message: mapped.message });
@@ -138,7 +142,9 @@ export async function signUpWithEmailPassword(
   }
 }
 
-export async function signInWithGoogle(redirectPath = "/learn"): Promise<AuthResult<{ url?: string }>> {
+export async function signInWithGoogle(
+  redirectPath = DEFAULT_POST_AUTH_PATH,
+): Promise<AuthResult<{ url?: string }>> {
   try {
     assertSupabaseReady();
     const supabase = createClient();

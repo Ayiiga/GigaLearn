@@ -9,15 +9,23 @@ export async function GET() {
   const started = Date.now();
 
   let authReachable = false;
-  if (config.ok) {
+  let authStatus: number | null = null;
+  let authError: string | null = null;
+
+  if (config.hasValidKey) {
     try {
       const response = await fetch(`${config.url}/auth/v1/health`, {
         headers: { apikey: getSupabasePublishableKey() },
         cache: "no-store",
       });
+      authStatus = response.status;
       authReachable = response.ok;
-    } catch {
+      if (!response.ok) {
+        authError = `Auth health returned ${response.status}`;
+      }
+    } catch (error) {
       authReachable = false;
+      authError = error instanceof Error ? error.message : "Auth health check failed";
     }
   }
 
@@ -43,6 +51,8 @@ export async function GET() {
         project: config.projectRef,
         configured: config.ok,
         authReachable,
+        authStatus,
+        authError,
         issues: config.issues,
       },
       environment: process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "unknown",
