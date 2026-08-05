@@ -5,10 +5,24 @@ import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 const isGithubPages = process.env.GITHUB_PAGES === "true";
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
+function resolvePublicSupabaseKey(): string {
+  return (
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim() ||
+    process.env.ANON_PUBLIC_KEY?.trim() ||
+    ""
+  );
+}
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   compress: true,
   poweredByHeader: false,
+  env: {
+    // Bridge Cursor/Vercel secret names into the NEXT_PUBLIC_* vars the client bundle expects.
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: resolvePublicSupabaseKey(),
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: resolvePublicSupabaseKey(),
+  },
   async headers() {
     return [
       {
