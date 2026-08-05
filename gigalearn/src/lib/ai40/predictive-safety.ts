@@ -8,62 +8,62 @@ import type {
 
 const RISK_META: Record<
   PredictiveRiskKind,
-  { label: string; description: string; action: RecommendedAction }
+  { label: string; description: string; recommendedAction: RecommendedAction }
 > = {
   heavy_rain: {
     label: "Heavy rain likely",
     description: "AI estimates heavy rainfall along your route corridor.",
-    action: "slow_down",
+    recommendedAction: "slow_down",
   },
   flood: {
     label: "Flood risk",
     description: "Low-lying road segments may become impassable.",
-    action: "reroute",
+    recommendedAction: "reroute",
   },
   lightning: {
     label: "Lightning activity",
     description: "Thunderstorm cells detected within range of your route.",
-    action: "seek_shelter",
+    recommendedAction: "seek_shelter",
   },
   strong_wind: {
     label: "Strong crosswinds",
     description: "Gusty winds may affect high-profile vehicles and bridges.",
-    action: "slow_down",
+    recommendedAction: "slow_down",
   },
   dust_storm: {
     label: "Dust storm risk",
     description: "Reduced visibility from blowing dust is possible.",
-    action: "pull_over",
+    recommendedAction: "pull_over",
   },
   wildfire: {
     label: "Wildfire smoke",
     description: "Air quality and visibility may degrade near fire-affected areas.",
-    action: "reroute",
+    recommendedAction: "reroute",
   },
   road_icing: {
     label: "Road icing possible",
     description: "Freezing conditions may create slippery surfaces overnight.",
-    action: "slow_down",
+    recommendedAction: "slow_down",
   },
   reduced_visibility: {
     label: "Reduced visibility",
     description: "Fog or haze may limit sight distance ahead.",
-    action: "slow_down",
+    recommendedAction: "slow_down",
   },
   traffic_congestion: {
     label: "Traffic congestion building",
     description: "Traffic density is increasing on major corridors.",
-    action: "reroute",
+    recommendedAction: "reroute",
   },
   multi_vehicle_accident: {
     label: "Multi-vehicle incident",
     description: "Reports indicate a significant incident affecting traffic flow.",
-    action: "reroute",
+    recommendedAction: "reroute",
   },
   road_closure: {
     label: "Road closure ahead",
     description: "A segment of your route may be closed or restricted.",
-    action: "reroute",
+    recommendedAction: "reroute",
   },
 };
 
@@ -180,7 +180,7 @@ function risksFromReports(
       minutesToImpact: Math.round(5 + t * 25),
       affectedAreaKm: 1.5,
       coordinates: report.coordinates,
-      recommendedAction: meta.action,
+      recommendedAction: meta.recommendedAction,
       alternateRouteHint: "Community-verified alternate available",
       source: "community_verified",
       isOfficial: false,

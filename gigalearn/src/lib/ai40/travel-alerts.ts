@@ -1,4 +1,3 @@
-import type { Coordinates } from "@/types/smart-map";
 import type { SafetyWarning } from "@/lib/navigation/types";
 import type { PredictiveRisk, TravelAlert, TravelAlertKind } from "@/lib/ai40/types";
 import { warningVoiceLine } from "@/lib/navigation/safety-analysis";
@@ -82,10 +81,7 @@ export function alertsWithinDistance(
   return alerts.filter((a) => a.distanceM <= maxDistanceM);
 }
 
-export function nearestAlert(
-  alerts: TravelAlert[],
-  _position: Coordinates,
-): TravelAlert | null {
+export function nearestAlert(alerts: TravelAlert[]): TravelAlert | null {
   if (alerts.length === 0) return null;
   return alerts.reduce((nearest, a) => (a.distanceM < nearest.distanceM ? a : nearest));
 }

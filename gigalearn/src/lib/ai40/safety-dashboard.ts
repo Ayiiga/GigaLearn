@@ -6,13 +6,6 @@ import {
   computeSafetyScore,
 } from "@/lib/ai40/predictive-safety";
 
-function riskLevel(score: number): "low" | "moderate" | "high" | "severe" {
-  if (score >= 80) return "low";
-  if (score >= 60) return "moderate";
-  if (score >= 40) return "high";
-  return "severe";
-}
-
 function weatherRiskLevel(weather?: WeatherSnapshot): SafetyDashboardSnapshot["weatherRisk"] {
   if (!weather) return "moderate";
   if (weather.floodRisk === "high" || weather.heatAlert) return "severe";

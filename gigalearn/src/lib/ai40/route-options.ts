@@ -1,4 +1,3 @@
-import { haversineKm } from "@/content/smart-map/places";
 import type { Coordinates } from "@/types/smart-map";
 import {
   buildPolyline,

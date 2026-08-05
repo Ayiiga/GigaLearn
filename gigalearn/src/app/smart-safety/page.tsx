@@ -23,10 +23,14 @@ export default function SmartSafetyPage() {
   const [weather, setWeather] = useState<WeatherSnapshot | undefined>();
   const [consentOpen, setConsentOpen] = useState(false);
 
-  const destination = navDestination?.coordinates ?? {
-    lat: userLocation.lat + 0.04,
-    lng: userLocation.lng + 0.03,
-  };
+  const destination = useMemo(
+    () =>
+      navDestination?.coordinates ?? {
+        lat: userLocation.lat + 0.04,
+        lng: userLocation.lng + 0.03,
+      },
+    [navDestination?.coordinates, userLocation.lat, userLocation.lng],
+  );
 
   useEffect(() => {
     if (!hasConsent(consents, "weather_providers")) return;
