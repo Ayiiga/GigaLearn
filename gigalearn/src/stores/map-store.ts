@@ -12,7 +12,13 @@ import type {
   TravelMode,
   UserMapPreferences,
 } from "@/types/smart-map";
-import type { LocationPermission, NavEndpoint, ResolvedAddress } from "@/lib/geo/types";
+import type {
+  AddressResolveStatus,
+  LocationEngineStatus,
+  LocationPermission,
+  NavEndpoint,
+  ResolvedAddress,
+} from "@/lib/geo/types";
 import type { PrivacyConsent, PrivacyConsentKey } from "@/lib/ai40/types";
 import { DEFAULT_CONSENTS, grantConsent, revokeConsent, revokeAllConsents } from "@/lib/ai40/privacy";
 import { SAMPLE_REPORTS } from "@/content/smart-map/reports";
@@ -30,6 +36,9 @@ interface MapState extends UserMapPreferences {
   locationPermission: LocationPermission;
   locationMeta: LocationMeta;
   resolvedAddress: ResolvedAddress | null;
+  locationEngineStatus: LocationEngineStatus;
+  addressStatus: AddressResolveStatus;
+  addressError: string | null;
   selectedPlaceId: string | null;
   activeCategory: PlaceCategory | "all";
   travelMode: TravelMode;
@@ -52,6 +61,8 @@ interface MapState extends UserMapPreferences {
   setLocationPermission: (permission: LocationPermission) => void;
   setLocationMeta: (meta: Partial<LocationMeta>) => void;
   setResolvedAddress: (address: ResolvedAddress | null) => void;
+  setLocationEngineStatus: (status: LocationEngineStatus) => void;
+  setAddressStatus: (status: AddressResolveStatus, error?: string | null) => void;
   setSelectedPlaceId: (id: string | null) => void;
   setActiveCategory: (category: PlaceCategory | "all") => void;
   setTravelMode: (mode: TravelMode) => void;
@@ -89,6 +100,9 @@ export const useMapStore = create<MapState>()(
       locationPermission: "unknown",
       locationMeta: { accuracyM: null, speedMps: null, updatedAt: null, source: "none" },
       resolvedAddress: null,
+      locationEngineStatus: "idle",
+      addressStatus: "idle",
+      addressError: null,
       selectedPlaceId: null,
       activeCategory: "all",
       travelMode: "driving",
@@ -120,7 +134,14 @@ export const useMapStore = create<MapState>()(
       setUserLocation: (coords) => set({ userLocation: coords }),
       setLocationPermission: (permission) => set({ locationPermission: permission }),
       setLocationMeta: (meta) => set({ locationMeta: { ...get().locationMeta, ...meta } }),
-      setResolvedAddress: (address) => set({ resolvedAddress: address }),
+      setResolvedAddress: (address) =>
+        set({
+          resolvedAddress: address,
+          addressStatus: address ? "resolved" : get().addressStatus,
+          addressError: address ? null : get().addressError,
+        }),
+      setLocationEngineStatus: (status) => set({ locationEngineStatus: status }),
+      setAddressStatus: (status, error = null) => set({ addressStatus: status, addressError: error }),
       setSelectedPlaceId: (id) => set({ selectedPlaceId: id }),
       setActiveCategory: (category) => set({ activeCategory: category }),
       setTravelMode: (mode) => set({ travelMode: mode }),
@@ -224,6 +245,9 @@ export const useMapStore = create<MapState>()(
           locationPermission: current.locationPermission,
           locationMeta: current.locationMeta,
           resolvedAddress: current.resolvedAddress,
+          locationEngineStatus: current.locationEngineStatus,
+          addressStatus: current.addressStatus,
+          addressError: current.addressError,
           navOrigin: current.navOrigin,
           navDestination: current.navDestination,
           pickOnMapMode: current.pickOnMapMode,

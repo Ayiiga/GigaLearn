@@ -3,6 +3,7 @@ import type { GeoSearchResult, NearbyPoi, ResolvedAddress } from "@/lib/geo/type
 import type { PlaceCategory } from "@/types/smart-map";
 import { haversineKm } from "@/content/smart-map/places";
 import { MODE_SPEED_KMH } from "@/lib/navigation/route-engine";
+import { fetchWithRetry } from "@/lib/network/fetch-with-retry";
 
 const NOMINATIM = "https://nominatim.openstreetmap.org";
 const OVERPASS = "https://overpass-api.de/api/interpreter";
@@ -119,10 +120,12 @@ export async function nominatimSearch(
   url.searchParams.set("addressdetails", "1");
   url.searchParams.set("limit", String(options?.limit ?? 8));
 
-  const res = await fetch(url.toString(), {
+  const res = await fetchWithRetry(url.toString(), {
     headers: headers(),
     signal: options?.signal,
-    next: { revalidate: 0 },
+    retries: 2,
+    retryDelayMs: 600,
+    timeoutMs: 12_000,
   });
   if (!res.ok) throw new Error(`Geocode search failed (${res.status})`);
   const data = (await res.json()) as NominatimItem[];
@@ -141,10 +144,12 @@ export async function nominatimReverse(
   url.searchParams.set("addressdetails", "1");
   url.searchParams.set("zoom", "18");
 
-  const res = await fetch(url.toString(), {
+  const res = await fetchWithRetry(url.toString(), {
     headers: headers(),
     signal: options?.signal,
-    next: { revalidate: 0 },
+    retries: 2,
+    retryDelayMs: 600,
+    timeoutMs: 12_000,
   });
   if (!res.ok) return null;
   const data = (await res.json()) as NominatimItem;
@@ -183,7 +188,7 @@ export async function overpassNearbyEmergency(
     out center 40;
   `;
 
-  const res = await fetch(OVERPASS, {
+  const res = await fetchWithRetry(OVERPASS, {
     method: "POST",
     headers: {
       ...headers(),
@@ -191,6 +196,9 @@ export async function overpassNearbyEmergency(
     },
     body: `data=${encodeURIComponent(query)}`,
     signal: options?.signal,
+    retries: 2,
+    retryDelayMs: 1000,
+    timeoutMs: 25_000,
   });
   if (!res.ok) throw new Error(`Nearby POI lookup failed (${res.status})`);
 

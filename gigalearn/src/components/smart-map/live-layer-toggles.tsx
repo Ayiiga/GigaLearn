@@ -11,13 +11,18 @@ const HOME_LAYERS: MapLayerId[] = [
   "satellite",
   "terrain",
   "traffic",
-  "vegetation",
-  "rivers",
-  "lakes",
-  "forests",
-  "land_cover",
+  "weather",
   "night",
 ];
+
+const LAYER_LABELS: Partial<Record<MapLayerId, string>> = {
+  standard: "Standard",
+  satellite: "Satellite",
+  terrain: "Terrain",
+  traffic: "Traffic",
+  weather: "Weather",
+  night: "Safety",
+};
 
 export function LiveLayerToggles() {
   const setMapStyle = useMapStore((s) => s.setMapStyle);
@@ -41,24 +46,35 @@ export function LiveLayerToggles() {
   }
 
   return (
-    <div className="rounded-3xl border border-white/30 bg-white/92 p-3 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#0B3A63]/94">
-      <p className="text-xs font-semibold uppercase tracking-wide text-sm-emerald">Live map layers</p>
-      <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
-        {MAP_LAYERS.filter((l) => HOME_LAYERS.includes(l.id)).map((layer) => (
-          <button
-            key={layer.id}
-            type="button"
-            onClick={() => toggle(layer.id)}
-            className={cn(
-              "shrink-0 rounded-2xl px-3 py-2 text-xs font-bold",
-              active.includes(layer.id)
-                ? "bg-sm-primary text-white"
-                : "bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-white",
-            )}
-          >
-            {layer.emoji} {layer.label}
-          </button>
-        ))}
+    <div className="rounded-2xl border border-white/30 bg-white/95 p-3 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-[#0B1220]/95">
+      <p className="text-xs font-semibold uppercase tracking-wide text-[#0F5B8D]">Live map layers</p>
+      <div
+        className="mt-2 -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 scrollbar-none"
+        style={{ WebkitOverflowScrolling: "touch" }}
+        role="tablist"
+        aria-label="Map layers"
+      >
+        {MAP_LAYERS.filter((l) => HOME_LAYERS.includes(l.id)).map((layer) => {
+          const isActive = active.includes(layer.id);
+          const label = LAYER_LABELS[layer.id] ?? layer.label;
+          return (
+            <button
+              key={layer.id}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              onClick={() => toggle(layer.id)}
+              className={cn(
+                "shrink-0 rounded-2xl px-3 py-2.5 text-xs font-bold min-h-[44px] transition-colors",
+                isActive
+                  ? "bg-[#0F5B8D] text-white shadow-md"
+                  : "bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-white",
+              )}
+            >
+              {layer.emoji} {label}
+            </button>
+          );
+        })}
       </div>
       {pending && <p className="mt-1 text-[11px] text-slate-500">Updating…</p>}
     </div>
