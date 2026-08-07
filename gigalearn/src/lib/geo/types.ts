@@ -47,7 +47,19 @@ export interface NearbyPoi {
   phone?: string;
   distanceKm: number;
   durationMin: number;
+  openStatus?: "open" | "closed" | "unknown";
 }
+
+export type LocationEngineStatus =
+  | "idle"
+  | "locating"
+  | "resolved"
+  | "low_accuracy"
+  | "unavailable"
+  | "permission_denied"
+  | "network_unavailable";
+
+export type AddressResolveStatus = "idle" | "resolving" | "resolved" | "failed" | "unavailable";
 
 export type NavEndpointSource =
   | "gps"

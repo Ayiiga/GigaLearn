@@ -15,10 +15,14 @@ export async function GET(request: Request) {
 
   try {
     const address = await nominatimReverse({ lat, lng });
-    return NextResponse.json({ address, provider: "nominatim" });
+    return NextResponse.json({
+      address,
+      provider: "nominatim",
+      fetchedAt: new Date().toISOString(),
+    });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Reverse geocode failed" },
+      { error: error instanceof Error ? error.message : "Reverse geocode failed", address: null },
       { status: 502 },
     );
   }

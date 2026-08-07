@@ -8,19 +8,15 @@ import {
   readGeolocationPermission,
   watchLocation,
 } from "@/lib/geo/geolocation";
-import type { ResolvedAddress } from "@/lib/geo/types";
+import { getAccuracyInfo, isStaleLocation } from "@/lib/geo/accuracy";
+import { reverseGeocode } from "@/lib/geo/reverse-geocode-service";
+import { readLocationCache } from "@/lib/geo/location-cache";
+import { classifyGeolocationError, logSmartMapError } from "@/lib/errors/smart-map-errors";
 import { useMapStore } from "@/stores/map-store";
+import { useOnlineStatus } from "@/lib/hooks/use-online-status";
 
-async function fetchReverse(lat: number, lng: number): Promise<ResolvedAddress | null> {
-  try {
-    const res = await fetch(`/api/geo/reverse?lat=${lat}&lng=${lng}`, { cache: "no-store" });
-    if (!res.ok) return null;
-    const data = (await res.json()) as { address?: ResolvedAddress };
-    return data.address ?? null;
-  } catch {
-    return null;
-  }
-}
+const REVERSE_DEBOUNCE_MS = 45_000;
+const REVERSE_COORD_PRECISION = 4;
 
 /**
  * Starts continuous GPS tracking and reverse-geocoding into the map store.
@@ -31,21 +27,47 @@ export function useLiveLocation(enabled = true) {
   const setLocationMeta = useMapStore((s) => s.setLocationMeta);
   const setLocationPermission = useMapStore((s) => s.setLocationPermission);
   const setResolvedAddress = useMapStore((s) => s.setResolvedAddress);
+  const setLocationEngineStatus = useMapStore((s) => s.setLocationEngineStatus);
+  const setAddressStatus = useMapStore((s) => s.setAddressStatus);
   const locationPermission = useMapStore((s) => s.locationPermission);
+  const online = useOnlineStatus();
+
   const lastReverseAt = useRef(0);
   const lastReverseKey = useRef("");
+  const reverseAbortRef = useRef<AbortController | null>(null);
+  const hydratedCache = useRef(false);
 
-  const reverseIfNeeded = useCallback(
-    async (lat: number, lng: number) => {
-      const key = `${lat.toFixed(4)},${lng.toFixed(4)}`;
+  const resolveAddress = useCallback(
+    async (lat: number, lng: number, accuracyM: number | null, force = false) => {
+      const key = `${lat.toFixed(REVERSE_COORD_PRECISION)},${lng.toFixed(REVERSE_COORD_PRECISION)}`;
       const now = Date.now();
-      if (key === lastReverseKey.current && now - lastReverseAt.current < 45_000) return;
+      if (!force && key === lastReverseKey.current && now - lastReverseAt.current < REVERSE_DEBOUNCE_MS) {
+        return;
+      }
       lastReverseKey.current = key;
       lastReverseAt.current = now;
-      const address = await fetchReverse(lat, lng);
-      if (address) setResolvedAddress(address);
+
+      reverseAbortRef.current?.abort();
+      const controller = new AbortController();
+      reverseAbortRef.current = controller;
+
+      setAddressStatus("resolving", null);
+
+      const result = await reverseGeocode(
+        { lat, lng },
+        { signal: controller.signal, offline: !online, accuracyM },
+      );
+
+      if (controller.signal.aborted) return;
+
+      if (result.address) {
+        setResolvedAddress(result.address);
+        setAddressStatus("resolved", null);
+      } else {
+        setAddressStatus(result.status, result.error?.userMessage ?? "Address unavailable — tap to retry");
+      }
     },
-    [setResolvedAddress],
+    [online, setAddressStatus, setResolvedAddress],
   );
 
   const applyFix = useCallback(
@@ -56,6 +78,10 @@ export function useLiveLocation(enabled = true) {
       timestamp: number;
     }) => {
       if (!isValidCoordinates(fix.coordinates)) return;
+
+      const accuracy = getAccuracyInfo(fix.accuracyM);
+      const stale = isStaleLocation(fix.timestamp);
+
       setUserLocation(fix.coordinates);
       setLocationMeta({
         accuracyM: fix.accuracyM,
@@ -64,20 +90,52 @@ export function useLiveLocation(enabled = true) {
         source: "gps",
       });
       setLocationPermission("granted");
-      void reverseIfNeeded(fix.coordinates.lat, fix.coordinates.lng);
+
+      if (accuracy.isLow || stale) {
+        setLocationEngineStatus("low_accuracy");
+      } else {
+        setLocationEngineStatus("resolved");
+      }
+
+      void resolveAddress(fix.coordinates.lat, fix.coordinates.lng, fix.accuracyM);
     },
-    [reverseIfNeeded, setLocationMeta, setLocationPermission, setUserLocation],
+    [resolveAddress, setLocationEngineStatus, setLocationMeta, setLocationPermission, setUserLocation],
   );
 
   const requestLocation = useCallback(async () => {
+    if (!online) {
+      setLocationEngineStatus("network_unavailable");
+      const cached = readLocationCache();
+      if (cached) {
+        setUserLocation(cached.coordinates);
+        setLocationMeta({
+          accuracyM: cached.accuracyM,
+          speedMps: null,
+          updatedAt: cached.updatedAt,
+          source: "gps",
+        });
+        if (cached.address) {
+          setResolvedAddress(cached.address);
+          setAddressStatus("resolved", null);
+        }
+      }
+      return false;
+    }
+
+    setLocationEngineStatus("locating");
     setLocationPermission("prompt");
     try {
-      const fix = await getCurrentFix();
+      const fix = await getCurrentFix({ enableHighAccuracy: true, timeout: 15_000, maximumAge: 5000 });
       applyFix(fix);
       return true;
-    } catch {
+    } catch (error) {
+      const classified = classifyGeolocationError(error as GeolocationPositionError);
+      logSmartMapError(classified.code, error);
       const permission = await readGeolocationPermission();
       setLocationPermission(permission === "granted" ? "denied" : permission);
+      setLocationEngineStatus(
+        classified.code === "LOCATION_PERMISSION_DENIED" ? "permission_denied" : "unavailable",
+      );
       setLocationMeta({
         accuracyM: null,
         speedMps: null,
@@ -86,7 +144,43 @@ export function useLiveLocation(enabled = true) {
       });
       return false;
     }
-  }, [applyFix, setLocationMeta, setLocationPermission]);
+  }, [
+    applyFix,
+    online,
+    setAddressStatus,
+    setLocationEngineStatus,
+    setLocationMeta,
+    setLocationPermission,
+    setResolvedAddress,
+    setUserLocation,
+  ]);
+
+  const refreshAddress = useCallback(() => {
+    const coords = useMapStore.getState().userLocation;
+    const meta = useMapStore.getState().locationMeta;
+    if (!coords) return;
+    lastReverseKey.current = "";
+    void resolveAddress(coords.lat, coords.lng, meta.accuracyM, true);
+  }, [resolveAddress]);
+
+  useEffect(() => {
+    if (!enabled || hydratedCache.current) return;
+    hydratedCache.current = true;
+    const cached = readLocationCache();
+    if (cached) {
+      setUserLocation(cached.coordinates);
+      setLocationMeta({
+        accuracyM: cached.accuracyM,
+        speedMps: null,
+        updatedAt: cached.updatedAt,
+        source: "gps",
+      });
+      if (cached.address) {
+        setResolvedAddress(cached.address);
+        setAddressStatus("resolved", null);
+      }
+    }
+  }, [enabled, setAddressStatus, setLocationMeta, setResolvedAddress, setUserLocation]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -97,16 +191,33 @@ export function useLiveLocation(enabled = true) {
       const permission = await readGeolocationPermission();
       if (cancelled) return;
       setLocationPermission(permission);
-      if (permission === "denied" || permission === "unavailable") return;
+      if (permission === "denied") {
+        setLocationEngineStatus("permission_denied");
+        return;
+      }
+      if (permission === "unavailable") {
+        setLocationEngineStatus("unavailable");
+        return;
+      }
+      if (!online) {
+        setLocationEngineStatus("network_unavailable");
+        return;
+      }
+
+      setLocationEngineStatus("locating");
 
       try {
         const fix = await getCurrentFix();
         if (cancelled) return;
         applyFix(fix);
-      } catch {
+      } catch (error) {
         if (!cancelled) {
+          const classified = classifyGeolocationError(error as GeolocationPositionError);
           const next = await readGeolocationPermission();
           setLocationPermission(next === "granted" ? "denied" : next);
+          setLocationEngineStatus(
+            classified.code === "LOCATION_PERMISSION_DENIED" ? "permission_denied" : "unavailable",
+          );
         }
       }
 
@@ -114,10 +225,15 @@ export function useLiveLocation(enabled = true) {
         (fix) => {
           if (!cancelled) applyFix(fix);
         },
-        async () => {
+        async (error) => {
           if (cancelled) return;
           const next = await readGeolocationPermission();
-          if (next === "denied") setLocationPermission("denied");
+          if (next === "denied") {
+            setLocationPermission("denied");
+            setLocationEngineStatus("permission_denied");
+          } else if ("code" in error && error.code === 3) {
+            setLocationEngineStatus("unavailable");
+          }
         },
       );
     })();
@@ -125,12 +241,15 @@ export function useLiveLocation(enabled = true) {
     return () => {
       cancelled = true;
       stopWatch();
+      reverseAbortRef.current?.abort();
     };
-  }, [applyFix, enabled, setLocationPermission]);
+  }, [applyFix, enabled, online, setLocationEngineStatus, setLocationPermission]);
 
   return {
     requestLocation,
+    refreshAddress,
     locationPermission,
     formatAccuracy,
+    online,
   };
 }
