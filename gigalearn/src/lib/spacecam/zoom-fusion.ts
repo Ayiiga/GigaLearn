@@ -54,7 +54,7 @@ const SOURCES: SourceDefinition[] = [
   },
   {
     source: "earth",
-    maxScaleMeters: 3_000_000_000,
+    maxScaleMeters: 7_000_000,
     scaleMeters: 6_400_000,
     label: "EARTH VIEW",
     description: "3D-style Earth scale visualization.",
