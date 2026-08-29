@@ -62,7 +62,7 @@ const SOURCES: SourceDefinition[] = [
   },
   {
     source: "simulation",
-    maxScaleMeters: 10_000_000_000,
+    maxScaleMeters: 10_000_000,
     scaleMeters: 384_400_000,
     label: "SIMULATION",
     description: "Conceptual orbital-scale visualization, not live camera footage.",
