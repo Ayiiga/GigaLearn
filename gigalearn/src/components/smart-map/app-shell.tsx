@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { BottomNav } from "@/components/smart-map/bottom-nav";
 import { useLiveLocation } from "@/lib/geo/use-live-location";
 
-const MAP_FULLSCREEN = new Set(["/", "/navigate"]);
+const MAP_FULLSCREEN = new Set(["/", "/navigate", "/spacecam"]);
 const AUTH_ROUTES = new Set(["/login", "/register", "/auth/auth-code-error"]);
 
 function LiveLocationBootstrap() {

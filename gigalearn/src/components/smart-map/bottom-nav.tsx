@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Map, Search, Navigation, Shield, User } from "lucide-react";
+import { Map, Search, Navigation, Rocket, Shield, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { href: "/", label: "Map", icon: Map, match: (p: string) => p === "/" },
   { href: "/search", label: "Search", icon: Search, match: (p: string) => p.startsWith("/search") },
   { href: "/navigate", label: "Navigate", icon: Navigation, match: (p: string) => p.startsWith("/navigate") },
+  { href: "/spacecam", label: "SpaceCam", icon: Rocket, match: (p: string) => p.startsWith("/spacecam") },
   { href: "/safety", label: "Safety", icon: Shield, match: (p: string) => p.startsWith("/safety") || p.startsWith("/smart-safety") },
   { href: "/profile", label: "Profile", icon: User, match: (p: string) => p.startsWith("/profile") || p.startsWith("/settings") },
 ] as const;
