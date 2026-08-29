@@ -9,6 +9,7 @@ describe("Zoom Fusion Engine", () => {
   it("moves outward through geospatial and conceptual sources", () => {
     expect(getZoomFusionState(45).source).toBe("satellite");
     expect(getZoomFusionState(70).source).toBe("earth");
+    expect(getZoomFusionState(96).source).toBe("simulation");
     expect(getZoomFusionState(100).source).toBe("astronomical");
   });
 
