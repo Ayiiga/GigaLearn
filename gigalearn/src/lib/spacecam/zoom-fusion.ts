@@ -2,7 +2,7 @@ export type SpaceCamSource =
   | "real-capture"
   | "optical"
   | "computational"
-  | "satellite"
+  | "map"
   | "earth"
   | "simulation"
   | "astronomical";
@@ -45,11 +45,11 @@ const SOURCES: SourceDefinition[] = [
     isExternal: false,
   },
   {
-    source: "satellite",
+    source: "map",
     maxScaleMeters: 100_000,
     scaleMeters: 12_600,
-    label: "SATELLITE",
-    description: "Map imagery from the configured geospatial provider.",
+    label: "MAP DATA",
+    description: "Existing Smart Map geospatial view; satellite imagery is not configured.",
     isExternal: true,
   },
   {
@@ -94,5 +94,5 @@ export function formatSpaceCamScale(meters: number): string {
 }
 
 export function requiresMapView(source: SpaceCamSource): boolean {
-  return source === "satellite";
+  return source === "map";
 }

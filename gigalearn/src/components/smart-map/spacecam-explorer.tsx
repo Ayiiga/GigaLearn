@@ -162,7 +162,7 @@ export function SpaceCamExplorer() {
   );
 
   return (
-    <main className="relative h-[100dvh] w-full overflow-hidden bg-[#020915] text-white">
+    <main key={fusion.source} className="relative h-[100dvh] w-full overflow-hidden bg-[#020915] text-white">
       {visual}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between p-3 sm:p-5">
         <Link href="/" className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-slate-950/75 px-3 py-2 text-sm font-bold shadow-lg backdrop-blur" aria-label="Return to Smart Map">
@@ -221,7 +221,7 @@ export function SpaceCamExplorer() {
               </button>
             </div>
           )}
-          {fusion.source === "satellite" && <p className="mt-3 text-xs text-slate-300">Using your existing Smart Map view in {mapStyle} style. It is map imagery, not device camera footage.</p>}
+          {fusion.source === "map" && <p className="mt-3 text-xs text-slate-300">Using your existing Smart Map view in {mapStyle} style. It is geospatial map data, not device camera or satellite imagery.</p>}
         </div>
       </div>
     </main>

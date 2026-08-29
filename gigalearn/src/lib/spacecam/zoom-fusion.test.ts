@@ -7,7 +7,7 @@ describe("Zoom Fusion Engine", () => {
   });
 
   it("moves outward through geospatial and conceptual sources", () => {
-    expect(getZoomFusionState(45).source).toBe("satellite");
+    expect(getZoomFusionState(45).source).toBe("map");
     expect(getZoomFusionState(70).source).toBe("earth");
     expect(getZoomFusionState(98).source).toBe("simulation");
     expect(getZoomFusionState(100).source).toBe("astronomical");
@@ -19,8 +19,8 @@ describe("Zoom Fusion Engine", () => {
     expect(formatSpaceCamScale(384_400_000)).toBe("384,400 km");
   });
 
-  it("only requests the existing map at the satellite stage", () => {
-    expect(requiresMapView("satellite")).toBe(true);
+  it("only requests the existing map at the map-data stage", () => {
+    expect(requiresMapView("map")).toBe(true);
     expect(requiresMapView("earth")).toBe(false);
   });
 });
