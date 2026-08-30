@@ -54,18 +54,18 @@ const SOURCES: SourceDefinition[] = [
   },
   {
     source: "earth",
-    maxScaleMeters: 7_000_000,
+    maxScaleMeters: 100_000_000,
     scaleMeters: 6_400_000,
     label: "EARTH VIEW",
-    description: "3D-style Earth scale visualization.",
+    description: "Simulated Earth view at planetary scale.",
     isExternal: true,
   },
   {
     source: "simulation",
-    maxScaleMeters: 10_000_000,
+    maxScaleMeters: 2_000_000_000,
     scaleMeters: 384_400_000,
     label: "SIMULATION",
-    description: "Conceptual orbital-scale visualization, not live camera footage.",
+    description: "Simulated orbital view using real scale distances, not live camera footage.",
     isExternal: true,
   },
   {
@@ -80,7 +80,9 @@ const SOURCES: SourceDefinition[] = [
 
 export function getZoomFusionState(zoom: number): ZoomFusionState {
   const normalizedZoom = Math.max(0, Math.min(100, zoom));
-  const scaleMeters = 2.4 * 10 ** (normalizedZoom / 15);
+  // Each 10 slider points represents one order of magnitude, reaching
+  // astronomical distances without implying a physical camera zoom.
+  const scaleMeters = 2.4 * 10 ** (normalizedZoom / 10);
   const source = SOURCES.find((item) => scaleMeters <= item.maxScaleMeters) ?? SOURCES.at(-1)!;
   return { ...source, scaleMeters };
 }
