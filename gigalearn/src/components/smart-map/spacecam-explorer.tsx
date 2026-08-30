@@ -130,7 +130,14 @@ export function SpaceCamExplorer() {
   }
 
   const visual = requiresMapView(fusion.source) ? (
-    <MapView className="absolute inset-0" places={[]} />
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,#155e75,transparent_45%),#020617]">
+      <MapView className="absolute inset-0" places={[]} />
+      <div className="pointer-events-none absolute inset-x-0 top-1/3 z-10 text-center">
+        <p className="inline-block rounded-full bg-slate-950/70 px-3 py-1.5 text-xs text-white/85 backdrop-blur">
+          Smart Map geospatial view
+        </p>
+      </div>
+    </div>
   ) : cameraStage ? (
     <div className="absolute inset-0 bg-slate-950">
       <video ref={videoRef} className="h-full w-full object-cover" playsInline muted />
