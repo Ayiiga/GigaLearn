@@ -56,6 +56,11 @@
       "description": "Start turn-by-turn navigation"
     },
     {
+      "name": "SpaceCam",
+      "url": "/spacecam",
+      "description": "Explore visual scale from camera to space"
+    },
+    {
       "name": "AI Assistant",
       "url": "/ai-assistant",
       "description": "Ask Smart Map AI for safe routes"
