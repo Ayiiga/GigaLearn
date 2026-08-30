@@ -48,6 +48,13 @@ export function SpaceCamExplorer() {
 
   const fusion = useMemo(() => getZoomFusionState(zoom), [zoom]);
   const cameraStage = CAMERA_SOURCES.has(fusion.source);
+  const displaySource =
+    cameraStage && cameraStatus !== "ready"
+      ? {
+          label: "CAMERA OFF",
+          description: "Camera access is disabled until you explicitly enable it.",
+        }
+      : fusion;
 
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -182,8 +189,8 @@ export function SpaceCamExplorer() {
           <ArrowLeft className="h-4 w-4" /> <span className="hidden sm:inline">Smart Map</span>
         </Link>
         <div className="rounded-2xl bg-slate-950/75 px-3 py-2 text-right shadow-lg backdrop-blur">
-          <p className="text-[10px] font-bold tracking-[0.16em] text-cyan-200">{fusion.label}</p>
-          <p className="text-xs text-white/75">{fusion.description}</p>
+          <p className="text-[10px] font-bold tracking-[0.16em] text-cyan-200">{displaySource.label}</p>
+          <p className="text-xs text-white/75">{displaySource.description}</p>
         </div>
       </div>
 
@@ -198,7 +205,7 @@ export function SpaceCamExplorer() {
           <div className="flex items-end justify-between">
             <div>
               <p className="font-display text-3xl font-extrabold">{formatSpaceCamScale(fusion.scaleMeters)}</p>
-              <p className="mt-1 text-xs text-slate-300">{fusion.label}{userLocation ? " · centered on your Smart Map location" : ""}</p>
+              <p className="mt-1 text-xs text-slate-300">{displaySource.label}{userLocation ? " · centered on your Smart Map location" : ""}</p>
             </div>
             {cameraStatus === "ready" && cameraStage && (
               <button type="button" onClick={captureLocally} className="grid h-12 w-12 place-items-center rounded-full border-4 border-white bg-transparent" aria-label="Capture locally">
@@ -241,17 +248,65 @@ export function SpaceCamExplorer() {
   );
 }
 
+const SOLAR_TARGETS = [
+  { name: "Earth", distance: "12,742 km diameter", color: "from-sky-200 via-blue-500 to-blue-950" },
+  { name: "Moon", distance: "384,400 km away", color: "from-slate-100 via-slate-400 to-slate-800" },
+  { name: "Mars", distance: "227.9m km from Sun", color: "from-orange-200 via-orange-500 to-red-950" },
+  { name: "Jupiter", distance: "778.5m km from Sun", color: "from-amber-100 via-orange-300 to-orange-900" },
+  { name: "Saturn", distance: "1.43b km from Sun", color: "from-yellow-100 via-amber-300 to-amber-800" },
+] as const;
+
+const RECENT_EXOPLANETS = [
+  { name: "Gliese 12 b", detail: "Confirmed 2024 · 12 pc away" },
+  { name: "TOI-715 b", detail: "Confirmed 2024 · 42 pc away" },
+] as const;
+
 function SpaceVisualization({ source }: { source: SpaceCamSource }) {
   const isEarth = source === "earth";
+  const [targetIndex, setTargetIndex] = useState(0);
+  const target = isEarth ? SOLAR_TARGETS[0] : SOLAR_TARGETS[targetIndex];
+  const planetary = source === "simulation" || source === "astronomical";
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[radial-gradient(circle_at_70%_20%,#164e73_0,transparent_28%),radial-gradient(circle_at_20%_75%,#312e81_0,transparent_20%),#020617]">
-      <div className={cn("absolute rounded-full shadow-[0_0_100px_28px_rgba(34,211,238,0.22)]", isEarth ? "left-1/2 top-1/2 h-[min(72vw,520px)] w-[min(72vw,520px)] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(circle_at_33%_28%,#d8f3ff_0,#1771a6_22%,#073255_55%,#021425_76%)]" : "left-[55%] top-[42%] h-[min(42vw,290px)] w-[min(42vw,290px)] bg-[radial-gradient(circle_at_30%_25%,#f8fafc_0,#94a3b8_22%,#334155_60%,#0f172a_78%)]")} />
-      <div className="absolute inset-0 opacity-70 [background-image:radial-gradient(white_1px,transparent_1px)] [background-size:52px_52px]" />
-      <div className="absolute inset-x-0 top-[57%] text-center">
-        {isEarth ? <Satellite className="mx-auto h-8 w-8 text-cyan-200" /> : <Moon className="mx-auto h-8 w-8 text-indigo-200" />}
-        <p className="mt-2 text-sm font-bold">{source === "astronomical" ? "CONCEPTUAL DEEP-SPACE VIEW" : "SIMULATED SCALE VIEW"}</p>
-        <p className="mt-1 text-xs text-white/70">Not live camera footage or a live astronomical feed.</p>
+    <div className="absolute inset-0 overflow-hidden bg-[radial-gradient(circle_at_50%_40%,#0b4d77_0,transparent_35%),radial-gradient(circle_at_82%_18%,#4c1d95_0,transparent_26%),#020617]">
+      <div className="absolute inset-0 opacity-80 [background-image:radial-gradient(white_1.2px,transparent_1.2px)] [background-size:52px_52px]" />
+      <div className="absolute inset-0 opacity-40 [background-image:radial-gradient(#bae6fd_1px,transparent_1px)] [background-size:137px_137px]" />
+      <div className={cn(
+        "absolute left-1/2 top-[43%] h-[min(76vw,540px)] w-[min(76vw,540px)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/20 shadow-[0_0_120px_36px_rgba(34,211,238,0.25)]",
+        `bg-gradient-to-br ${target.color}`,
+      )}>
+        {target.name === "Earth" && (
+          <>
+            <div className="absolute left-[17%] top-[22%] h-[18%] w-[25%] rounded-[55%_45%_40%_60%] bg-emerald-300/65 blur-[1px]" />
+            <div className="absolute bottom-[22%] right-[13%] h-[13%] w-[30%] rounded-[48%_52%_60%_40%] bg-emerald-200/50 blur-[1px]" />
+            <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_24%,rgba(255,255,255,.9),transparent_13%),radial-gradient(circle_at_45%_36%,rgba(255,255,255,.5),transparent_18%),linear-gradient(105deg,transparent_55%,rgba(0,0,0,.65)_100%)]" />
+          </>
+        )}
+        {target.name === "Saturn" && <div className="absolute left-[-25%] top-[38%] h-[25%] w-[150%] rotate-[-14deg] rounded-[50%] border-[min(5vw,24px)] border-amber-100/65" />}
+        {target.name === "Jupiter" && <div className="absolute left-[15%] top-[68%] h-[10%] w-[48%] rounded-full bg-red-900/60 blur-sm" />}
       </div>
+      <div className="absolute inset-x-0 top-[63%] px-5 text-center">
+        {isEarth ? <Satellite className="mx-auto h-8 w-8 text-cyan-200" /> : <Moon className="mx-auto h-8 w-8 text-indigo-200" />}
+        <p className="mt-2 text-base font-bold">{target.name} · SIMULATED SCALE VIEW</p>
+        <p className="mt-1 text-xs text-cyan-100">{target.distance}</p>
+        <p className="mt-1 text-xs text-white/80">Illustrative visualization using real reference distances — not live camera footage.</p>
+      </div>
+      {planetary && (
+        <div className="absolute inset-x-3 top-28 z-10 mx-auto max-w-lg rounded-2xl border border-white/15 bg-slate-950/65 p-2 backdrop-blur-md">
+          <p className="px-2 pb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-200">Solar system targets</p>
+          <div className="flex gap-1 overflow-x-auto">
+            {SOLAR_TARGETS.map((item, index) => (
+              <button key={item.name} type="button" onClick={() => setTargetIndex(index)} className={cn("shrink-0 rounded-xl px-3 py-2 text-xs font-bold", index === targetIndex ? "bg-cyan-300 text-slate-950" : "bg-white/10 text-white")}>
+                {item.name}
+              </button>
+            ))}
+          </div>
+          {source === "astronomical" && (
+            <p className="px-2 pt-2 text-[11px] text-slate-200">
+              Recent confirmed exoplanets: {RECENT_EXOPLANETS.map((planet) => `${planet.name} (${planet.detail})`).join(" · ")}. Reference data: NASA Exoplanet Archive.
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
