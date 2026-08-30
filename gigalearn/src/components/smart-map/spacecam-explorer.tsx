@@ -48,6 +48,13 @@ export function SpaceCamExplorer() {
 
   const fusion = useMemo(() => getZoomFusionState(zoom), [zoom]);
   const cameraStage = CAMERA_SOURCES.has(fusion.source);
+  const displaySource =
+    cameraStage && cameraStatus !== "ready"
+      ? {
+          label: "CAMERA OFF",
+          description: "Camera access is disabled until you explicitly enable it.",
+        }
+      : fusion;
 
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -182,8 +189,8 @@ export function SpaceCamExplorer() {
           <ArrowLeft className="h-4 w-4" /> <span className="hidden sm:inline">Smart Map</span>
         </Link>
         <div className="rounded-2xl bg-slate-950/75 px-3 py-2 text-right shadow-lg backdrop-blur">
-          <p className="text-[10px] font-bold tracking-[0.16em] text-cyan-200">{fusion.label}</p>
-          <p className="text-xs text-white/75">{fusion.description}</p>
+          <p className="text-[10px] font-bold tracking-[0.16em] text-cyan-200">{displaySource.label}</p>
+          <p className="text-xs text-white/75">{displaySource.description}</p>
         </div>
       </div>
 
@@ -198,7 +205,7 @@ export function SpaceCamExplorer() {
           <div className="flex items-end justify-between">
             <div>
               <p className="font-display text-3xl font-extrabold">{formatSpaceCamScale(fusion.scaleMeters)}</p>
-              <p className="mt-1 text-xs text-slate-300">{fusion.label}{userLocation ? " · centered on your Smart Map location" : ""}</p>
+              <p className="mt-1 text-xs text-slate-300">{displaySource.label}{userLocation ? " · centered on your Smart Map location" : ""}</p>
             </div>
             {cameraStatus === "ready" && cameraStage && (
               <button type="button" onClick={captureLocally} className="grid h-12 w-12 place-items-center rounded-full border-4 border-white bg-transparent" aria-label="Capture locally">
