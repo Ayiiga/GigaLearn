@@ -15,6 +15,7 @@ import {
 import Link from "next/link";
 import { useMapStore } from "@/stores/map-store";
 import { cn } from "@/lib/utils";
+import { hasConsent } from "@/lib/ai40/privacy";
 import {
   formatSpaceCamScale,
   getZoomFusionState,
@@ -42,6 +43,8 @@ export function SpaceCamExplorer() {
   const [isOnline, setIsOnline] = useState(true);
   const userLocation = useMapStore((state) => state.userLocation);
   const mapStyle = useMapStore((state) => state.mapStyle);
+  const privacyConsents = useMapStore((state) => state.privacyConsents);
+  const setPrivacyConsent = useMapStore((state) => state.setPrivacyConsent);
 
   const fusion = useMemo(() => getZoomFusionState(zoom), [zoom]);
   const cameraStage = CAMERA_SOURCES.has(fusion.source);
@@ -53,6 +56,9 @@ export function SpaceCamExplorer() {
 
   const startCamera = useCallback(
     async (facingMode = cameraFacing) => {
+      if (!hasConsent(privacyConsents, "camera")) {
+        setPrivacyConsent("camera", true);
+      }
       if (!navigator.mediaDevices?.getUserMedia) {
         setCameraStatus("unavailable");
         return;
@@ -82,7 +88,7 @@ export function SpaceCamExplorer() {
         setCameraStatus(error instanceof DOMException && error.name === "NotAllowedError" ? "denied" : "unavailable");
       }
     },
-    [cameraFacing, stopCamera],
+    [cameraFacing, privacyConsents, setPrivacyConsent, stopCamera],
   );
 
   useEffect(() => {
@@ -147,7 +153,7 @@ export function SpaceCamExplorer() {
             <Camera className="mx-auto h-12 w-12 text-cyan-200" />
             <h2 className="mt-4 font-display text-xl font-bold">Open your device camera</h2>
             <p className="mt-2 text-sm text-slate-200">
-              SpaceCam uses your camera only after you choose to enable it. Captures stay on this device unless you download them.
+              SpaceCam uses your camera only after you choose to enable it. This grants Smart Map&apos;s camera permission preference; captures stay on this device unless you download them.
             </p>
             <button
               type="button"
