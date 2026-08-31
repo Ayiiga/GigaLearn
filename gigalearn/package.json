@@ -20,9 +20,12 @@
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.110.0",
     "@vercel/analytics": "^2.0.1",
+    "astronomy-engine": "^2.1.19",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "dexie": "^4.4.4",
@@ -36,6 +39,7 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "tailwind-merge": "^3.3.0",
+    "three": "^0.185.1",
     "workbox-window": "^7.3.0",
     "zustand": "^5.0.5"
   },
@@ -50,6 +54,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.185.4",
     "@vitejs/plugin-react": "^4.5.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.20",

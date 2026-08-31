@@ -3,7 +3,7 @@ import { SpaceCamExplorer } from "@/components/smart-map/spacecam-explorer";
 
 export const metadata: Metadata = {
   title: "SpaceCam",
-  description: "Explore visual scale from your device camera to Smart Map and conceptual space views.",
+  description: "Premium interactive 3D astronomy explorer — camera overlay, sky map, and deep space visualization.",
 };
 
 export default function SpaceCamPage() {
