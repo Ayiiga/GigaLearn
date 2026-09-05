@@ -17,6 +17,7 @@ import { useMapStore } from "@/stores/map-store";
 import { getCountry } from "@/content/smart-map/countries";
 import type { Place } from "@/types/smart-map";
 import type { NavEndpoint } from "@/lib/geo/types";
+import { registerMapForScreenshot } from "@/lib/map/map-screenshot";
 
 interface MapViewProps {
   places?: Place[];
@@ -76,7 +77,9 @@ export function MapView({
       zoom: userLocation ? 15 : country.zoom || DEFAULT_ZOOM,
       attributionControl: { compact: true },
       interactive,
+      canvasContextAttributes: { preserveDrawingBuffer: true },
     });
+    registerMapForScreenshot(map);
 
     map.addControl(new NavigationControl({ visualizePitch: true }), "bottom-right");
     const geolocate = new GeolocateControl({
@@ -139,6 +142,7 @@ export function MapView({
       extraMarkersRef.current.forEach((m) => m.remove());
       extraMarkersRef.current = [];
       userMarkerRef.current?.remove();
+      registerMapForScreenshot(null);
       map.remove();
       mapRef.current = null;
     };

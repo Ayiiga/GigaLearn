@@ -12,6 +12,8 @@ import { LiveLayerToggles } from "@/components/smart-map/live-layer-toggles";
 import { SafetyStatusCard } from "@/components/smart-map/safety-status-card";
 import { WeatherIntelligenceCard } from "@/components/smart-map/weather-intelligence-card";
 import { OfflineBanner } from "@/components/smart-map/offline-banner";
+import { OfflineReadyBadge } from "@/components/smart-map/offline-ready-badge";
+import { AddToHomeScreenPrompt } from "@/components/smart-map/a2hs-prompt";
 import { BRAND } from "@/lib/brand";
 import { usePublicSafetyEnabled } from "@/lib/features/use-feature-flag";
 
@@ -43,6 +45,10 @@ export function HomeOverlay() {
           </div>
 
           <OfflineBanner />
+          <div className="flex flex-wrap items-center gap-2">
+            <OfflineReadyBadge />
+          </div>
+          <AddToHomeScreenPrompt />
 
           <Link
             href="/search"

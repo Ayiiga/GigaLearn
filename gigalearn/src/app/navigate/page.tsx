@@ -10,7 +10,6 @@ import {
   Footprints,
   Home,
   MapPinned,
-  Mic,
   Navigation,
   Route,
   ShieldAlert,
@@ -29,6 +28,11 @@ import {
 import { analyzeRouteSafety } from "@/lib/navigation/safety-analysis";
 import { useAi40Enabled } from "@/lib/features/use-feature-flag";
 import Link from "next/link";
+import { NavigateVoiceControls } from "@/components/smart-map/navigate-voice-controls";
+import { NavigateVoiceRunner } from "@/components/smart-map/navigate-voice-runner";
+import { NavigationHudOverlay } from "@/components/smart-map/navigation-hud-overlay";
+import { RouteShareButton } from "@/components/smart-map/route-share-button";
+import { recordSuccessfulNavigation } from "@/lib/offline/navigation-counter";
 
 const MapView = dynamic(
   () => import("@/components/smart-map/map-view").then((m) => m.MapView),
@@ -58,8 +62,6 @@ export default function NavigatePage() {
   const resolvedAddress = useMapStore((s) => s.resolvedAddress);
   const travelMode = useMapStore((s) => s.travelMode);
   const setTravelMode = useMapStore((s) => s.setTravelMode);
-  const voiceNav = useMapStore((s) => s.voiceNav);
-  const setVoiceNav = useMapStore((s) => s.setVoiceNav);
   const navOrigin = useMapStore((s) => s.navOrigin);
   const navDestination = useMapStore((s) => s.navDestination);
   const setNavOrigin = useMapStore((s) => s.setNavOrigin);
@@ -194,6 +196,13 @@ export default function NavigatePage() {
   return (
     <div className="relative h-[100dvh] w-full">
       <MapView places={[]} />
+      <NavigationHudOverlay active={navigating} />
+      <NavigateVoiceRunner
+        navigating={navigating}
+        steps={active?.steps ?? []}
+        fromLabel={origin?.label}
+        toLabel={dest?.label}
+      />
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 max-h-[100dvh] overflow-y-auto p-3 sm:p-4">
         <div className="pointer-events-auto mx-auto flex max-w-xl flex-col gap-3 pb-28">
           <LocationPermissionCard compact />
@@ -428,28 +437,22 @@ export default function NavigatePage() {
               </div>
             )}
 
-            <div className="mt-4 flex gap-2">
+            <div className="mt-4 flex flex-wrap gap-2">
               <button
                 type="button"
                 disabled={!active}
-                onClick={() => setNavigating(true)}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-sm-primary px-4 py-3 text-sm font-bold text-white disabled:opacity-40"
+                onClick={() => {
+                  setNavigating(true);
+                  recordSuccessfulNavigation();
+                }}
+                className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-2xl bg-sm-primary px-4 py-3 text-sm font-bold text-white disabled:opacity-40"
               >
                 <Navigation className="h-4 w-4" />
                 {navigating ? "Navigating…" : "Start navigation"}
               </button>
-              <button
-                type="button"
-                onClick={() => setVoiceNav(!voiceNav)}
-                className={cn(
-                  "inline-flex items-center justify-center rounded-2xl px-4 py-3",
-                  voiceNav ? "bg-sm-emerald text-white" : "bg-slate-100 dark:bg-white/10",
-                )}
-                aria-label="Toggle voice navigation"
-              >
-                <Mic className="h-5 w-5" />
-              </button>
+              <RouteShareButton routeLabel={active?.label ?? "Smart Map route"} disabled={!active} />
             </div>
+            <NavigateVoiceControls className="mt-3" />
           </section>
 
           <LiveLayerToggles />
