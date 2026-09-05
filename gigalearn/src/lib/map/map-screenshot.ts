@@ -1,13 +1,12 @@
 import type { Map as MapLibreMapType } from "maplibre-gl";
-
-let registeredMap: MapLibreMapType | null = null;
+import { getRegisteredMap, registerMapInstance } from "@/lib/map/map-instance-registry";
 
 export function registerMapForScreenshot(map: MapLibreMapType | null): void {
-  registeredMap = map;
+  registerMapInstance(map);
 }
 
 export function captureMapScreenshot(type = "image/png", quality = 0.92): string | null {
-  const map = registeredMap;
+  const map = getRegisteredMap();
   if (!map) return null;
   try {
     map.triggerRepaint();

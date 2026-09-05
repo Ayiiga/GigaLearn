@@ -8,6 +8,13 @@ import {
 import { localizeVoiceStep, translateStepToTwi } from "@/lib/navigation/voice-ghana";
 import { buildSosMessage, formatSosLocation } from "@/lib/safety/sos-share";
 import { ghanaPackTileUrls } from "@/lib/offline/ghana-tile-pack";
+import {
+  routeHasTolls,
+  routeSummaryDescription,
+  routeSummaryHeadline,
+  routeTollLabel,
+} from "@/lib/navigation/route-detail-formatter";
+import { planAdvancedRoutes } from "@/lib/navigation/route-engine";
 
 describe("Ghana route preview steps", () => {
   it("includes Head south for Ofinso - Juansa Rd", () => {
@@ -49,5 +56,20 @@ describe("Ghana offline tile pack", () => {
     const urls = ghanaPackTileUrls();
     expect(urls.length).toBeGreaterThan(20);
     expect(urls.some((u) => u.includes("tiles.openfreemap.org"))).toBe(true);
+  });
+});
+
+describe("route detail formatter", () => {
+  it("builds rich navigation headlines and toll labels", () => {
+    const [plan] = planAdvancedRoutes({
+      from: { id: "a", label: "Bedomase", coordinates: BEDOMASE_COORDINATES },
+      to: { id: "b", label: "Ofinso - Juansa Rd", coordinates: { lat: 6.747, lng: -1.691 } },
+      mode: "driving",
+      preferences: ["fastest"],
+    });
+    expect(routeSummaryHeadline(plan)).toMatch(/km\)/);
+    expect(routeSummaryDescription(plan)).toContain("Fastest");
+    expect(routeTollLabel(plan)).toMatch(/tolls/i);
+    expect(typeof routeHasTolls(plan)).toBe("boolean");
   });
 });

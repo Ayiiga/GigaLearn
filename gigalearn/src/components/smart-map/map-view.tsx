@@ -92,6 +92,14 @@ export function MapView({
     map.addControl(geolocate, "bottom-right");
     map.addControl(new ScaleControl({ maxWidth: 100 }), "bottom-left");
 
+    map.touchZoomRotate.enable();
+    map.dragPan.enable();
+    map.scrollZoom.enable();
+    map.doubleClickZoom.enable();
+
+    map.on("dragstart", () => useMapStore.getState().setFollowUser(false));
+    map.on("zoomstart", () => useMapStore.getState().setFollowUser(false));
+
     const markReady = () => setReady(true);
     map.on("load", markReady);
     map.on("idle", markReady);
@@ -274,7 +282,7 @@ export function MapView({
       className={`relative h-full w-full overflow-hidden ${className}`}
       style={{ cursor: pickOnMapMode ? "crosshair" : undefined }}
     >
-      <div ref={containerRef} className="absolute inset-0" />
+      <div ref={containerRef} className="absolute inset-0 touch-pan-x touch-pan-y" />
       {pickOnMapMode && (
         <div className="pointer-events-none absolute inset-x-0 top-3 z-30 flex justify-center">
           <p className="rounded-full bg-sm-primary px-4 py-2 text-xs font-bold text-white shadow-lg">
