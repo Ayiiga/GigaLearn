@@ -12,7 +12,7 @@ import type { Map as MapLibreMapType, Marker as MarkerType } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { PLACES } from "@/content/smart-map/places";
 import { getCategoryMeta } from "@/content/smart-map/categories";
-import { MAP_STYLE_URLS, DEFAULT_CENTER, DEFAULT_ZOOM } from "@/lib/map/styles";
+import { MAP_STYLE_URLS, DEFAULT_CENTER, DEFAULT_ZOOM, applyMapStyle, initialMapStyle, mapStyleKey } from "@/lib/map/styles";
 import { useMapStore } from "@/stores/map-store";
 import { getCountry } from "@/content/smart-map/countries";
 import type { Place } from "@/types/smart-map";
@@ -47,6 +47,7 @@ export function MapView({
   const extraMarkersRef = useRef<MarkerType[]>([]);
   const userMarkerRef = useRef<MarkerType | null>(null);
   const geolocateRef = useRef<GeolocateControl | null>(null);
+  const appliedStyleRef = useRef<string>("");
   const [ready, setReady] = useState(false);
   const didFlyToUser = useRef(false);
 
@@ -70,15 +71,17 @@ export function MapView({
 
     const country = getCountry(countryCode);
     const initial = userLocation ?? country.center ?? DEFAULT_CENTER;
+    const initialStyle = initialMapStyle(mapStyle);
     const map = new MapLibreMap({
       container: containerRef.current,
-      style: MAP_STYLE_URLS[mapStyle] ?? MAP_STYLE_URLS.streets,
+      style: initialStyle,
       center: [initial.lng, initial.lat],
       zoom: userLocation ? 15 : country.zoom || DEFAULT_ZOOM,
       attributionControl: { compact: true },
       interactive,
       canvasContextAttributes: { preserveDrawingBuffer: true },
     });
+    appliedStyleRef.current = mapStyleKey(mapStyle);
     registerMapForScreenshot(map);
 
     map.addControl(new NavigationControl({ visualizePitch: true }), "bottom-right");
@@ -160,8 +163,10 @@ export function MapView({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready) return;
-    const styleUrl = MAP_STYLE_URLS[mapStyle];
-    if (styleUrl) map.setStyle(styleUrl);
+    const nextKey = mapStyleKey(mapStyle);
+    if (appliedStyleRef.current === nextKey) return;
+    appliedStyleRef.current = nextKey;
+    applyMapStyle(map, mapStyle);
   }, [mapStyle, ready]);
 
   useEffect(() => {
