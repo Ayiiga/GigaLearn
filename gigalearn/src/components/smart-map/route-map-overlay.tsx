@@ -3,26 +3,34 @@
 import { useEffect } from "react";
 import type { Map as MapLibreMapType } from "maplibre-gl";
 import type { AdvancedRoutePlan } from "@/lib/navigation/types";
+import type { Coordinates } from "@/types/smart-map";
 import { getRegisteredMap, subscribeMapInstance } from "@/lib/map/map-instance-registry";
 import { clearRoutesFromMap, renderRoutesOnMap } from "@/lib/map/route-map-layer";
 
 interface RouteMapOverlayProps {
   routes: AdvancedRoutePlan[];
   activeRouteId: string | null;
+  origin?: Coordinates | null;
+  destination?: Coordinates | null;
 }
 
-export function RouteMapOverlay({ routes, activeRouteId }: RouteMapOverlayProps) {
+export function RouteMapOverlay({
+  routes,
+  activeRouteId,
+  origin,
+  destination,
+}: RouteMapOverlayProps) {
   useEffect(() => {
     let cancelled = false;
     let detachMapListeners: (() => void) | undefined;
 
     const draw = (map: MapLibreMapType) => {
       if (cancelled) return;
-      if (routes.length === 0) {
+      if (routes.length === 0 || !origin || !destination) {
         clearRoutesFromMap(map);
         return;
       }
-      renderRoutesOnMap(map, routes, activeRouteId);
+      renderRoutesOnMap(map, routes, activeRouteId, { origin, destination });
     };
 
     const bindMap = (map: MapLibreMapType | null) => {
@@ -32,7 +40,11 @@ export function RouteMapOverlay({ routes, activeRouteId }: RouteMapOverlayProps)
 
       const onStyle = () => draw(map);
       map.on("styledata", onStyle);
-      detachMapListeners = () => map.off("styledata", onStyle);
+      map.on("idle", onStyle);
+      detachMapListeners = () => {
+        map.off("styledata", onStyle);
+        map.off("idle", onStyle);
+      };
 
       if (map.isStyleLoaded()) draw(map);
       else map.once("load", () => draw(map));
@@ -48,7 +60,7 @@ export function RouteMapOverlay({ routes, activeRouteId }: RouteMapOverlayProps)
       const map = getRegisteredMap();
       if (map) clearRoutesFromMap(map);
     };
-  }, [routes, activeRouteId]);
+  }, [routes, activeRouteId, origin, destination]);
 
   return null;
 }

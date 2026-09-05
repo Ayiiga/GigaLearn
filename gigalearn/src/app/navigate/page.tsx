@@ -33,6 +33,7 @@ import {
   MapTouchZoomHint,
   MapZoomControls,
 } from "@/components/smart-map/map-touch-controls";
+import { NavigateSatelliteToggle } from "@/components/smart-map/navigate-satellite-toggle";
 import { recordSuccessfulNavigation } from "@/lib/offline/navigation-counter";
 
 const MapView = dynamic(
@@ -82,6 +83,7 @@ export default function NavigatePage() {
     "fastest",
   );
   const [navigating, setNavigating] = useState(false);
+  const [showInputs, setShowInputs] = useState(true);
   const ai40 = useAi40Enabled();
 
   // Default From = current GPS. Only write when missing or values actually changed
@@ -179,6 +181,10 @@ export default function NavigatePage() {
     });
   }, [active, travelMode]);
 
+  useEffect(() => {
+    if (routes.length > 0) setShowInputs(false);
+  }, [routes.length]);
+
   function useCurrentLocation() {
     if (!userLocation) {
       setPickOnMapMode("origin");
@@ -197,7 +203,20 @@ export default function NavigatePage() {
   return (
     <div className="relative h-[100dvh] w-full touch-manipulation">
       <MapView places={[]} />
-      <RouteMapOverlay routes={routes} activeRouteId={active?.id ?? null} />
+      <RouteMapOverlay
+        routes={routes}
+        activeRouteId={active?.id ?? null}
+        origin={origin?.coordinates}
+        destination={dest?.coordinates}
+      />
+      <div
+        className="pointer-events-none absolute right-3 z-20 flex flex-col gap-2"
+        style={{ top: "calc(11rem + env(safe-area-inset-top))" }}
+      >
+        <div className="pointer-events-auto">
+          <NavigateSatelliteToggle />
+        </div>
+      </div>
       <MapTouchZoomHint />
       <MapRecenterButton />
       <MapZoomControls />
@@ -210,6 +229,20 @@ export default function NavigatePage() {
       />
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 p-3 sm:p-4">
         <div className="pointer-events-auto mx-auto flex max-w-xl flex-col gap-3">
+          {!showInputs && origin && dest ? (
+            <button
+              type="button"
+              onClick={() => setShowInputs(true)}
+              className="rounded-2xl border border-white/30 bg-white/95 px-4 py-3 text-left shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#0B1220]/95"
+            >
+              <p className="text-xs font-semibold text-slate-500">Route</p>
+              <p className="truncate text-sm font-bold">
+                {origin.label} → {dest.label}
+              </p>
+              <p className="mt-1 text-[11px] text-[#1A73E8]">Tap to edit · pinch map to zoom</p>
+            </button>
+          ) : (
+            <>
           <LocationPermissionCard compact />
           <LocationHud />
 
@@ -363,6 +396,8 @@ export default function NavigatePage() {
           </section>
 
           <LiveLayerToggles />
+            </>
+          )}
         </div>
       </div>
 
