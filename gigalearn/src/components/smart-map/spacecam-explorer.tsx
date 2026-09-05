@@ -28,6 +28,7 @@ import { identifyObjectsNearDirection, orientationToHorizontal, getIdentifyDiscl
 import { fetchSatellitePositions } from "@/lib/spacecam/satellite-service";
 import { fetchCometData } from "@/lib/spacecam/comet-service";
 import { ObjectInfoSheet } from "./spacecam/object-info-sheet";
+import { SpaceCamSatelliteTilt } from "@/components/smart-map/spacecam-satellite-tilt";
 import { SearchPanel } from "./spacecam/search-panel";
 import { LayersMenu } from "./spacecam/layers-menu";
 import { TimeTravelPanel } from "./spacecam/time-travel";
@@ -88,6 +89,7 @@ export function SpaceCamExplorer() {
   const [isOnline, setIsOnline] = useState(true);
   const [satelliteMessage, setSatelliteMessage] = useState("");
   const [identifyOpen, setIdentifyOpen] = useState(false);
+  const [satelliteMapOpen, setSatelliteMapOpen] = useState(false);
 
   const fusion = getZoomFusionStateFromLevel(zoomLevel);
 
@@ -170,6 +172,11 @@ export function SpaceCamExplorer() {
       {mode === "space-3d" && (
         <SpaceRenderer observer={observer} className="absolute inset-0" />
       )}
+      {satelliteMapOpen && (
+        <div className="absolute inset-0 z-[5]">
+          <SpaceCamSatelliteTilt />
+        </div>
+      )}
 
       {/* Top bar */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between p-3 sm:p-5">
@@ -219,6 +226,7 @@ export function SpaceCamExplorer() {
         <FloatingButton icon={Plus} label="Zoom in" onClick={() => setZoomLevel(Math.min(10, zoomLevel + 1) as typeof zoomLevel)} />
         <FloatingButton icon={Minus} label="Zoom out" onClick={() => setZoomLevel(Math.max(0, zoomLevel - 1) as typeof zoomLevel)} />
         <FloatingButton icon={Compass} label="Recenter" onClick={() => setZoomLevel((mode === "space-3d" ? 4 : 1) as typeof zoomLevel)} />
+        <FloatingButton icon={Globe} label="Satellite map" onClick={() => setSatelliteMapOpen((v) => !v)} />
         <FloatingButton icon={Layers} label="Layers" onClick={() => setLayersOpen(true)} />
         <FloatingButton icon={Crosshair} label="Identify" onClick={handleIdentify} />
         <FloatingButton icon={Clock} label="Time travel" onClick={() => setTimeOpen(true)} />

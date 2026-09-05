@@ -17,6 +17,7 @@ import { useMapStore } from "@/stores/map-store";
 import { getCountry } from "@/content/smart-map/countries";
 import type { Place } from "@/types/smart-map";
 import type { NavEndpoint } from "@/lib/geo/types";
+import { registerMapForScreenshot } from "@/lib/map/map-screenshot";
 
 interface MapViewProps {
   places?: Place[];
@@ -76,7 +77,9 @@ export function MapView({
       zoom: userLocation ? 15 : country.zoom || DEFAULT_ZOOM,
       attributionControl: { compact: true },
       interactive,
+      canvasContextAttributes: { preserveDrawingBuffer: true },
     });
+    registerMapForScreenshot(map);
 
     map.addControl(new NavigationControl({ visualizePitch: true }), "bottom-right");
     const geolocate = new GeolocateControl({
@@ -88,6 +91,14 @@ export function MapView({
     geolocateRef.current = geolocate;
     map.addControl(geolocate, "bottom-right");
     map.addControl(new ScaleControl({ maxWidth: 100 }), "bottom-left");
+
+    map.touchZoomRotate.enable();
+    map.dragPan.enable();
+    map.scrollZoom.enable();
+    map.doubleClickZoom.enable();
+
+    map.on("dragstart", () => useMapStore.getState().setFollowUser(false));
+    map.on("zoomstart", () => useMapStore.getState().setFollowUser(false));
 
     const markReady = () => setReady(true);
     map.on("load", markReady);
@@ -139,6 +150,7 @@ export function MapView({
       extraMarkersRef.current.forEach((m) => m.remove());
       extraMarkersRef.current = [];
       userMarkerRef.current?.remove();
+      registerMapForScreenshot(null);
       map.remove();
       mapRef.current = null;
     };
@@ -270,7 +282,7 @@ export function MapView({
       className={`relative h-full w-full overflow-hidden ${className}`}
       style={{ cursor: pickOnMapMode ? "crosshair" : undefined }}
     >
-      <div ref={containerRef} className="absolute inset-0" />
+      <div ref={containerRef} className="absolute inset-0 touch-pan-x touch-pan-y" />
       {pickOnMapMode && (
         <div className="pointer-events-none absolute inset-x-0 top-3 z-30 flex justify-center">
           <p className="rounded-full bg-sm-primary px-4 py-2 text-xs font-bold text-white shadow-lg">

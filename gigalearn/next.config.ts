@@ -128,7 +128,15 @@ const withPwaConfig = withPWA({
         handler: "CacheFirst",
         options: {
           cacheName: "map-tiles",
-          expiration: { maxEntries: 256, maxAgeSeconds: 7 * 24 * 60 * 60 },
+          expiration: { maxEntries: 512, maxAgeSeconds: 14 * 24 * 60 * 60 },
+        },
+      },
+      {
+        urlPattern: /^https:\/\/server\.arcgisonline\.com\/ArcGIS\/rest\/services\/World_Imagery\/MapServer\/tile\/.*/i,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "satellite-tiles",
+          expiration: { maxEntries: 128, maxAgeSeconds: 14 * 24 * 60 * 60 },
         },
       },
       {

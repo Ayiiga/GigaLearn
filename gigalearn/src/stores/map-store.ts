@@ -90,6 +90,8 @@ interface MapState extends UserMapPreferences {
   setMedical: (bloodGroup?: string, medicalNotes?: string) => void;
   addReport: (report: CommunityReport) => void;
   setVoiceNav: (on: boolean) => void;
+  voiceLanguage: "en" | "tw";
+  setVoiceLanguage: (language: "en" | "tw") => void;
 }
 
 export const useMapStore = create<MapState>()(
@@ -130,6 +132,7 @@ export const useMapStore = create<MapState>()(
       medicalNotes: undefined,
       mapStyle: "streets",
       voiceNav: true,
+      voiceLanguage: "en",
       setCountryCode: (code) => set({ countryCode: code }),
       setUserLocation: (coords) => set({ userLocation: coords }),
       setLocationPermission: (permission) => set({ locationPermission: permission }),
@@ -229,6 +232,7 @@ export const useMapStore = create<MapState>()(
       setMedical: (bloodGroup, medicalNotes) => set({ bloodGroup, medicalNotes }),
       addReport: (report) => set({ reports: [report, ...get().reports] }),
       setVoiceNav: (on) => set({ voiceNav: on }),
+      setVoiceLanguage: (language) => set({ voiceLanguage: language }),
     }),
     {
       name: "smart-map-store",
@@ -265,8 +269,9 @@ export const useMapStore = create<MapState>()(
         touristSafetyMode: state.touristSafetyMode,
         bloodGroup: state.bloodGroup,
         medicalNotes: state.medicalNotes,
-        mapStyle: state.mapStyle,
-        voiceNav: state.voiceNav,
+          mapStyle: state.mapStyle,
+          voiceNav: state.voiceNav,
+          voiceLanguage: state.voiceLanguage ?? "en",
         reports: state.reports,
         privacyConsents: state.privacyConsents,
         homeLocation: state.homeLocation,

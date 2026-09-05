@@ -150,4 +150,5 @@ export interface UserMapPreferences {
   medicalNotes?: string;
   mapStyle: MapStyle;
   voiceNav: boolean;
+  voiceLanguage: "en" | "tw";
 }

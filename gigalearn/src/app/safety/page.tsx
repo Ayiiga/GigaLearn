@@ -9,18 +9,16 @@ import {
   QrCode,
   Share2,
   Shield,
-  Siren,
   UserRound,
   Users,
 } from "lucide-react";
 import { getCountry, LAUNCH_COUNTRY } from "@/content/smart-map/countries";
 import { useMapStore } from "@/stores/map-store";
 import { isValidPhone, sanitizeText } from "@/lib/security/validate";
+import { SosEmergencyButton } from "@/components/smart-map/sos-emergency-button";
 
 function SafetyPageContent() {
   const country = getCountry(useMapStore((s) => s.countryCode));
-  const sosActive = useMapStore((s) => s.sosActive);
-  const setSosActive = useMapStore((s) => s.setSosActive);
   const womenSafetyMode = useMapStore((s) => s.womenSafetyMode);
   const childSafetyMode = useMapStore((s) => s.childSafetyMode);
   const touristSafetyMode = useMapStore((s) => s.touristSafetyMode);
@@ -30,7 +28,6 @@ function SafetyPageContent() {
   const setMedical = useMapStore((s) => s.setMedical);
   const emergencyContacts = useMapStore((s) => s.emergencyContacts);
   const addEmergencyContact = useMapStore((s) => s.addEmergencyContact);
-  const userLocation = useMapStore((s) => s.userLocation);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [shared, setShared] = useState(false);
@@ -47,33 +44,7 @@ function SafetyPageContent() {
         </p>
       </header>
 
-      <section className="mt-6 rounded-[2rem] bg-gradient-to-br from-sm-danger to-[#9f1239] p-5 text-white shadow-xl">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="text-sm font-semibold opacity-90">Emergency SOS</p>
-            <h2 className="font-display text-2xl font-extrabold">Need help now?</h2>
-          </div>
-          <Siren className="h-8 w-8" />
-        </div>
-        <button
-          type="button"
-          onClick={() => setSosActive(!sosActive)}
-          className={`sm-sos-pulse mt-5 flex h-28 w-full items-center justify-center rounded-[1.75rem] text-2xl font-black tracking-wide ${
-            sosActive ? "bg-white text-sm-danger" : "bg-white/15 backdrop-blur"
-          }`}
-        >
-          {sosActive ? "SOS ACTIVE — HELP ON THE WAY" : "HOLD / TAP SOS"}
-        </button>
-        {sosActive && (
-          <p className="mt-3 text-sm text-white/90">
-            Broadcasting alert to emergency contacts
-            {userLocation
-              ? ` · live location ${userLocation.lat.toFixed(4)}, ${userLocation.lng.toFixed(4)}`
-              : " · enable GPS for live location"}
-            .
-          </p>
-        )}
-      </section>
+      <SosEmergencyButton />
 
       <section className="mt-6 grid gap-3 sm:grid-cols-3">
         {[
