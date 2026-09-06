@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin } from "lucide-react";
+import { MapPin, Navigation } from "lucide-react";
 import { SmartMapLogo } from "@/components/smart-map/logo";
 import { PlaceSheet } from "@/components/smart-map/place-sheet";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -50,15 +50,25 @@ export function HomeOverlay() {
           </div>
           <AddToHomeScreenPrompt />
 
-          <Link
-            href="/search"
-            className="flex min-h-[48px] items-center gap-3 rounded-2xl border border-white/30 bg-white/95 px-4 py-3 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-[#0B1220]/95"
-          >
-            <MapPin className="h-5 w-5 shrink-0 text-[#0F5B8D]" />
-            <span className="truncate text-sm font-medium text-slate-500 dark:text-slate-300">
-              Search worldwide — cities, streets, hospitals, airports…
-            </span>
-          </Link>
+          <div className="flex gap-2">
+            <Link
+              href="/search"
+              className="flex min-h-[48px] flex-1 items-center gap-3 rounded-2xl border border-white/30 bg-white/95 px-4 py-3 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-[#0B1220]/95"
+            >
+              <MapPin className="h-5 w-5 shrink-0 text-[#0F5B8D]" />
+              <span className="truncate text-sm font-medium text-slate-500 dark:text-slate-300">
+                Search worldwide — cities, streets, hospitals…
+              </span>
+            </Link>
+            <Link
+              href="/navigate"
+              className="inline-flex min-h-[48px] min-w-[48px] items-center justify-center rounded-2xl border border-white/30 bg-[#1A73E8] text-white shadow-lg backdrop-blur-xl"
+              aria-label="Directions"
+              title="Directions"
+            >
+              <Navigation className="h-5 w-5" />
+            </Link>
+          </div>
 
           <LocationPermissionCard />
           <LocationHud />
