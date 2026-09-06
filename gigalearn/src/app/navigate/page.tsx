@@ -36,7 +36,14 @@ import {
   MapZoomControls,
 } from "@/components/smart-map/map-touch-controls";
 import { NavigateSatelliteToggle } from "@/components/smart-map/navigate-satellite-toggle";
+import { TransportModeBar } from "@/components/smart-map/transport-mode-bar";
+import { MapAttributionFooter } from "@/components/smart-map/map-attribution-footer";
 import { recordSuccessfulNavigation } from "@/lib/offline/navigation-counter";
+import { getPlaceById } from "@/content/smart-map/places";
+
+const SmartMapTopBar = dynamic(() => import("@/components/smart-map/smart-map-top-bar").then((m) => m.SmartMapTopBar), { ssr: false });
+const SmartMapRouteSidebar = dynamic(() => import("@/components/smart-map/smart-map-route-sidebar").then((m) => m.SmartMapRouteSidebar), { ssr: false });
+const MapMinimapInset = dynamic(() => import("@/components/smart-map/map-minimap-inset").then((m) => m.MapMinimapInset), { ssr: false });
 
 const MapView = dynamic(
   () => import("@/components/smart-map/map-view").then((m) => m.MapView),
@@ -88,6 +95,13 @@ export default function NavigatePage() {
   const [previewMode, setPreviewMode] = useState(false);
   const [showInputs, setShowInputs] = useState(true);
   const ai40 = useAi40Enabled();
+
+  useEffect(() => {
+    const agona = getPlaceById("gh-agona-ashanti");
+    const bedomasеPlace = getPlaceById("gh-bedomase");
+    if (!navOrigin && agona) setNavOrigin({ id: agona.id, label: agona.name, coordinates: agona.coordinates, source: "search", placeId: agona.id, address: agona.address });
+    if (!navDestination && bedomasеPlace) setNavDestination({ id: bedomasеPlace.id, label: bedomasеPlace.name, coordinates: bedomasеPlace.coordinates, source: "search", placeId: bedomasеPlace.id, address: bedomasеPlace.address });
+  }, [navOrigin, navDestination, setNavOrigin, setNavDestination]);
 
   useEffect(() => {
     if (!userLocation) return;
@@ -223,8 +237,9 @@ export default function NavigatePage() {
   const showRouteCard = !showInputs && origin && dest && !previewMode;
 
   return (
-    <div className="relative h-[100dvh] w-full touch-manipulation">
-      <MapView places={[]} />
+    <div className="relative h-[100dvh] w-full touch-manipulation bg-[#0A0E23]">
+      <MapView places={[]} hideDefaultControls />
+      <SmartMapTopBar />
       <RouteMapOverlay
         routes={routes}
         activeRouteId={active?.id ?? null}
@@ -250,6 +265,16 @@ export default function NavigatePage() {
       <MapTouchZoomHint />
       <MapRecenterButton />
       <MapZoomControls />
+      {active && origin && dest && (
+        <div className="pointer-events-none absolute z-20 hidden p-4 lg:block" style={{ top: "calc(5rem + env(safe-area-inset-top))", right: 0 }}>
+          <SmartMapRouteSidebar active={active} destLabel={dest.label} navigating={navigating} onStartNavigation={() => { setPreviewMode(false); setNavigating(true); recordSuccessfulNavigation(); }} />
+        </div>
+      )}
+      <div className="pointer-events-none absolute inset-x-0 z-20 flex justify-center px-3" style={{ bottom: "calc(1rem + env(safe-area-inset-bottom))" }}>
+        <TransportModeBar multiModeEta={multiModeEta} />
+      </div>
+      <MapMinimapInset />
+      <MapAttributionFooter />
       <NavigationHudOverlay active={navigating} />
       <NavigateVoiceRunner
         navigating={navigating}
@@ -429,6 +454,7 @@ export default function NavigatePage() {
         </div>
       </div>
 
+      <div className="lg:hidden">
       <NavigateBottomSheet
         origin={origin}
         dest={dest}
@@ -453,6 +479,7 @@ export default function NavigatePage() {
         }}
         modes={MODES}
       />
+      </div>
     </div>
   );
 }
